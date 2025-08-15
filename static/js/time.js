@@ -12,7 +12,7 @@ function time() {
     var todayHour = today.getHours()
     var todayMinute = today.getMinutes()
     var todaySecond = today.getSeconds()
-    var t1 = Date.UTC(2018, 4, 18, 00, 00, 00)
+    var t1 = Date.UTC(2025, 8, 5, 00, 00, 00)
     var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond)
     var diff = t2 - t1
     var diffYears = Math.floor(diff / years)
