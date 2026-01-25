@@ -229,8 +229,31 @@ fetch('https://v1.hitokoto.cn')
     .then(response => response.json())
     .then(data => {
       const hitokoto = document.querySelector('#hitokoto_text')
+	  const hitokoto_from = document.querySelector('#hitokoto_from')
       hitokoto.href = `https://hitokoto.cn/?uuid=${data.uuid}`
+	  if (data.from_who = "null") {
+		hitokoto.from = "---" + data.from 	
+	  } else{
+	  	hitokoto.from = "---" + data.from + " " + data.from_who
+	  }
       hitokoto.innerText = data.hitokoto
+	  hitokoto_from.innerText = hitokoto.from
+	  console.log(data)
+// 	  数据结构一言
+//{
+//     "id": 9525,
+//     "uuid": "b3444351-174c-4834-973c-6d68a41afb09",
+//     "hitokoto": "火车是往前开的，去哪并不重要，重要的是窗外的风景。",
+//     "type": "h",
+//     "from": "爱情公寓",
+//     "from_who": "吕子乔",
+//     "creator": "郁离",
+//     "creator_uid": 15811,
+//     "reviewer": 4756,
+//     "commit_from": "web",
+//     "created_at": "1694464264",
+//     "length": 25
+// }
     })
     .catch(console.error)
 

@@ -877,6 +877,30 @@ footer {
     right: 50%;
 }
 
-.hitokoto{
-	
+#hitokoto_text{
+	display: block;
+	text-align: center;	
+	font-size: 24px;	
+}
+#hitokoto_from{
+	display: block;
+	text-align: right;
+	font-size: 17px;
+	padding: 1vh 0 0 0;
+}
+.LD_Hitokoto{
+	backdrop-filter: blur(var(--card_filter));
+	-webkit-backdrop-filter: blur(var(--card_filter));
+	background: var(--item_bg_color);
+	border-radius: 7px;
+	padding: 3vh 2vw 3vh 2vw;
+	transition: transform 0.4s cubic-bezier(0.37, 0.68, 0.37, 0.69);
+}
+.LD_Hitokoto:hover{
+	backdrop-filter: blur(var(--card_filter));
+	-webkit-backdrop-filter: blur(var(--card_filter));
+	background: var(--item_bg_color);
+	border-radius: 7px;
+	padding: 3vh 2vw 3vh 2vw;
+	transform: translateY(-5px);
 }
