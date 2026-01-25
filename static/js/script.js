@@ -1,11 +1,11 @@
 console.log('%cCopyright © 2024 zyyo.net',
     'background-color: #ff00ff; color: white; font-size: 24px; font-weight: bold; padding: 10px;'
 );
-console.log('%c   /\\_/\\', 'color: #8B4513; font-size: 20px;');
-console.log('%c  ( o.o )', 'color: #8B4513; font-size: 20px;');
-console.log(' %c  > ^ <', 'color: #8B4513; font-size: 20px;');
-console.log('  %c /  ~ \\', 'color: #8B4513; font-size: 20px;');
-console.log('  %c/______\\', 'color: #8B4513; font-size: 20px;');
+console.log('%c   /\\_/\\', 'color: #20128b; font-size: 20px;');
+console.log('%c  ( o.o )', 'color: #20128b; font-size: 20px;');
+console.log(' %c  > ^ <', 'color: #20128b; font-size: 20px;');
+console.log('  %c /  ~ \\', 'color: #20128b font-size: 20px;');
+console.log('  %c/______\\', 'color: #20128b; font-size: 20px;');
 
 document.addEventListener('contextmenu', function (event) {
     event.preventDefault();
@@ -225,7 +225,7 @@ window.addEventListener('load', function() {
 });
 
 
-fetch('https://v1.hitokoto.cn')
+fetch('https://v1.hitokoto.cn/?c=j&c=i')
     .then(response => response.json())
     .then(data => {
       const hitokoto = document.querySelector('#hitokoto_text')
@@ -239,6 +239,9 @@ fetch('https://v1.hitokoto.cn')
       hitokoto.innerText = data.hitokoto
 	  hitokoto_from.innerText = hitokoto.from
 	  console.log(data)
+	  })
+    .catch(console.error)
+
 // 	  数据结构一言
 //{
 //     "id": 9525,
@@ -254,8 +257,6 @@ fetch('https://v1.hitokoto.cn')
 //     "created_at": "1694464264",
 //     "length": 25
 // }
-    })
-    .catch(console.error)
 
 
 
