@@ -257,26 +257,28 @@ fetch('https://v1.hitokoto.cn/?c=j&c=i')
 //     "created_at": "1694464264",
 //     "length": 25
 // }
-const SeverName = document.querySelector('.SeverName') 
-SeverName.innerText = "自然之域"
-SeverIp = "play.simpfun.cn:15436"
 
-fetch('https://uapis.cn/api/v1/game/minecraft/serverstatus?server=' + SeverIp)
-	.then(response => response.json())
-	.then(data =>{
-		const ResponesData = data
-		console.log(ResponesData)
+
+// const SeverName = document.querySelector('.SeverName') 
+// SeverName.innerText = "自然之域"
+// SeverIp = "play.simpfun.cn:15436"
+
+// fetch('https://uapis.cn/api/v1/game/minecraft/serverstatus?server=' + SeverIp)
+// 	.then(response => response.json())
+// 	.then(data =>{
+// 		const ResponesData = data
+// 		console.log(ResponesData)
 		
 		
 		
-		const online = document.querySelector('.SeverStatus') 
-		if (data.online = true) {
-			online.innerText = "运行中"
-		} else{
-			online.innerText = "已关闭"
-		}
+// 		const online = document.querySelector('.SeverStatus') 
+// 		if (data.online = true) {
+// 			online.innerText = "运行中"
+// 		} else{
+// 			online.innerText = "已关闭"
+// 		}
 		
-		c
+// 		c
 		
-	})
+// 	})
 
