@@ -928,16 +928,16 @@ footer {
 .SeverName{
 	text-align: left;
 	font-size: 24px;
-	padding: 0 0 0 1vw;
+	/* padding: 0 0 0 1vw;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	background-size: 200%;
 	background-position: 0%;
 	animation: backgroundSizeAnimation 10s ease-in-out infinite;
-	  background-image:  var(--gradient);
+	  background-image:  var(--gradient); */
 	font-weight: 800;
 }
-.Status{
+.SeverStatus{
 	font-size: 24px;
 	border-width: 0;
 	display: block;
