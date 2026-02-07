@@ -86,7 +86,26 @@ function getCookie(name) {
 }
 
 
+function LoadHi() {
+	fetch('https://v1.hitokoto.cn/?c=j&c=i')
+		.then(response => response.json())
+		.then(data => {
+			const hitokoto = document.querySelector('#hitokoto_text')
+			const hitokoto_from = document.querySelector('#hitokoto_from')
+			// hitokoto.href = `https://hitokoto.cn/?uuid=${data.uuid}`
+			if (data.from_who = "null") {
+				hitokoto.from = "---" + data.from
+			} else {
+				hitokoto.from = "---" + data.from + " " + data.from_who
+			}
+			hitokoto.innerText = data.hitokoto
+			hitokoto_from.innerText = hitokoto.from
+			console.log(data)
+		})
+		.catch(console.error)
+}
 
+LoadHi()
 
 
 
@@ -225,22 +244,7 @@ window.addEventListener('load', function() {
 });
 
 
-fetch('https://v1.hitokoto.cn/?c=j&c=i')
-	.then(response => response.json())
-	.then(data => {
-		const hitokoto = document.querySelector('#hitokoto_text')
-		const hitokoto_from = document.querySelector('#hitokoto_from')
-		hitokoto.href = `https://hitokoto.cn/?uuid=${data.uuid}`
-		if (data.from_who = "null") {
-			hitokoto.from = "---" + data.from
-		} else {
-			hitokoto.from = "---" + data.from + " " + data.from_who
-		}
-		hitokoto.innerText = data.hitokoto
-		hitokoto_from.innerText = hitokoto.from
-		console.log(data)
-	})
-	.catch(console.error)
+
 
 // 	  数据结构一言
 //{
@@ -257,22 +261,3 @@ fetch('https://v1.hitokoto.cn/?c=j&c=i')
 //     "created_at": "1694464264",
 //     "length": 25
 // }
-
-
-const SeverName = document.querySelector('.SeverName')
-SeverName.innerText = "自然之域(MCsever)"
-SeverIp = "play.simpfun.cn:15436"
-
-fetch('https://uapis.cn/api/v1/game/minecraft/serverstatus?server=' + SeverIp)
-	.then(response => response.json())
-	.then(data => {
-		const ResponesData = data
-		console.log(data)
-		const online = document.querySelector('.SeverStatus')
-		if (data.online = true) {
-			online.innerText = "online"
-		} else {
-			online.innerText = "off"
-			online.style.backgroundColor = 'rgba(191, 0, 0, 1.0)'
-		}
-	})
