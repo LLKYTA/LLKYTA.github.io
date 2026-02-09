@@ -218,10 +218,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			requestAnimationFrame(step);
 		};
 
-		appendFps = function(fpsValue) {
-			fpsElement.textContent = 'FPS: ' + fpsValue;
-		};
-
+		// appendFps = function(fpsValue) {
+		// 	fpsElement.textContent = 'FPS: ' + fpsValue;
+		// };
 		step();
 	})();
 
