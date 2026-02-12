@@ -1,4 +1,4 @@
-console.log('%cCopyright © 2024 zyyo.net',
+ console.log('%cCopyright © 2024 zyyo.net',
 	'background-color: #ff00ff; color: white; font-size: 24px; font-weight: bold; padding: 10px;'
 );
 console.log('%c   /\\_/\\', 'color: #20128b; font-size: 20px;');
@@ -6,23 +6,18 @@ console.log('%c  ( o.o )', 'color: #20128b; font-size: 20px;');
 console.log(' %c  > ^ <', 'color: #20128b; font-size: 20px;');
 console.log('  %c /  ~ \\', 'color: #20128b font-size: 20px;');
 console.log('  %c/______\\', 'color: #20128b; font-size: 20px;');
-
 document.addEventListener('contextmenu', function(event) {
 	event.preventDefault();
 });
-
 function handlePress(event) {
 	this.classList.add('pressed');
 }
-
 function handleRelease(event) {
 	this.classList.remove('pressed');
 }
-
 function handleCancel(event) {
 	this.classList.remove('pressed');
 }
-
 var buttons = document.querySelectorAll('.projectItem');
 buttons.forEach(function(button) {
 	button.addEventListener('mousedown', handlePress);
@@ -32,14 +27,12 @@ buttons.forEach(function(button) {
 	button.addEventListener('touchend', handleRelease);
 	button.addEventListener('touchcancel', handleCancel);
 });
-
 function toggleClass(selector, className) {
 	var elements = document.querySelectorAll(selector);
 	elements.forEach(function(element) {
 		element.classList.toggle(className);
 	});
 }
-
 function pop(imageURL) {
 	var tcMainElement = document.querySelector(".tc-img");
 	if (imageURL) {
@@ -48,7 +41,6 @@ function pop(imageURL) {
 	toggleClass(".tc-main", "active");
 	toggleClass(".tc", "active");
 }
-
 var tc = document.getElementsByClassName('tc');
 var tc_main = document.getElementsByClassName('tc-main');
 tc[0].addEventListener('click', function(event) {
@@ -57,9 +49,6 @@ tc[0].addEventListener('click', function(event) {
 tc_main[0].addEventListener('click', function(event) {
 	event.stopPropagation();
 });
-
-
-
 function setCookie(name, value, days) {
 	var expires = "";
 	if (days) {
@@ -69,7 +58,6 @@ function setCookie(name, value, days) {
 	}
 	document.cookie = name + "=" + value + expires + "; path=/";
 }
-
 function getCookie(name) {
 	var nameEQ = name + "=";
 	var cookies = document.cookie.split(';');
@@ -84,8 +72,6 @@ function getCookie(name) {
 	}
 	return null;
 }
-
-
 function LoadHi() {
 	fetch('https://v1.hitokoto.cn/?c=j&c=i')
 		.then(response => response.json())
@@ -104,49 +90,17 @@ function LoadHi() {
 		})
 		.catch(console.error)
 }
-
 LoadHi()
-
-
-
-
-
-
-
-
-
-
-
-
 document.addEventListener('DOMContentLoaded', function() {
-
-
-
-
-
-
 	var html = document.querySelector('html');
 	var themeState = getCookie("themeState") || "Light";
 	var tanChiShe = document.getElementById("tanChiShe");
-
-
-
-
-
-
 	function changeTheme(theme) {
 		tanChiShe.src = "./static/svg/snake-" + theme + ".svg";
 		html.dataset.theme = theme;
 		setCookie("themeState", theme, 365);
 		themeState = theme;
 	}
-
-
-
-
-
-
-
 	var Checkbox = document.getElementById('myonoffswitch')
 	Checkbox.addEventListener('change', function() {
 		if (themeState == "Dark") {
@@ -157,40 +111,16 @@ document.addEventListener('DOMContentLoaded', function() {
 			changeTheme("Dark");
 		}
 	});
-
-
-
 	if (themeState == "Dark") {
 		Checkbox.checked = false;
 	}
-
 	changeTheme(themeState);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	var fpsElement = document.createElement('div');
 	fpsElement.id = 'fps';
 	fpsElement.style.zIndex = '10000';
 	fpsElement.style.position = 'fixed';
 	fpsElement.style.left = '0';
 	document.body.insertBefore(fpsElement, document.body.firstChild);
-
 	var showFPS = (function() {
 		var requestAnimationFrame = window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame ||
@@ -200,51 +130,32 @@ document.addEventListener('DOMContentLoaded', function() {
 			function(callback) {
 				window.setTimeout(callback, 1000 / 60);
 			};
-
 		var fps = 0,
 			last = Date.now(),
 			offset, step, appendFps;
-
 		step = function() {
 			offset = Date.now() - last;
 			fps += 1;
-
 			if (offset >= 1000) {
 				last += offset;
-				appendFps(fps);
+				// appendFps(fps);
 				fps = 0;
 			}
-
 			requestAnimationFrame(step);
 		};
-
 		// appendFps = function(fpsValue) {
 		// 	fpsElement.textContent = 'FPS: ' + fpsValue;
 		// };
 		step();
 	})();
-
-
-
 	//pop('./static/img/tz.jpg')
-
-
-
 });
-
-
-
-
 var pageLoading = document.querySelector("#zyyo-loading");
 window.addEventListener('load', function() {
 	setTimeout(function() {
 		pageLoading.style.opacity = '0';
 	}, 100);
 });
-
-
-
-
 // 	  数据结构一言
 //{
 //     "id": 9525,
