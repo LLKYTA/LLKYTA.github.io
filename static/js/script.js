@@ -90,7 +90,7 @@ function LoadHi() {
 		})
 		.catch(console.error)
 }
-LoadHi()
+setTimeout(LoadHi,1500)//setTimeout异步
 document.addEventListener('DOMContentLoaded', function() {
 	var html = document.querySelector('html');
 	var themeState = getCookie("themeState") || "Light";
