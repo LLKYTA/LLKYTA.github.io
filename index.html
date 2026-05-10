@@ -324,11 +324,29 @@
 		</div>
 	</body>
 	<script src="./static/js/script.js"> </script>
+	<script src="./static/js/uapi.js" charset="utf-8"></script>
 	<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
-	<script>
+	<!--<script>
 		LA.init({
 			id: "KFqltKSkJgQTGD9l",
 			ck: "KFqltKSkJgQTGD9l"
 		})
-	</script>
+	</script>-->
+ <script type="module">
+  import { UapiClient } from 'https://cdn.jsdelivr.net/npm/uapi-browser-sdk@latest/dist/index.js';
+  const client = new UapiClient('https://uapis.cn');
+ // const city = "";
+	// Tab to edit
+	const city = "";
+	const WeatherPayLoad = {
+   extended: true,
+   forecast: true,
+   hourly: true,
+   minutely: true,
+   indices: true,
+   lang: "zh",
+	}
+  const weatherData = client.misc.getMiscWeather(WeatherPayLoad);
+  console.log(weatherData);
+ </script>
 </html>
