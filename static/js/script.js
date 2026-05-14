@@ -80,7 +80,7 @@
  	return null;
  }
  
- function LoadHi() {
+ async function HitokotoService() {
  	fetch('https://v1.hitokoto.cn/?c=j&c=i')
  		.then(response => response.json())
  		.then(data => {
@@ -99,7 +99,6 @@
  		.catch(console.error)
  		return 0;
  }
- setTimeout(LoadHi, 1500) //setTimeout异步
  document.addEventListener('DOMContentLoaded', function() {
  	var html = document.querySelector('html');
  	var themeState = getCookie("themeState") || "Light";
@@ -148,20 +147,21 @@
  			fps += 1;
  			if (offset >= 1000) {
  				last += offset;
- 				appendFps(fps);
+ 				//appendFps(fps);
  				fps = 0;
  			}
  			requestAnimationFrame(step);
  		};
- 		appendFps = function(fpsValue) {
+ /*appendFps = function(fpsValue) {
  		fpsElement.textContent = 'FPS: ' + fpsValue;
- 		 };
+ 		 }*/		
  		step();
  	})();
  	//pop('./static/img/tz.jpg')
  });
  var pageLoading = document.querySelector("#zyyo-loading");
  window.addEventListener('load', function() {
+  HitokotoService()
  	setTimeout(function() {
  		pageLoading.style.opacity = '0';
  	}, 100);
