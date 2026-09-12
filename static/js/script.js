@@ -4,7 +4,7 @@
 console.log('%c   /\\_/\\', 'color: #20128b; font-size: 20px;');
 console.log('%c  ( o.o )', 'color: #20128b; font-size: 20px;');
 console.log(' %c  > ^ <', 'color: #20128b; font-size: 20px;');
-console.log('  %c /  ~ \\', 'color: #20128b font-size: 20px;');
+console.log('  %c /  ~ \\', 'color: #20128b; font-size: 20px;');
 console.log('  %c/______\\', 'color: #20128b; font-size: 20px;');
 document.addEventListener('contextmenu', function(event) {
 	event.preventDefault();
@@ -171,3 +171,204 @@ window.addEventListener('load', function() {
 //     "created_at": "1694464264",
 //     "length": 25
 // }
+// ==================== GitHub 数据接入 ====================
+const GITHUB_API = 'https://uapis.cn/api/v1/github/user?user=LLKYTA&activity=true&activity_scope=all&pinned=true&repos=true&repos_limit=6';
+
+// 语言颜色映射
+const LANG_COLORS = {
+    'JavaScript': '#f1e05a',
+    'TypeScript': '#3178c6',
+    'Python': '#3572A5',
+    'HTML': '#e34c26',
+    'CSS': '#563d7c',
+    'Java': '#b07219',
+    'Go': '#00ADD8',
+    'Rust': '#dea584',
+    'C': '#555555',
+    'C++': '#f34b7d',
+    'Shell': '#89e051',
+    'Vue': '#41b883',
+    'PHP': '#4F5D95',
+    'Ruby': '#701516',
+    'Kotlin': '#A97BFF',
+    'Swift': '#F05138',
+    'default': '#8b8b8b'
+};
+
+function loadGitHubData() {
+    const loadingEl = document.getElementById('github-loading');
+    const errorEl = document.getElementById('github-error');
+    const contentEl = document.getElementById('github-content');
+
+    // 显示加载状态
+    loadingEl.style.display = 'flex';
+    errorEl.style.display = 'none';
+    contentEl.style.display = 'none';
+
+    fetch(GITHUB_API)
+        .then(res => {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+        })
+        .then(data => {
+            renderGitHubProfile(data);
+            renderContributionGraph(data.activity);
+            renderRepositories(data.pinned_repositories || data.repositories || []);
+            loadingEl.style.display = 'none';
+            contentEl.style.display = 'block';
+        })
+        .catch(err => {
+            console.error('GitHub API Error:', err);
+            loadingEl.style.display = 'none';
+            errorEl.style.display = 'block';
+        });
+}
+
+function renderGitHubProfile(data) {
+    // 头像
+    document.getElementById('gh-avatar').src = data.avatar_url || '';
+
+    // 主页链接
+    const linkEl = document.getElementById('gh-link');
+    linkEl.href = data.html_url || '#';
+
+    // 昵称
+    document.getElementById('gh-name').textContent = data.name || data.login || '';
+
+    // 简介
+    const bioEl = document.getElementById('gh-bio');
+    bioEl.textContent = data.bio || '这个人很懒，什么都没写~';
+
+    // 统计数据
+    document.getElementById('gh-repos').textContent = data.public_repos || 0;
+    document.getElementById('gh-followers').textContent = data.followers || 0;
+    document.getElementById('gh-following').textContent = data.following || 0;
+
+    // 组织标签
+    const orgsEl = document.getElementById('gh-orgs');
+    orgsEl.innerHTML = '';
+    if (data.organizations && data.organizations.length > 0) {
+        data.organizations.forEach(org => {
+            const tag = document.createElement('span');
+            tag.className = 'github-org-tag';
+            tag.textContent = org.login;
+            orgsEl.appendChild(tag);
+        });
+    }
+}
+
+function renderContributionGraph(activity) {
+    const graphEl = document.getElementById('gh-contrib-graph');
+    const totalEl = document.getElementById('gh-total-contrib');
+
+    if (!activity || !activity.contribution_calendar) {
+        graphEl.innerHTML = '<span style="font-size:13px;opacity:0.6;">暂无贡献数据</span>';
+        return;
+    }
+
+    const weeks = activity.contribution_calendar.weeks || [];
+    const total = activity.total_contributions || activity.contribution_calendar.total_contributions || 0;
+
+    totalEl.textContent = `共 ${total} 次贡献`;
+
+    // 清空并渲染
+    graphEl.innerHTML = '';
+
+    // 颜色等级映射（根据贡献数决定颜色深浅）
+    function getLevel(count) {
+        if (count === 0) return 0;
+        if (count <= 2) return 1;
+        if (count <= 5) return 2;
+        if (count <= 9) return 3;
+        return 4;
+    }
+
+    weeks.forEach(week => {
+        const weekEl = document.createElement('div');
+        weekEl.className = 'github-contrib-week';
+
+        // 每周固定7天，缺失的天补空白
+        const days = week.contribution_days || [];
+        const dayMap = {};
+        days.forEach(d => { dayMap[d.weekday] = d; });
+
+        for (let i = 0; i < 7; i++) {
+            const dayEl = document.createElement('div');
+            dayEl.className = 'github-contrib-day';
+
+            if (dayMap[i]) {
+                const count = dayMap[i].contribution_count || 0;
+                const level = getLevel(count);
+                dayEl.style.background = `var(--gh-contrib-${level}, #9be9a8)`;
+                // 直接用内联样式覆盖，兼容主题
+                dayEl.style.opacity = count === 0 ? '0.4' : '1';
+                dayEl.title = `${dayMap[i].date}: ${count} 次贡献`;
+            } else {
+                dayEl.style.opacity = '0.15';
+            }
+
+            weekEl.appendChild(dayEl);
+        }
+
+        graphEl.appendChild(weekEl);
+    });
+}
+
+function renderRepositories(repos) {
+    const gridEl = document.getElementById('gh-repos-grid');
+    gridEl.innerHTML = '';
+
+    if (!repos || repos.length === 0) {
+        gridEl.innerHTML = '<span style="font-size:13px;opacity:0.6;">暂无仓库数据</span>';
+        return;
+    }
+
+    repos.forEach(repo => {
+        const card = document.createElement('a');
+        card.className = 'github-repo-card';
+        card.href = repo.html_url || '#';
+        card.target = '_blank';
+
+        const langColor = LANG_COLORS[repo.language] || LANG_COLORS['default'];
+
+        card.innerHTML = `
+            <div class="github-repo-name">${escapeHtml(repo.name)}</div>
+            <div class="github-repo-desc">${escapeHtml(repo.description || '暂无描述')}</div>
+            <div class="github-repo-meta">
+                ${repo.language ? `
+                    <span class="github-repo-lang">
+                        <span class="github-repo-lang-dot" style="background:${langColor}"></span>
+                        ${escapeHtml(repo.language)}
+                    </span>
+                ` : ''}
+                <span class="github-repo-stars">
+                    ⭐ ${formatNumber(repo.stargazers || 0)}
+                </span>
+                <span>🍴 ${formatNumber(repo.forks || 0)}</span>
+            </div>
+        `;
+
+        gridEl.appendChild(card);
+    });
+}
+
+// 简易HTML转义，防止XSS
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+}
+
+function formatNumber(n) {
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+    return n.toString();
+}
+
+// 在 DOMContentLoaded 中调用
+document.addEventListener('DOMContentLoaded', function() {
+    // ... 保留你原有的代码 ...
+
+    // 延迟加载 GitHub 数据
+    loadGitHubData();
+});
