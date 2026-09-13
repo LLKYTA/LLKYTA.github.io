@@ -1,10 +1,14 @@
-/* github-card.css */
+/* ============================================================
+   GitHub 模块样式
+   样式方案：圆角方块（更柔和的 GitHub 风格）
+   贡献图：宽度撑满父容器，格子等比缩放
+   ============================================================ */
 
 .github-section {
     width: 100%;
 }
 
-/* 加载状态 */
+/* ---------- 加载状态 ---------- */
 .github-loading {
     display: flex;
     flex-direction: column;
@@ -27,10 +31,12 @@
 }
 
 @keyframes gh-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-/* 错误状态 */
+/* ---------- 错误状态 ---------- */
 .github-error {
     text-align: center;
     padding: 40px 20px;
@@ -58,7 +64,7 @@
     transform: translateY(-2px);
 }
 
-/* 用户画像卡片 */
+/* ---------- 用户画像卡片 ---------- */
 .github-profile-card {
     display: flex;
     gap: 20px;
@@ -168,7 +174,7 @@
     opacity: 0.85;
 }
 
-/* 贡献热力图卡片 */
+/* ---------- 贡献热力图卡片 ---------- */
 .github-contrib-card {
     padding: 20px;
     border-radius: 13px;
@@ -199,43 +205,78 @@
     color: var(--item_left_text_color);
 }
 
+/* ---------- 贡献热力图：宽度对齐父元素 ---------- */
 .github-contrib-graph {
     display: flex;
     gap: 3px;
-    overflow-x: auto;
-    padding-bottom: 6px;
-    scrollbar-width: thin;
-}
-
-.github-contrib-graph::-webkit-scrollbar {
-    height: 4px;
-}
-
-.github-contrib-graph::-webkit-scrollbar-thumb {
-    background: var(--left_tag_item);
-    border-radius: 4px;
+    width: 100%;
+    overflow: hidden;
 }
 
 .github-contrib-week {
+    flex: 1 1 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 3px;
-    flex-shrink: 0;
 }
 
+/* ---------- 圆角方块核心样式 ---------- */
 .github-contrib-day {
-    width: 11px;
-    height: 11px;
-    border-radius: 2px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 30%;
     background: var(--item_hover_color);
-    transition: transform 0.15s ease;
+    transition: transform 0.15s ease, border-radius 0.15s ease;
 }
 
 .github-contrib-day:hover {
-    transform: scale(1.4);
+    transform: scale(1.5);
+    border-radius: 50%;
     outline: 1px solid var(--purple_text_color);
+    z-index: 1;
 }
 
+/* 颜色等级：0 表示无贡献，1-4 递增 */
+.github-contrib-day.level-0 {
+    background: var(--item_hover_color);
+}
+
+.github-contrib-day.level-1 {
+    background: #9be9a8;
+}
+
+.github-contrib-day.level-2 {
+    background: #40c463;
+}
+
+.github-contrib-day.level-3 {
+    background: #30a14e;
+}
+
+.github-contrib-day.level-4 {
+    background: #216e39;
+}
+
+/* 暗色主题下调整热力图颜色 */
+html[data-theme="Dark"] .github-contrib-day.level-1 {
+    background: #0e4429;
+}
+
+html[data-theme="Dark"] .github-contrib-day.level-2 {
+    background: #006d32;
+}
+
+html[data-theme="Dark"] .github-contrib-day.level-3 {
+    background: #26a641;
+}
+
+html[data-theme="Dark"] .github-contrib-day.level-4 {
+    background: #39d353;
+}
+
+/* ---------- 图例 ---------- */
 .github-contrib-legend {
     display: flex;
     align-items: center;
@@ -250,22 +291,46 @@
 .github-contrib-level {
     width: 11px;
     height: 11px;
-    border-radius: 2px;
+    border-radius: 30%;
 }
 
-.github-contrib-level.level-0 { background: var(--item_hover_color); }
-.github-contrib-level.level-1 { background: #9be9a8; }
-.github-contrib-level.level-2 { background: #40c463; }
-.github-contrib-level.level-3 { background: #30a14e; }
-.github-contrib-level.level-4 { background: #216e39; }
+.github-contrib-level.level-0 {
+    background: var(--item_hover_color);
+}
 
-/* 暗色主题下调整热力图颜色 */
-html[data-theme="Dark"] .github-contrib-level.level-1 { background: #0e4429; }
-html[data-theme="Dark"] .github-contrib-level.level-2 { background: #006d32; }
-html[data-theme="Dark"] .github-contrib-level.level-3 { background: #26a641; }
-html[data-theme="Dark"] .github-contrib-level.level-4 { background: #39d353; }
+.github-contrib-level.level-1 {
+    background: #9be9a8;
+}
 
-/* 仓库网格 */
+.github-contrib-level.level-2 {
+    background: #40c463;
+}
+
+.github-contrib-level.level-3 {
+    background: #30a14e;
+}
+
+.github-contrib-level.level-4 {
+    background: #216e39;
+}
+
+html[data-theme="Dark"] .github-contrib-level.level-1 {
+    background: #0e4429;
+}
+
+html[data-theme="Dark"] .github-contrib-level.level-2 {
+    background: #006d32;
+}
+
+html[data-theme="Dark"] .github-contrib-level.level-3 {
+    background: #26a641;
+}
+
+html[data-theme="Dark"] .github-contrib-level.level-4 {
+    background: #39d353;
+}
+
+/* ---------- 仓库网格 ---------- */
 .github-repos-grid {
     display: flex;
     flex-wrap: wrap;
@@ -338,7 +403,7 @@ html[data-theme="Dark"] .github-contrib-level.level-4 { background: #39d353; }
     gap: 4px;
 }
 
-/* 响应式 */
+/* ---------- 响应式 ---------- */
 @media (max-width: 800px) {
     .github-profile-card {
         flex-direction: column;
@@ -358,8 +423,27 @@ html[data-theme="Dark"] .github-contrib-level.level-4 { background: #39d353; }
         flex: 1 1 100%;
         min-width: unset;
     }
+}
 
+/* ---------- 小屏：热力图极限压缩 ---------- */
+@media (max-width: 600px) {
     .github-contrib-graph {
-        justify-content: flex-start;
+        gap: 2px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .github-contrib-week {
+        min-width: 4px;
+        gap: 2px;
+    }
+
+    .github-contrib-graph::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .github-contrib-graph::-webkit-scrollbar-thumb {
+        background: var(--left_tag_item);
+        border-radius: 4px;
     }
 }

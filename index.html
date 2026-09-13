@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="zyyo.net">
+<html lang="zh-CN" class="zyyo.net">
 
 <head>
     <meta charset="utf-8" />
@@ -8,10 +8,11 @@
     <link rel="icon" href="./static/img/favicon.ico" />
     <meta name="description" content="整天半吊子和不学无术的坏孩子,梦想成为庄稼地里的读书人....." />
     <meta name="keywords" content="LD_klin,刘岩主页,LD引导页,LD" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./static/css/style.css" />
     <link rel="stylesheet" href="./static/css/root.css" />
     <link rel="stylesheet" href="./static/css/github-card.css" />
+    <link rel="stylesheet" href="./static/css/music-player.css" />
 </head>
 
 <body>
@@ -20,11 +21,10 @@
     </div>
     <div class="zyyo-filter"></div>
     <div class="zyyo-main">
-        <!-- 左侧边栏 -->
+        <!-- ============ 左侧边栏 ============ -->
         <div class="zyyo-left">
-            <div class="logo" style="background-image: url(./static/img/logo.png)">
-                <img style="position: absolute; top: -15%; left: -10%; width: 120%; aspect-ratio: 1/1;"
-                    src="./static/img/logokuang.png" />
+            <div class="logo">
+                <img class="logo-border" src="./static/img/logokuang.png" alt="" />
             </div>
             <div class="left-div left-des">
                 <div class="left-des-item">
@@ -36,7 +36,7 @@
                         <path
                             d="M512 39.152941c-216.847059 0-391.529412 174.682353-391.529412 391.529412 0 349.364706 391.529412 572.235294 391.529412 572.235294s391.529412-222.870588 391.529412-572.235294c0-216.847059-174.682353-391.529412-391.529412-391.529412z m0 891.482353C424.658824 873.411765 180.705882 686.682353 180.705882 430.682353c0-183.717647 147.576471-331.294118 331.294118-331.294118s331.294118 147.576471 331.294118 331.294118c0 256-243.952941 442.729412-331.294118 499.952941z"
                             p-id="1480"></path>
-                    </svg>China-Hohhot
+                    </svg>China-HuHot
                 </div>
                 <div class="left-des-item">
                     <svg t="1705773906032" class="icon" viewBox="0 0 1024 1024" version="1.1"
@@ -44,67 +44,86 @@
                         <path
                             d="M729.6 234.666667H294.4V157.866667a51.2 51.2 0 0 1 51.2-51.2h332.8a51.2 51.2 0 0 1 51.2 51.2v76.8z m179.2 51.2a51.2 51.2 0 0 1 51.2 51.2v512a51.2 51.2 0 0 1-51.2 51.2H115.2a51.2 51.2 0 0 1-51.2-51.2v-512a51.2 51.2 0 0 1 51.2-51.2h793.557333z m-768 172.032c0 16.384 13.312 29.696 29.696 29.696h683.008a29.696 29.696 0 1 0 0-59.392H170.410667a29.696 29.696 0 0 0-29.696 29.696z m252.416 118.784c0 16.384 13.312 29.696 29.696 29.696h178.176a29.696 29.696 0 1 0 0-59.392H422.912a29.738667 29.738667 0 0 0-29.696 29.696z"
                             p-id="2475"></path>
-                    </svg>土默特左旗第一中学
+                    </svg>高中在读
                 </div>
             </div>
             <div class="left-div left-tag">
-                <div class="left-tag-item">网瘾</div>
-                <div class="left-tag-item">男高</div>
-                <div class="left-tag-item">高一</div>
-                <div class="left-tag-item">linux</div>
-                <div class="left-tag-item">跑者</div>
-                <div class="left-tag-item">腐竹</div>
-                <div class="left-tag-item">全栈开发者</div>
-                <div class="left-tag-item">羽球</div>
-                <div class="left-tag-item">骑行</div>
+                <div class="left-tag-item">Indie Hacker</div>
+                <div class="left-tag-item">Full-Stack</div>
+                <div class="left-tag-item">Open Sourcer</div>
+                <div class="left-tag-item">Linux</div>
+                <div class="left-tag-item">Self-Hosted</div>
+                <div class="left-tag-item">Runner</div>
+                <div class="left-tag-item">Cyclist</div>
+                <div class="left-tag-item">Badminton</div>
             </div>
             <div class="left-div left-time">
                 <ul id="line">
                     <li>
                         <div class="focus"></div>
-                        <div>敬请期待</div>
-                        <div>2026</div>
+                        <div class="line-head">
+                            <span class="line-ver">v1.2</span>
+                            <span class="line-title">内容扩展</span>
+                            <span class="line-date">2026.09</span>
+                        </div>
+                        <div class="line-desc">接入 GitHub 动态与音乐播放器</div>
                     </li>
                     <li>
                         <div class="focus"></div>
-                        <div>更新网站域名 ld.of.cd</div>
-                        <div>2026.2.3</div>
+                        <div class="line-head">
+                            <span class="line-ver">v1.1</span>
+                            <span class="line-title">域名迁移</span>
+                            <span class="line-date">2026.02</span>
+                        </div>
+                        <div class="line-desc">正式迁移至 KD.of.cd</div>
                     </li>
                     <li>
                         <div class="focus"></div>
-                        <div>...</div>
-                        <div>...</div>
+                        <div class="line-head">
+                            <span class="line-ver">v1.0</span>
+                            <span class="line-title">主题重构</span>
+                            <span class="line-date">2026.01</span>
+                        </div>
+                        <div class="line-desc">基于 CSS 变量重写主题系统</div>
                     </li>
                     <li>
                         <div class="focus"></div>
-                        <div>构建网站</div>
-                        <div>2026.1</div>
+                        <div class="line-head">
+                            <span class="line-ver">v0.1</span>
+                            <span class="line-title">首次上线</span>
+                            <span class="line-date">2026.01</span>
+                        </div>
+                        <div class="line-desc">完成基础框架与个人信息展示</div>
                     </li>
                 </ul>
             </div>
         </div>
+        <!-- ============ 关闭 zyyo-left ============ -->
 
-        <!-- 右侧主内容 -->
+        <!-- ============ 右侧主内容 ============ -->
         <div class="zyyo-right">
             <header>
-                <div class="index-logo" style="background-image: url(./static/img/logo.png)">
-                    <img style="position: absolute; top: -15%; left: -10%; width: 120%; aspect-ratio: 1/1;"
-                        src="./static/img/logokuang.png" />
+                <div class="index-logo">
+                    <img class="logo-border" src="./static/img/logokuang.png" alt="" />
                 </div>
-                <div class="welcome">
-                    Hello I' m <span class="gradientText"> KD_klin </span>
-                </div>
-                <div class="description">
-                    👦 <span class="purpleText">Full Stack</span> Student
-                </div>
-                <div class="description">
+
+                <h1 class="welcome">
+                    Hello, I'm <span class="gradientText">KD_klin</span>
+                </h1>
+
+                <p class="tagline">
+                    <span class="status-dot"></span>
+                    <span class="purpleText">Full-Stack</span> Student · Building on the web
+                </p>
+
+                <p class="description">
                     📝 The only way to do
                     <span class="purpleText textBackground">great</span> is to
                     <span class="purpleText textBackground">love</span> what you do.
-                </div>
+                </p>
 
                 <div class="iconContainer">
-                    <a class="iconItem" href="https://github.com/LLKYTA">
+                    <a class="iconItem" href="https://github.com/LLKYTA" aria-label="GitHub">
                         <svg t="1704870335945" class="icon" viewBox="0 0 1024 1024" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" p-id="2487">
                             <path
@@ -113,7 +132,7 @@
                         </svg>
                         <div class="iconTip">Github</div>
                     </a>
-                    <a class="iconItem" href="mailto:010107lys@163.com">
+                    <a class="iconItem" href="mailto:010107lys@163.com" aria-label="发送邮件">
                         <svg t="1704870588438" class="icon" viewBox="0 0 1024 1024" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" p-id="3174">
                             <path
@@ -122,22 +141,8 @@
                         </svg>
                         <div class="iconTip">Mail</div>
                     </a>
-                    <a class="iconItem" onclick="pop('./static/img/wxzsm.jpg')" href="javascript:void(0)">
-                        <svg t="1705247464964" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                            xmlns="http://www.w3.org/2000/svg" p-id="4987">
-                            <path
-                                d="M995.575172 725.451034c-12.358621-26.835862-38.488276-64.794483-92.689655-94.27862-62.146207-33.721379-136.297931-40.96-208.860689-20.303448l-99.928276 28.424827-279.304828-126.057931H22.775172v489.401379h509.704828l432.375172-195.266207c15.006897-6.708966 26.835862-19.42069 32.662069-34.957241 5.649655-15.36 4.943448-31.955862-1.942069-46.962759z m-482.162758 188.910345H111.051034V601.688276h184.673104l166.664828 75.387586-3.354483 0.882759h-170.372414v88.275862H471.393103l246.819311-70.267586c49.434483-14.124138 101.517241-9.357241 142.653793 12.888275 18.184828 9.886897 30.72 20.833103 39.371034 30.896552l-386.824827 174.609655z"
-                                p-id="4988"></path>
-                            <path
-                                d="M695.437241 163.486897l58.615173-142.30069h-397.24138l66.736552 143.36c-121.82069 53.142069-207.095172 174.433103-207.095172 315.674483 0 28.601379 3.531034 57.202759 10.593103 84.744827l85.627586-21.715862c-5.12-20.48-7.768276-41.666207-7.768275-63.028965 0-141.241379 114.758621-256 256-256s256 114.758621 256 256c0 51.023448-14.830345 100.104828-43.078621 142.300689l73.268965 49.08138c37.958621-56.673103 58.085517-122.88 58.085518-191.382069-0.176552-141.947586-86.686897-264.121379-209.743449-316.733793zM467.508966 91.983448h180.965517l-21.009655 50.846897a348.16 348.16 0 0 0-66.913104-6.708966c-23.834483 0-46.962759 2.471724-69.384827 7.062069l-23.657931-51.2z"
-                                p-id="4989"></path>
-                            <path
-                                d="M683.431724 427.431724v-70.62069h-38.311724l30.190345-30.190344-49.964138-49.964138-62.49931 62.49931h-6.002759L494.344828 276.656552l-49.787587 49.964138 30.013793 30.190344h-38.311724v70.62069h88.275862v35.310345h-88.275862v70.62069h88.275862v52.965517h70.62069v-52.965517h88.275862v-70.62069h-88.275862v-35.310345z"
-                                p-id="4990"></path>
-                        </svg>
-                        <div class="iconTip">赞助</div>
-                    </a>
-                    <a class="iconItem" onclick="pop('./static/img/qq.jpg')" href="javascript:void(0)">
+                    <a class="iconItem" onclick="pop('./static/img/qq.jpg')" href="javascript:void(0)"
+                        aria-label="QQ 好友二维码">
                         <svg t="1712319361023" class="icon" viewBox="0 0 1024 1024" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" p-id="1861">
                             <path
@@ -146,10 +151,10 @@
                         </svg>
                         <div class="iconTip">QQ</div>
                     </a>
-                    <a class="switch" href="javascript:void(0)">
+                    <a class="switch" href="javascript:void(0)" aria-label="切换深色/浅色主题">
                         <div class="onoffswitch">
                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"
-                                id="myonoffswitch" checked />
+                                id="myonoffswitch" aria-label="切换深色/浅色主题" checked />
                             <label class="onoffswitch-label" for="myonoffswitch">
                                 <span class="onoffswitch-inner"></span>
                                 <span class="onoffswitch-switch"></span>
@@ -159,12 +164,12 @@
                 </div>
 
                 <div class="tanChiShe">
-                    <img id="tanChiShe" src="./static/svg/snake-Light.svg" alt="" />
+                    <img id="tanChiShe" src="./static/svg/snake-Light.svg" alt="贪吃蛇插画" />
                 </div>
             </header>
 
             <content>
-                <!-- GitHub 模块 -->
+                <!-- ============ GitHub 模块 ============ -->
                 <div class="title">
                     <svg t="1705773709627" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg">
@@ -176,25 +181,21 @@
                 </div>
 
                 <div class="github-section">
-                    <!-- 加载状态 -->
                     <div id="github-loading" class="github-loading">
                         <div class="github-loading-spinner"></div>
                         <span>正在获取 GitHub 数据...</span>
                     </div>
 
-                    <!-- 错误状态 -->
                     <div id="github-error" class="github-error" style="display: none">
                         <p>😥 数据加载失败，请稍后重试</p>
                         <button onclick="loadGitHubData()" class="github-retry-btn">重新加载</button>
                     </div>
 
-                    <!-- 数据展示区 -->
                     <div id="github-content" style="display: none">
-                        <!-- 用户画像卡片 -->
                         <div class="github-profile-card">
                             <div class="github-profile-left">
-                                <img id="gh-avatar" src="" alt="avatar" class="github-avatar" />
-                                <a id="gh-link" href="" target="_blank" class="github-link">
+                                <img id="gh-avatar" src="" alt="GitHub 头像" class="github-avatar" />
+                                <a id="gh-link" href="" target="_blank" rel="noopener" class="github-link">
                                     <svg viewBox="0 0 1024 1024" class="icon" width="16" height="16"
                                         fill="currentColor">
                                         <path
@@ -225,7 +226,6 @@
                             </div>
                         </div>
 
-                        <!-- 贡献热力图 -->
                         <div class="github-contrib-card">
                             <div class="github-contrib-header">
                                 <span>最近一年贡献</span>
@@ -243,12 +243,11 @@
                             </div>
                         </div>
 
-                        <!-- 仓库列表 -->
                         <div class="github-repos-grid" id="gh-repos-grid"></div>
                     </div>
                 </div>
 
-                <!-- DailySentence 模块 -->
+                <!-- ============ DailySentence 模块 ============ -->
                 <div class="title">
                     <svg t="1705257422086" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="1891">
@@ -265,7 +264,7 @@
                     </p>
                 </div>
 
-                <!-- skills 模块 -->
+                <!-- ============ skills 模块 ============ -->
                 <div class="title">
                     <svg t="1705257823317" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="7833">
@@ -276,23 +275,60 @@
                     skills
                 </div>
                 <div class="skill">
-                    <img id="skillPc" src="./static/svg/skillPc.svg" alt="" />
-                    <img id="skillWap" src="./static/svg/skillWap.svg" alt="" />
+                    <img id="skillPc" src="./static/svg/skillPc.svg" alt="技能图标（桌面端）" />
+                    <img id="skillWap" src="./static/svg/skillWap.svg" alt="技能图标（移动端）" />
                 </div>
             </content>
         </div>
+        <!-- ============ 关闭 zyyo-right ============ -->
+    </div>
+    <!-- ============ 关闭 zyyo-main ============ -->
+
+    <footer><span>adapted from Zyyo © 2024 | LD_klin</span></footer>
+
+    <!-- ============ 音乐播放器 ============ -->
+    <div class="music-player" id="musicPlayer">
+        <audio id="musicAudio" loop preload="auto"
+            src="https://music.163.com/song/media/outer/url?id=3342074799.mp3"></audio>
+
+        <button class="music-cover" id="musicCover" aria-label="播放 / 暂停">
+            <span class="music-disc"></span>
+            <span class="music-ctrl">
+                <svg class="music-play-icon" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+                <svg class="music-pause-icon" viewBox="0 0 24 24">
+                    <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+                </svg>
+            </span>
+        </button>
+
+        <div class="music-body">
+            <div class="music-title" id="musicTitle">失眠</div>
+            <div class="music-progress">
+                <span class="music-time" id="musicCurrent">0:00</span>
+                <input type="range" id="musicSeek" min="0" max="100" step="0.1" value="0"
+                    aria-label="播放进度" />
+                <span class="music-time" id="musicDuration">0:00</span>
+            </div>
+        </div>
+
+        <button class="music-collapse" id="musicCollapse" aria-label="收起 / 展开">
+            <svg viewBox="0 0 24 24">
+                <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+            </svg>
+        </button>
     </div>
 
-    <footer>adapted from Zyyo © 2024 | LD_klin</footer>
     <div class="tc">
-        <div onclick="" class="tc-main">
-            <img class="tc-img" src="" alt="" />
+        <div class="tc-main">
+            <img class="tc-img" src="" alt="二维码" />
         </div>
     </div>
 </body>
 
 <script src="./static/js/script.js"></script>
-<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+<script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
 <script>
     LA.init({
         id: "KFqltKSkJgQTGD9l",
