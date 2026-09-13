@@ -542,8 +542,6 @@ document.addEventListener("DOMContentLoaded", function () {
         titleEl.textContent = '音源加载失败';
         console.warn('[Music] 音频加载失败。网易云外链对部分歌曲会返回 404。');
     });
-
-    /* ---------- 初始化 ---------- */
     /* ---------- 初始化 ---------- */
     paintSeek(0);
 
@@ -558,4 +556,74 @@ autoPlayMuted();
 
     // 直接尝试静音自动播放
     autoPlayMuted();
+})();
+/* ==================== 标题个性化 ==================== */
+(function () {
+    var BASE_TITLE = 'KD_klin · 个人主页';
+    var AWAY_TITLE = '👀 别走嘛，回来看看～';
+    var BLUR_TITLE = '💤 暂时离开了...';
+
+    var typeTimer = null;
+    var typeIndex = 0;
+    var isVisible = !document.hidden;
+    var hasFocus = document.hasFocus();
+
+    /* ---------- 打字机效果 ---------- */
+    function typeTitle(text, speed, callback) {
+        clearInterval(typeTimer);
+        typeIndex = 0;
+        document.title = '';
+
+        typeTimer = setInterval(function () {
+            if (typeIndex >= text.length) {
+                clearInterval(typeTimer);
+                if (typeof callback === 'function') callback();
+                return;
+            }
+            document.title += text.charAt(typeIndex);
+            typeIndex++;
+        }, speed || 100);
+    }
+
+    /* ---------- 恢复标题 ---------- */
+    function restoreTitle() {
+        // 避免重复打字：如果当前标题已经是基础标题，直接返回
+        if (document.title === BASE_TITLE) return;
+        typeTitle(BASE_TITLE, 100);
+    }
+
+    /* ---------- 可见性变化（切标签页） ---------- */
+    document.addEventListener('visibilitychange', function () {
+        isVisible = !document.hidden;
+        if (isVisible && hasFocus) {
+            restoreTitle();
+        } else if (!isVisible) {
+            clearInterval(typeTimer);
+            document.title = AWAY_TITLE;
+        }
+    });
+
+    /* ---------- 窗口焦点变化（切应用） ---------- */
+    window.addEventListener('blur', function () {
+        hasFocus = false;
+        // 只有在页面可见时才显示"离开"提示，避免和 visibilitychange 冲突
+        if (isVisible) {
+            clearInterval(typeTimer);
+            document.title = BLUR_TITLE;
+        }
+    });
+
+    window.addEventListener('focus', function () {
+        hasFocus = true;
+        if (isVisible) {
+            restoreTitle();
+        }
+    });
+
+    /* ---------- 首次加载：打字机入场 ---------- */
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            typeTitle(BASE_TITLE, 100);
+        }, 300);
+    });
 })();
