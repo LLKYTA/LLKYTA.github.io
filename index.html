@@ -21,6 +21,7 @@
     <div id="KD-loading-center"></div>
   </div>
   <div class="KD-filter"></div>
+  <div class="mouse-glow" id="mouseGlow" aria-hidden="true"></div>
   <div class="KD-main">
     <!-- 左侧边栏 -->
     <div class="KD-left">
@@ -104,8 +105,8 @@
       <header>
         <div class="index-logo"></div>
 
-        <h1 class="welcome">
-          Hello, I'm <span class="gradientText">KD_klin</span>
+        <h1 class="welcome" id="welcomeTitle">
+          <span id="welcomeTyped"></span><span class="welcome-cursor">|</span>
         </h1>
 
         <p class="tagline">
@@ -280,7 +281,40 @@
   </div>
   <!-- 关闭 KD-main -->
 
-  <footer><span>adapted from Zyyo © 2024 | LD_klin</span></footer>
+  <footer>
+    <span>
+      adapted from Zyyo © 2024 | LD_klin
+      <span class="footer-dot">·</span>
+      <span id="siteRuntime">运行 0 天</span>
+      <span class="footer-dot">·</span>
+      <span id="visitStats">第 ? 位访客</span>
+    </span>
+  </footer>
+
+  <!-- 命令面板触发提示 -->
+  <div class="cmd-hint" id="cmdHint" role="button" aria-label="打开命令面板" tabindex="0">
+    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+      <path
+        d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z" />
+    </svg>
+    <kbd>Ctrl</kbd><kbd>K</kbd>
+  </div>
+
+  <!-- 命令面板 -->
+  <div class="cmd-palette" id="cmdPalette" aria-hidden="true">
+    <div class="cmd-backdrop" id="cmdBackdrop"></div>
+    <div class="cmd-panel" role="dialog" aria-label="命令面板">
+      <div class="cmd-input-wrap">
+        <svg class="cmd-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path
+            d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z" />
+        </svg>
+        <input type="text" id="cmdInput" class="cmd-input" placeholder="输入命令或搜索..." autocomplete="off" />
+        <kbd class="cmd-kbd">ESC</kbd>
+      </div>
+      <div class="cmd-list" id="cmdList"></div>
+    </div>
+  </div>
 
   <!-- 音乐播放器 -->
   <div class="music-player" id="musicPlayer">

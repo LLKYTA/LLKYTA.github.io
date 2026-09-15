@@ -14,6 +14,12 @@ console.log(' %c  > ^ <', 'color: #20128b; font-size: 20px;');
 console.log('  %c /  ~ \\', 'color: #20128b; font-size: 20px;');
 console.log('  %c/______\\', 'color: #20128b; font-size: 20px;');
 
+const PREFERS_REDUCED_MOTION = window.matchMedia(
+  '(prefers-reduced-motion: reduce)'
+).matches;
+
+/* ==================== 通用工具 ==================== */
+
 /**
  * 切换元素的 class。
  * @param {string} selector CSS 选择器。
@@ -21,9 +27,8 @@ console.log('  %c/______\\', 'color: #20128b; font-size: 20px;');
  * @return {void}
  */
 function toggleClass(selector, className) {
-  const elements = document.querySelectorAll(selector);
-  elements.forEach(function (element) {
-    element.classList.toggle(className);
+  document.querySelectorAll(selector).forEach(function (el) {
+    el.classList.toggle(className);
   });
 }
 
@@ -43,12 +48,16 @@ function pop(imageURL) {
 
 const tc = document.getElementsByClassName('tc');
 const tcMain = document.getElementsByClassName('tc-main');
-tc[0].addEventListener('click', function () {
-  pop();
-});
-tcMain[0].addEventListener('click', function (event) {
-  event.stopPropagation();
-});
+if (tc[0]) {
+  tc[0].addEventListener('click', function () {
+    pop();
+  });
+}
+if (tcMain[0]) {
+  tcMain[0].addEventListener('click', function (event) {
+    event.stopPropagation();
+  });
+}
 
 /**
  * 设置 Cookie。
@@ -87,6 +96,8 @@ function getCookie(name) {
   return null;
 }
 
+/* ==================== 一言 ==================== */
+
 /**
  * 从一言 API 获取随机句子并更新页面。
  * @return {void}
@@ -106,7 +117,6 @@ function loadHi() {
       }
       hitokoto.innerText = data.hitokoto;
       hitokotoFrom.innerText = hitokoto.from;
-      console.log(data);
     })
     .catch(function (err) {
       console.error('一言加载失败:', err);
@@ -114,6 +124,538 @@ function loadHi() {
         '一言加载失败，点击重试';
       document.querySelector('#hitokoto_from').innerText = '-- 网络异常';
     });
+}
+
+/* ==================== 站点运行时间 ==================== */
+
+(function initSiteRuntime() {
+  const el = document.getElementById('siteRuntime');
+  if (!el) {
+    return;
+  }
+  const START_DATE = new Date('2026-01-01T00:00:00');
+
+  function tick() {
+    const diff = Date.now() - START_DATE.getTime();
+    if (diff < 0) {
+      el.innerHTML = '尚未上线';
+      return;
+    }
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    el.innerHTML =
+      '本站已运行 <b>' +
+      days +
+      '</b> 天 <b>' +
+      hours +
+      '</b> 时 <b>' +
+      mins +
+      '</b> 分';
+  }
+  tick();
+  setInterval(tick, 30000);
+})();
+
+/* ==================== 访客统计 ==================== */
+
+(function initVisitStats() {
+  const el = document.getElementById('visitStats');
+  if (!el) {
+    return;
+  }
+
+  const LOCAL_KEY = 'KD_visitCount';
+  const BASE_VISITS = 1024;
+  let localCount =
+    parseInt(localStorage.getItem(LOCAL_KEY) || '0', 10) + 1;
+  localStorage.setItem(LOCAL_KEY, localCount);
+  const total = BASE_VISITS + localCount;
+
+  el.innerHTML =
+    '你是第 <b>' + total.toLocaleString() + '</b> 位访客';
+
+  fetch('https://ip.useragentinfo.com/json')
+    .then(function (r) {
+      return r.json();
+    })
+    .then(function (d) {
+      const city = d.city || d.province || d.country || '未知';
+      el.innerHTML =
+        '你是第 <b>' +
+        total.toLocaleString() +
+        '</b> 位访客 · 来自 <b>' +
+        city +
+        '</b>';
+    })
+    .catch(function () {
+      /* 失败时不修改，保留默认文本 */
+    });
+})();
+
+/* ==================== 打字机问候语 ==================== */
+
+(function initTypewriter() {
+  const target = document.getElementById('welcomeTyped');
+  if (!target) {
+    return;
+  }
+
+  /** @type {!Array<!Array<{text: string, hl: boolean}>>} */
+  const PHRASES = [
+    [
+      { text: "Hello, I'm ", hl: false },
+      { text: 'KD_klin', hl: true },
+    ],
+    [
+      { text: '你好，我是 ', hl: false },
+      { text: 'KD_klin', hl: true },
+    ],
+    [
+      { text: 'こんにちは、', hl: false },
+      { text: 'KD_klin', hl: true },
+      { text: ' です', hl: false },
+    ],
+    [
+      { text: 'Bonjour, je suis ', hl: false },
+      { text: 'KD_klin', hl: true },
+    ],
+    [
+      { text: 'Hola, soy ', hl: false },
+      { text: 'KD_klin', hl: true },
+    ],
+  ];
+
+  /**
+   * 按可见字符数渲染片段。
+   * @param {!Array<{text: string, hl: boolean}>} fragments 片段数组。
+   * @param {number} visibleChars 可见字符数。
+   * @return {string} HTML 字符串。
+   */
+  function renderFragments(fragments, visibleChars) {
+    let html = '';
+    let remaining = visibleChars;
+    for (let i = 0; i < fragments.length && remaining > 0; i++) {
+      const frag = fragments[i];
+      const slice = frag.text.slice(0, remaining);
+      if (frag.hl) {
+        html += '<span class="gradientText">' + slice + '</span>';
+      } else {
+        html += slice;
+      }
+      remaining -= slice.length;
+    }
+    return html;
+  }
+
+  /**
+   * 计算片段总字符数。
+   * @param {!Array<{text: string, hl: boolean}>} fragments 片段数组。
+   * @return {number} 总长度。
+   */
+  function totalLength(fragments) {
+    return fragments.reduce(function (sum, f) {
+      return sum + f.text.length;
+    }, 0);
+  }
+
+  // 减少动态偏好：直接显示第一条
+  if (PREFERS_REDUCED_MOTION) {
+    target.innerHTML = renderFragments(PHRASES[0], totalLength(PHRASES[0]));
+    return;
+  }
+
+  let phraseIdx = 0;
+  let charIdx = 0;
+  let deleting = false;
+
+  function tick() {
+    const phrase = PHRASES[phraseIdx];
+    const total = totalLength(phrase);
+
+    if (!deleting) {
+      charIdx++;
+      if (charIdx >= total) {
+        charIdx = total;
+        target.innerHTML = renderFragments(phrase, charIdx);
+        setTimeout(function () {
+          deleting = true;
+          tick();
+        }, 1600);
+        return;
+      }
+    } else {
+      charIdx--;
+      if (charIdx <= 0) {
+        charIdx = 0;
+        target.innerHTML = '';
+        deleting = false;
+        phraseIdx = (phraseIdx + 1) % PHRASES.length;
+        setTimeout(tick, 400);
+        return;
+      }
+    }
+
+    target.innerHTML = renderFragments(phrase, charIdx);
+    setTimeout(tick, deleting ? 35 : 85);
+  }
+
+  tick();
+})();
+
+/* ==================== 鼠标跟随光效 ==================== */
+
+(function initMouseGlow() {
+  if (PREFERS_REDUCED_MOTION) {
+    return;
+  }
+  if (window.matchMedia('(hover: none)').matches) {
+    return;
+  }
+  const root = document.documentElement;
+  let rafId = null;
+  let pendingX = null;
+  let pendingY = null;
+
+  function apply() {
+    rafId = null;
+    if (pendingX !== null && pendingY !== null) {
+      root.style.setProperty('--mx', pendingX + 'px');
+      root.style.setProperty('--my', pendingY + 'px');
+      pendingX = pendingY = null;
+    }
+  }
+
+  document.addEventListener(
+    'mousemove',
+    function (e) {
+      pendingX = e.clientX;
+      pendingY = e.clientY;
+      if (rafId === null) {
+        rafId = requestAnimationFrame(apply);
+      }
+    },
+    { passive: true }
+  );
+})();
+
+/* ==================== 命令面板 ==================== */
+
+(function initCommandPalette() {
+  const palette = document.getElementById('cmdPalette');
+  const backdrop = document.getElementById('cmdBackdrop');
+  const input = document.getElementById('cmdInput');
+  const list = document.getElementById('cmdList');
+  const hint = document.getElementById('cmdHint');
+  if (!palette || !input || !list) {
+    return;
+  }
+
+  /** @type {!Array<!Object>} */
+  const COMMANDS = [
+    {
+      id: 'theme',
+      icon: '🌓',
+      title: '切换深色 / 浅色主题',
+      hint: 'Theme',
+      keywords: 'theme dark light',
+      action: function () {
+        document.getElementById('myonoffswitch').click();
+      },
+    },
+    {
+      id: 'music',
+      icon: '🎵',
+      title: '播放 / 暂停音乐',
+      hint: 'Music',
+      keywords: 'music play pause',
+      action: function () {
+        document.getElementById('musicCover').click();
+      },
+    },
+    {
+      id: 'hitokoto',
+      icon: '💬',
+      title: '刷新一言',
+      hint: 'Hitokoto',
+      keywords: 'hitokoto quote refresh',
+      action: loadHi,
+    },
+    {
+      id: 'github',
+      icon: '🐙',
+      title: '打开 GitHub 主页',
+      hint: 'GitHub',
+      keywords: 'github source code',
+      action: function () {
+        window.open('https://github.com/LLKYTA', '_blank', 'noopener');
+      },
+    },
+    {
+      id: 'mail',
+      icon: '📧',
+      title: '发送邮件',
+      hint: 'Mail',
+      keywords: 'mail email contact',
+      action: function () {
+        location.href = 'mailto:010107lys@163.com';
+      },
+    },
+    {
+      id: 'copy-mail',
+      icon: '📋',
+      title: '复制邮箱到剪贴板',
+      hint: 'Copy',
+      keywords: 'copy email clipboard',
+      action: function () {
+        const text = '010107lys@163.com';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text);
+        }
+      },
+    },
+    {
+      id: 'qq',
+      icon: '💌',
+      title: '查看 QQ 二维码',
+      hint: 'QQ',
+      keywords: 'qq qrcode contact',
+      action: function () {
+        pop('./static/img/qq.jpg');
+      },
+    },
+    {
+      id: 'skills',
+      icon: '⚡',
+      title: '跳转到技能图',
+      hint: 'Skills',
+      keywords: 'skills stack tech',
+      action: function () {
+        const el = document.querySelector('.skill');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      },
+    },
+    {
+      id: 'github-contrib',
+      icon: '📊',
+      title: '跳转到贡献热力图',
+      hint: 'Contrib',
+      keywords: 'github contrib heatmap',
+      action: function () {
+        const el = document.querySelector('.github-contrib-card');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      },
+    },
+    {
+      id: 'top',
+      icon: '⬆️',
+      title: '回到顶部',
+      hint: 'Scroll',
+      keywords: 'top scroll up',
+      action: function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+    },
+  ];
+
+  let filtered = COMMANDS.slice();
+  let activeIndex = 0;
+
+  /**
+   * 过滤命令列表。
+   * @param {string} keyword 搜索关键字。
+   * @return {void}
+   */
+  function filterCommands(keyword) {
+    const q = (keyword || '').trim().toLowerCase();
+    if (!q) {
+      filtered = COMMANDS.slice();
+    } else {
+      filtered = COMMANDS.filter(function (c) {
+        return (
+          c.title.toLowerCase().indexOf(q) !== -1 ||
+          (c.hint || '').toLowerCase().indexOf(q) !== -1 ||
+          (c.keywords || '').toLowerCase().indexOf(q) !== -1
+        );
+      });
+    }
+    activeIndex = 0;
+    renderList();
+  }
+
+  /**
+   * 渲染命令列表。
+   * @return {void}
+   */
+  function renderList() {
+    list.innerHTML = '';
+    if (filtered.length === 0) {
+      list.innerHTML =
+        '<div class="cmd-empty">没有匹配的命令</div>';
+      return;
+    }
+    filtered.forEach(function (cmd, idx) {
+      const item = document.createElement('div');
+      item.className = 'cmd-item' + (idx === activeIndex ? ' active' : '');
+      item.dataset.index = idx;
+      item.innerHTML =
+        '<div class="cmd-item-icon">' +
+        cmd.icon +
+        '</div>' +
+        '<div class="cmd-item-title">' +
+        cmd.title +
+        '</div>' +
+        '<div class="cmd-item-hint">' +
+        (cmd.hint || '') +
+        '</div>';
+      item.addEventListener('click', function () {
+        runCommand(idx);
+      });
+      item.addEventListener('mouseenter', function () {
+        activeIndex = idx;
+        updateActive();
+      });
+      list.appendChild(item);
+    });
+  }
+
+  /**
+   * 更新当前高亮项。
+   * @return {void}
+   */
+  function updateActive() {
+    const items = list.querySelectorAll('.cmd-item');
+    items.forEach(function (el, idx) {
+      el.classList.toggle('active', idx === activeIndex);
+    });
+    const activeEl = items[activeIndex];
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  /**
+   * 执行命令。
+   * @param {number} idx 命令索引。
+   * @return {void}
+   */
+  function runCommand(idx) {
+    const cmd = filtered[idx];
+    if (!cmd) {
+      return;
+    }
+    closePalette();
+    setTimeout(function () {
+      try {
+        cmd.action();
+      } catch (err) {
+        console.error('命令执行失败:', err);
+      }
+    }, 80);
+  }
+
+  /**
+   * 打开命令面板。
+   * @return {void}
+   */
+  function openPalette() {
+    palette.classList.add('active');
+    palette.setAttribute('aria-hidden', 'false');
+    input.value = '';
+    filterCommands('');
+    setTimeout(function () {
+      input.focus();
+    }, 60);
+  }
+
+  /**
+   * 关闭命令面板。
+   * @return {void}
+   */
+  function closePalette() {
+    palette.classList.remove('active');
+    palette.setAttribute('aria-hidden', 'true');
+  }
+
+  document.addEventListener('keydown', function (e) {
+    // Ctrl/Cmd + K 打开
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (palette.classList.contains('active')) {
+        closePalette();
+      } else {
+        openPalette();
+      }
+      return;
+    }
+
+    if (!palette.classList.contains('active')) {
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closePalette();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (filtered.length === 0) {
+        return;
+      }
+      activeIndex = (activeIndex + 1) % filtered.length;
+      updateActive();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (filtered.length === 0) {
+        return;
+      }
+      activeIndex =
+        (activeIndex - 1 + filtered.length) % filtered.length;
+      updateActive();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      runCommand(activeIndex);
+    }
+  });
+
+  input.addEventListener('input', function () {
+    filterCommands(input.value);
+  });
+
+  if (backdrop) {
+    backdrop.addEventListener('click', closePalette);
+  }
+
+  if (hint) {
+    hint.addEventListener('click', openPalette);
+    hint.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openPalette();
+      }
+    });
+  }
+
+  renderList();
+})();
+
+/* ==================== 主题切换 ==================== */
+
+/**
+ * 应用主题（不带动画）。
+ * @param {string} theme 主题名。
+ * @param {!HTMLElement} html html 元素。
+ * @param {!HTMLElement} tanChiShe 贪吃蛇图片。
+ * @param {function(string, string, number): void} setCookieFn Cookie 写入函数。
+ * @return {void}
+ */
+function applyTheme(theme, html, tanChiShe, setCookieFn) {
+  tanChiShe.src = './static/svg/snake-' + theme + '.svg';
+  html.dataset.theme = theme;
+  setCookieFn('themeState', theme, 365);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -124,30 +666,38 @@ document.addEventListener('DOMContentLoaded', function () {
   /**
    * 切换主题。
    * @param {string} theme 主题名。
+   * @param {boolean=} animate 是否使用 View Transitions。
    * @return {void}
    */
-  function changeTheme(theme) {
-    tanChiShe.src = './static/svg/snake-' + theme + '.svg';
-    html.dataset.theme = theme;
-    setCookie('themeState', theme, 365);
-    themeState = theme;
+  function changeTheme(theme, animate) {
+    const apply = function () {
+      applyTheme(theme, html, tanChiShe, setCookie);
+      themeState = theme;
+    };
+    if (animate && document.startViewTransition) {
+      document.startViewTransition(apply);
+    } else {
+      apply();
+    }
   }
 
   const checkbox = document.getElementById('myonoffswitch');
   checkbox.addEventListener('change', function () {
+    let next;
     if (themeState === 'Dark') {
-      changeTheme('Light');
+      next = 'Light';
     } else if (themeState === 'Light') {
-      changeTheme('Dark');
+      next = 'Dark';
     } else {
-      changeTheme('Dark');
+      next = 'Dark';
     }
+    changeTheme(next, true);
   });
 
   if (themeState === 'Dark') {
     checkbox.checked = false;
   }
-  changeTheme(themeState);
+  changeTheme(themeState, false);
 
   const qqIcon = document.getElementById('qqIcon');
   if (qqIcon) {
@@ -170,17 +720,22 @@ document.addEventListener('DOMContentLoaded', function () {
   loadGitHubData();
 });
 
+/* ==================== 页面加载 ==================== */
+
 const pageLoading = document.querySelector('#KD-loading');
 window.addEventListener('load', function () {
   setTimeout(function () {
-    pageLoading.style.opacity = '0';
-    setTimeout(function () {
-      pageLoading.style.display = 'none';
-    }, 500);
+    if (pageLoading) {
+      pageLoading.style.opacity = '0';
+      setTimeout(function () {
+        pageLoading.style.display = 'none';
+      }, 500);
+    }
   }, 100);
 });
 
-// ==================== GitHub 数据接入 ====================
+/* ==================== GitHub 数据接入 ==================== */
+
 const GITHUB_API =
   'https://uapis.cn/api/v1/github/user?user=LLKYTA&activity=true&activity_scope=all&pinned=true&repos=true&repos_limit=6';
 const GITHUB_CACHE_KEY = 'github_data_cache';
@@ -309,11 +864,6 @@ function renderContributionGraph(activity) {
   graphEl.innerHTML = '';
   const fragment = document.createDocumentFragment();
 
-  /**
-   * 获取贡献等级。
-   * @param {number} count 贡献次数。
-   * @return {number} 等级 0-4。
-   */
   function getLevel(count) {
     if (count === 0) {
       return 0;
@@ -450,6 +1000,7 @@ function formatNumber(n) {
 }
 
 /* ==================== 音乐播放器 ==================== */
+
 (function () {
   const player = document.getElementById('musicPlayer');
   if (!player) {
@@ -469,11 +1020,6 @@ function formatNumber(n) {
 
   let unlocked = false;
 
-  /**
-   * 格式化时间。
-   * @param {number} sec 秒数。
-   * @return {string} 格式化后的时间。
-   */
   function formatTime(sec) {
     if (!isFinite(sec) || sec < 0) {
       return '0:00';
@@ -483,11 +1029,6 @@ function formatNumber(n) {
     return m + ':' + (s < 10 ? '0' : '') + s;
   }
 
-  /**
-   * 绘制进度条。
-   * @param {number} pct 百分比。
-   * @return {void}
-   */
   function paintSeek(pct) {
     seek.style.background =
       'linear-gradient(to right, ' +
@@ -501,10 +1042,6 @@ function formatNumber(n) {
       '%)';
   }
 
-  /**
-   * 静音自动播放。
-   * @return {void}
-   */
   function autoPlayMuted() {
     audio.muted = true;
     const p = audio.play();
@@ -518,11 +1055,6 @@ function formatNumber(n) {
     }
   }
 
-  /**
-   * 绑定手势解锁声音。
-   * @param {boolean=} needResume 是否需要恢复播放。
-   * @return {void}
-   */
   function armUnlockGesture(needResume) {
     const events = ['pointerdown', 'touchstart', 'keydown'];
 
@@ -554,11 +1086,6 @@ function formatNumber(n) {
 
   let titleTimer = null;
 
-  /**
-   * 临时替换标题做提示。
-   * @param {string} text 提示文本。
-   * @return {void}
-   */
   function flashTitle(text) {
     const original = titleEl.dataset.original || titleEl.textContent;
     titleEl.dataset.original = original;
@@ -643,6 +1170,7 @@ function formatNumber(n) {
 })();
 
 /* ==================== 标题个性化 ==================== */
+
 (function () {
   const BASE_TITLE = 'KD_klin · 个人主页';
   const AWAY_TITLE = '👀 别走嘛，回来看看～';
@@ -653,13 +1181,6 @@ function formatNumber(n) {
   let isVisible = !document.hidden;
   let hasFocus = document.hasFocus();
 
-  /**
-   * 打字机效果。
-   * @param {string} text 文本。
-   * @param {number} speed 速度。
-   * @param {function()=} callback 回调。
-   * @return {void}
-   */
   function typeTitle(text, speed, callback) {
     clearInterval(typeTimer);
     typeIndex = 0;
@@ -678,10 +1199,6 @@ function formatNumber(n) {
     }, speed || 100);
   }
 
-  /**
-   * 恢复标题。
-   * @return {void}
-   */
   function restoreTitle() {
     if (document.title === BASE_TITLE) {
       return;

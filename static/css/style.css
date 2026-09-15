@@ -252,6 +252,7 @@ body {
 .welcome {
   font-size: 65px;
   font-weight: 800;
+  line-height: 1.15;   /* ← 新增这一行 */
   margin: 20px 0;
 }
 
@@ -586,6 +587,10 @@ footer span {
   .welcome {
     font-size: 10vw;
     margin: 2vw 0;
+    font-size: 65px;
+    font-weight: 800;
+    line-height: 1.15;   /* ← 新增这一行 */
+    margin: 20px 0;
   }
   .iconContainer {
     margin-top: 4vw;
@@ -894,4 +899,320 @@ footer span {
   margin-top: 6px;
   opacity: 0.9;
   color: var(--main_text_color);
+}
+
+/* ============================================================
+   新增功能：footer 统计 / 打字机 / 命令面板 / 鼠标光效 / View Transitions
+   ============================================================ */
+
+/* ---------- footer 内的分隔符与统计 ---------- */
+.footer-dot {
+  margin: 0 6px;
+  opacity: 0.5;
+}
+
+footer #siteRuntime b,
+footer #visitStats b {
+  color: var(--purple_text_color);
+  font-weight: 700;
+  margin: 0 1px;
+}
+
+footer {
+  z-index: 3;
+}
+
+/* ---------- 打字机问候语 ---------- */
+.welcome-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--purple_text_color);
+  font-weight: 400;
+  animation: welcome-cursor-blink 1s steps(1) infinite;
+}
+
+@keyframes welcome-cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-cursor {
+    animation: none;
+  }
+}
+
+/* ---------- 鼠标跟随光效 ---------- */
+.mouse-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 500px;
+  height: 500px;
+  margin: -250px 0 0 -250px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle,
+      var(--purple_text_color) 0%,
+      transparent 65%);
+  opacity: 0.14;
+  filter: blur(50px);
+  z-index: 0;
+  transform: translate3d(var(--mx, -1000px), var(--my, -1000px), 0);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.KD-filter {
+  z-index: -1;
+}
+
+.KD-main {
+  z-index: 1;
+}
+
+@media (hover: none),
+(prefers-reduced-motion: reduce) {
+  .mouse-glow {
+    display: none;
+  }
+}
+
+/* ---------- 命令面板触发提示 ---------- */
+.cmd-hint {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 9997;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--item_bg_color);
+  backdrop-filter: blur(var(--card_filter));
+  -webkit-backdrop-filter: blur(var(--card_filter));
+  color: var(--main_text_color);
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.6;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cmd-hint:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.cmd-hint svg {
+  opacity: 0.7;
+}
+
+.cmd-hint kbd {
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--item_hover_color);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: inherit;
+}
+
+@media (max-width: 800px) {
+  .cmd-hint {
+    display: none;
+  }
+}
+
+/* ---------- 命令面板 ---------- */
+.cmd-palette {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0s 0.2s;
+}
+
+.cmd-palette.active {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.2s ease, visibility 0s;
+  -webkit-transition: opacity 0.2s ease, visibility 0s;
+  -moz-transition: opacity 0.2s ease, visibility 0s;
+  -ms-transition: opacity 0.2s ease, visibility 0s;
+  -o-transition: opacity 0.2s ease, visibility 0s;
+}
+
+.cmd-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.cmd-panel {
+  position: relative;
+  width: 90%;
+  max-width: 520px;
+  max-height: 60vh;
+  border-radius: 14px;
+  background: var(--item_bg_color);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: var(--main_text_color);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transform: scale(0.95) translateY(-10px);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cmd-palette.active .cmd-panel {
+  transform: scale(1) translateY(0);
+}
+
+.cmd-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cmd-icon {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.cmd-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: inherit;
+  font-family: inherit;
+  padding: 0;
+}
+
+.cmd-input::placeholder {
+  opacity: 0.5;
+}
+
+.cmd-kbd {
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--item_hover_color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0.7;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.cmd-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.cmd-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cmd-list::-webkit-scrollbar-thumb {
+  background: var(--left_tag_item);
+  border-radius: 6px;
+}
+
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-size: 14px;
+  user-select: none;
+}
+
+.cmd-item.active {
+  background: var(--item_hover_color);
+}
+
+.cmd-item-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--item_bg_color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.cmd-item-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cmd-item-hint {
+  font-size: 11px;
+  opacity: 0.5;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.cmd-empty {
+  padding: 30px 20px;
+  text-align: center;
+  opacity: 0.5;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .cmd-palette {
+    padding-top: 10vh;
+  }
+}
+
+/* ---------- View Transitions ---------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: ease;
+}
+
+::view-transition-old(root) {
+  animation-name: vt-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: vt-fade-in;
+}
+
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
 }
