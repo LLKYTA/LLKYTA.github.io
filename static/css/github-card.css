@@ -1,449 +1,426 @@
-/* ============================================================
-   GitHub 模块样式
-   样式方案：圆角方块（更柔和的 GitHub 风格）
-   贡献图：宽度撑满父容器，格子等比缩放
-   ============================================================ */
-
+/* static/css/github-card.css */
 .github-section {
-    width: 100%;
+  width: 100%;
 }
 
-/* ---------- 加载状态 ---------- */
 .github-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    gap: 16px;
-    color: var(--main_text_color);
-    opacity: 0.7;
-    font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+  color: var(--main_text_color);
+  opacity: 0.7;
+  font-size: 14px;
 }
 
 .github-loading-spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid var(--item_bg_color);
-    border-top-color: var(--purple_text_color);
-    border-radius: 50%;
-    animation: gh-spin 0.8s linear infinite;
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--item_bg_color);
+  border-top-color: var(--purple_text_color);
+  border-radius: 50%;
+  animation: gh-spin 0.8s linear infinite;
 }
 
 @keyframes gh-spin {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* ---------- 错误状态 ---------- */
 .github-error {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--main_text_color);
-    opacity: 0.8;
-    font-size: 14px;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--main_text_color);
+  opacity: 0.8;
+  font-size: 14px;
 }
 
 .github-retry-btn {
-    margin-top: 12px;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 8px;
-    background: var(--item_bg_color);
-    color: var(--main_text_color);
-    cursor: pointer;
-    font-size: 13px;
-    backdrop-filter: blur(var(--card_filter));
-    -webkit-backdrop-filter: blur(var(--card_filter));
-    transition: background 0.2s ease, transform 0.2s ease;
+  margin-top: 12px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--item_bg_color);
+  color: var(--main_text_color);
+  cursor: pointer;
+  font-size: 13px;
+  backdrop-filter: blur(var(--card_filter));
+  -webkit-backdrop-filter: blur(var(--card_filter));
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .github-retry-btn:hover {
-    background: var(--item_hover_color);
-    transform: translateY(-2px);
+  background: var(--item_hover_color);
+  transform: translateY(-2px);
 }
 
-/* ---------- 用户画像卡片 ---------- */
 .github-profile-card {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-    border-radius: 13px;
-    background: var(--item_bg_color);
-    backdrop-filter: blur(var(--card_filter));
-    -webkit-backdrop-filter: blur(var(--card_filter));
-    transition: transform 0.3s ease, background 0.2s ease;
-    margin-bottom: 15px;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 13px;
+  background: var(--item_bg_color);
+  backdrop-filter: blur(var(--card_filter));
+  -webkit-backdrop-filter: blur(var(--card_filter));
+  transition: transform 0.3s ease, background 0.2s ease;
+  margin-bottom: 15px;
 }
 
 .github-profile-card:hover {
-    transform: translateY(-2px);
-    background: var(--item_hover_color);
+  transform: translateY(-2px);
+  background: var(--item_hover_color);
 }
 
 .github-profile-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .github-avatar {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    border: 2px solid var(--fill);
-    object-fit: cover;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid var(--fill);
+  object-fit: cover;
 }
 
 .github-link {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    color: var(--purple_text_color);
-    opacity: 0.9;
-    transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--purple_text_color);
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
 }
 
 .github-link:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 .github-profile-right {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .github-name {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--item_left_title_color);
-    margin-bottom: 4px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--item_left_title_color);
+  margin-bottom: 4px;
 }
 
 .github-bio {
-    font-size: 13px;
-    color: var(--item_left_text_color);
-    line-height: 1.5;
-    margin-bottom: 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  font-size: 13px;
+  color: var(--item_left_text_color);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .github-stats {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 10px;
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
 }
 
 .github-stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .github-stat-num {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--purple_text_color);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--purple_text_color);
 }
 
 .github-stat-label {
-    font-size: 11px;
-    color: var(--item_left_text_color);
-    opacity: 0.8;
+  font-size: 11px;
+  color: var(--item_left_text_color);
+  opacity: 0.8;
 }
 
 .github-orgs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .github-org-tag {
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 6px;
-    background: var(--left_tag_item);
-    color: var(--main_text_color);
-    opacity: 0.85;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--left_tag_item);
+  color: var(--main_text_color);
+  opacity: 0.85;
 }
 
-/* ---------- 贡献热力图卡片 ---------- */
 .github-contrib-card {
-    padding: 20px;
-    border-radius: 13px;
-    background: var(--item_bg_color);
-    backdrop-filter: blur(var(--card_filter));
-    -webkit-backdrop-filter: blur(var(--card_filter));
-    margin-bottom: 15px;
-    transition: transform 0.3s ease;
+  padding: 20px;
+  border-radius: 13px;
+  background: var(--item_bg_color);
+  backdrop-filter: blur(var(--card_filter));
+  -webkit-backdrop-filter: blur(var(--card_filter));
+  margin-bottom: 15px;
+  transition: transform 0.3s ease;
 }
 
 .github-contrib-card:hover {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .github-contrib-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--item_left_title_color);
-    margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--item_left_title_color);
+  margin-bottom: 14px;
 }
 
 .github-contrib-total {
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--item_left_text_color);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--item_left_text_color);
 }
 
-/* ---------- 贡献热力图：宽度对齐父元素 ---------- */
 .github-contrib-graph {
-    display: flex;
-    gap: 3px;
-    width: 100%;
-    overflow: hidden;
+  display: flex;
+  gap: 3px;
+  width: 100%;
+  overflow: hidden;
 }
 
 .github-contrib-week {
-    flex: 1 1 0;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-/* ---------- 圆角方块核心样式 ---------- */
 .github-contrib-day {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    border-radius: 30%;
-    background: var(--item_hover_color);
-    transition: transform 0.15s ease, border-radius 0.15s ease;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 30%;
+  background: var(--item_hover_color);
+  transition: transform 0.15s ease, border-radius 0.15s ease;
 }
 
 .github-contrib-day:hover {
-    transform: scale(1.5);
-    border-radius: 50%;
-    outline: 1px solid var(--purple_text_color);
-    z-index: 1;
+  transform: scale(1.5);
+  border-radius: 50%;
+  outline: 1px solid var(--purple_text_color);
+  z-index: 1;
 }
 
-/* 颜色等级：0 表示无贡献，1-4 递增 */
 .github-contrib-day.level-0 {
-    background: var(--item_hover_color);
+  background: var(--item_hover_color);
 }
 
 .github-contrib-day.level-1 {
-    background: #9be9a8;
+  background: #9be9a8;
 }
 
 .github-contrib-day.level-2 {
-    background: #40c463;
+  background: #40c463;
 }
 
 .github-contrib-day.level-3 {
-    background: #30a14e;
+  background: #30a14e;
 }
 
 .github-contrib-day.level-4 {
-    background: #216e39;
+  background: #216e39;
 }
 
-/* 暗色主题下调整热力图颜色 */
-html[data-theme="Dark"] .github-contrib-day.level-1 {
-    background: #0e4429;
+html[data-theme='Dark'] .github-contrib-day.level-1 {
+  background: #0e4429;
 }
 
-html[data-theme="Dark"] .github-contrib-day.level-2 {
-    background: #006d32;
+html[data-theme='Dark'] .github-contrib-day.level-2 {
+  background: #006d32;
 }
 
-html[data-theme="Dark"] .github-contrib-day.level-3 {
-    background: #26a641;
+html[data-theme='Dark'] .github-contrib-day.level-3 {
+  background: #26a641;
 }
 
-html[data-theme="Dark"] .github-contrib-day.level-4 {
-    background: #39d353;
+html[data-theme='Dark'] .github-contrib-day.level-4 {
+  background: #39d353;
 }
 
-/* ---------- 图例 ---------- */
 .github-contrib-legend {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    justify-content: flex-end;
-    margin-top: 10px;
-    font-size: 11px;
-    color: var(--item_left_text_color);
-    opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--item_left_text_color);
+  opacity: 0.7;
 }
 
 .github-contrib-level {
-    width: 11px;
-    height: 11px;
-    border-radius: 30%;
+  width: 11px;
+  height: 11px;
+  border-radius: 30%;
 }
 
 .github-contrib-level.level-0 {
-    background: var(--item_hover_color);
+  background: var(--item_hover_color);
 }
 
 .github-contrib-level.level-1 {
-    background: #9be9a8;
+  background: #9be9a8;
 }
 
 .github-contrib-level.level-2 {
-    background: #40c463;
+  background: #40c463;
 }
 
 .github-contrib-level.level-3 {
-    background: #30a14e;
+  background: #30a14e;
 }
 
 .github-contrib-level.level-4 {
-    background: #216e39;
+  background: #216e39;
 }
 
-html[data-theme="Dark"] .github-contrib-level.level-1 {
-    background: #0e4429;
+html[data-theme='Dark'] .github-contrib-level.level-1 {
+  background: #0e4429;
 }
 
-html[data-theme="Dark"] .github-contrib-level.level-2 {
-    background: #006d32;
+html[data-theme='Dark'] .github-contrib-level.level-2 {
+  background: #006d32;
 }
 
-html[data-theme="Dark"] .github-contrib-level.level-3 {
-    background: #26a641;
+html[data-theme='Dark'] .github-contrib-level.level-3 {
+  background: #26a641;
 }
 
-html[data-theme="Dark"] .github-contrib-level.level-4 {
-    background: #39d353;
+html[data-theme='Dark'] .github-contrib-level.level-4 {
+  background: #39d353;
 }
 
-/* ---------- 仓库网格 ---------- */
 .github-repos-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .github-repo-card {
-    flex: 1 1 calc(50% - 10px);
-    min-width: 220px;
-    padding: 16px;
-    border-radius: 10px;
-    background: var(--item_bg_color);
-    backdrop-filter: blur(var(--card_filter));
-    -webkit-backdrop-filter: blur(var(--card_filter));
-    transition: transform 0.25s ease, background 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  flex: 1 1 calc(50% - 10px);
+  min-width: 220px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--item_bg_color);
+  backdrop-filter: blur(var(--card_filter));
+  -webkit-backdrop-filter: blur(var(--card_filter));
+  transition: transform 0.25s ease, background 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .github-repo-card:hover {
-    transform: translateY(-3px);
-    background: var(--item_hover_color);
+  transform: translateY(-3px);
+  background: var(--item_hover_color);
 }
 
 .github-repo-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--item_left_title_color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--item_left_title_color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .github-repo-desc {
-    font-size: 12px;
-    color: var(--item_left_text_color);
-    line-height: 1.5;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    flex: 1;
+  font-size: 12px;
+  color: var(--item_left_text_color);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
 }
 
 .github-repo-meta {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-size: 12px;
-    color: var(--item_left_text_color);
-    opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--item_left_text_color);
+  opacity: 0.8;
 }
 
 .github-repo-lang {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .github-repo-lang-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
 }
 
 .github-repo-stars {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-/* ---------- 响应式 ---------- */
 @media (max-width: 800px) {
-    .github-profile-card {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .github-stats {
-        justify-content: center;
-    }
-
-    .github-orgs {
-        justify-content: center;
-    }
-
-    .github-repo-card {
-        flex: 1 1 100%;
-        min-width: unset;
-    }
+  .github-profile-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .github-stats {
+    justify-content: center;
+  }
+  .github-orgs {
+    justify-content: center;
+  }
+  .github-repo-card {
+    flex: 1 1 100%;
+    min-width: unset;
+  }
 }
 
-/* ---------- 小屏：热力图极限压缩 ---------- */
 @media (max-width: 600px) {
-    .github-contrib-graph {
-        gap: 2px;
-        overflow-x: auto;
-        padding-bottom: 4px;
-    }
-
-    .github-contrib-week {
-        min-width: 4px;
-        gap: 2px;
-    }
-
-    .github-contrib-graph::-webkit-scrollbar {
-        height: 4px;
-    }
-
-    .github-contrib-graph::-webkit-scrollbar-thumb {
-        background: var(--left_tag_item);
-        border-radius: 4px;
-    }
+  .github-contrib-graph {
+    gap: 2px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .github-contrib-week {
+    min-width: 4px;
+    gap: 2px;
+  }
+  .github-contrib-graph::-webkit-scrollbar {
+    height: 4px;
+  }
+  .github-contrib-graph::-webkit-scrollbar-thumb {
+    background: var(--left_tag_item);
+    border-radius: 4px;
+  }
 }
