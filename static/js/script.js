@@ -1,4 +1,3 @@
-/* static/js/script.js */
 /**
  * @fileoverview KD_klin 个人主页交互脚本。
  * @author KD_klin
@@ -8,121 +7,422 @@ console.log(
   '%cCopyright © 2024 KD_klin',
   'background-color: #ff00ff; color: white; font-size: 24px; font-weight: bold; padding: 10px;'
 );
-console.log('%c   /\\_/\\', 'color: #20128b; font-size: 20px;');
-console.log('%c  ( o.o )', 'color: #20128b; font-size: 20px;');
-console.log(' %c  > ^ <', 'color: #20128b; font-size: 20px;');
-console.log('  %c /  ~ \\', 'color: #20128b; font-size: 20px;');
-console.log('  %c/______\\', 'color: #20128b; font-size: 20px;');
 
-const PREFERS_REDUCED_MOTION = window.matchMedia(
-  '(prefers-reduced-motion: reduce)'
-).matches;
+const CFG = window.KD_CONFIG || {};
+const PREFERS_REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ==================== 通用工具 ==================== */
 
-/**
- * 切换元素的 class。
- * @param {string} selector CSS 选择器。
- * @param {string} className 要切换的 class 名。
- * @return {void}
- */
+/** 切换元素 class。 */
 function toggleClass(selector, className) {
   document.querySelectorAll(selector).forEach(function (el) {
     el.classList.toggle(className);
   });
 }
 
-/**
- * 弹出图片弹窗。
- * @param {string=} imageURL 图片地址。
- * @return {void}
- */
+/** 弹出图片弹窗。 */
 function pop(imageURL) {
-  const tcMainElement = document.querySelector('.tc-img');
-  if (imageURL) {
-    tcMainElement.src = imageURL;
-  }
+  const img = document.querySelector('.tc-img');
+  if (imageURL) img.src = imageURL;
   toggleClass('.tc-main', 'active');
   toggleClass('.tc', 'active');
 }
 
 const tc = document.getElementsByClassName('tc');
 const tcMain = document.getElementsByClassName('tc-main');
-if (tc[0]) {
-  tc[0].addEventListener('click', function () {
-    pop();
-  });
-}
-if (tcMain[0]) {
-  tcMain[0].addEventListener('click', function (event) {
-    event.stopPropagation();
-  });
-}
+if (tc[0]) tc[0].addEventListener('click', () => pop());
+if (tcMain[0]) tcMain[0].addEventListener('click', (e) => e.stopPropagation());
 
-/**
- * 设置 Cookie。
- * @param {string} name Cookie 名。
- * @param {string} value Cookie 值。
- * @param {number} days 过期天数。
- * @return {void}
- */
+/** 设置 Cookie。 */
 function setCookie(name, value, days) {
   let expires = '';
   if (days) {
     const date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    date.setTime(date.getTime() + days * 86400000);
     expires = '; expires=' + date.toUTCString();
   }
   document.cookie = name + '=' + value + expires + '; path=/';
 }
 
-/**
- * 读取 Cookie。
- * @param {string} name Cookie 名。
- * @return {?string} Cookie 值。
- */
+/** 读取 Cookie。 */
 function getCookie(name) {
-  const nameEQ = name + '=';
-  const cookies = document.cookie.split(';');
-  for (let i = 0; i < cookies.length; i++) {
-    let cookie = cookies[i];
-    while (cookie.charAt(0) === ' ') {
-      cookie = cookie.substring(1, cookie.length);
-    }
-    if (cookie.indexOf(nameEQ) === 0) {
-      return cookie.substring(nameEQ.length, cookie.length);
-    }
+  const eq = name + '=';
+  const parts = document.cookie.split(';');
+  for (let i = 0; i < parts.length; i++) {
+    let c = parts[i];
+    while (c.charAt(0) === ' ') c = c.substring(1);
+    if (c.indexOf(eq) === 0) return c.substring(eq.length);
   }
   return null;
 }
 
-/* ==================== 一言 ==================== */
+/* ==================== 配置渲染 ==================== */
+
+function renderProfileFromConfig() {
+  const c = CFG;
+  if (!c.profile) return;
+
+  const locEl = document.getElementById('desLocation');
+  const statEl = document.getElementById('desStatus');
+  if (locEl) locEl.textContent = c.profile.location || '';
+  if (statEl) statEl.textContent = c.profile.status || '';
+
+  const tagList = document.getElementById('tagList');
+  if (tagList && c.profile.tags) {
+    tagList.innerHTML = '';
+    c.profile.tags.forEach(function (t) {
+      const d = document.createElement('div');
+      d.className = 'left-tag-item';
+      d.textContent = t;
+      tagList.appendChild(d);
+    });
+  }
+}
+
+function renderTimelineFromConfig() {
+  const list = document.getElementById('line');
+  if (!list || !CFG.timeline) return;
+  list.innerHTML = '';
+  CFG.timeline.forEach(function (item) {
+    const li = document.createElement('li');
+    li.innerHTML =
+      '<div class="focus"></div>' +
+      '<div class="line-head">' +
+      '<span class="line-ver">' + item.ver + '</span>' +
+      '<span class="line-title">' + item.title + '</span>' +
+      '<span class="line-date">' + item.date + '</span>' +
+      '</div>' +
+      '<div class="line-desc">' + item.desc + '</div>';
+    list.appendChild(li);
+  });
+}
 
 /**
- * 从一言 API 获取随机句子并更新页面。
+ * 渲染社交图标 + 主题开关。
  * @return {void}
  */
+function renderSocialIconsFromConfig() {
+  const wrap = document.getElementById('iconContainer');
+  if (!wrap || !CFG.socials) return;
+
+  const github = CFG.socials.github || {};
+  const email = CFG.socials.email || '';
+
+  wrap.innerHTML =
+    // GitHub
+    '<a class="iconItem" href="' + (github.url || '#') + '" target="_blank" rel="noopener" aria-label="GitHub">' +
+      '<svg viewBox="0 0 1024 1024" aria-hidden="true">' +
+        '<path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9 23.5 23.2 38.1 55.4 38.1 91v112.5c0.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z"></path>' +
+      '</svg>' +
+      '<div class="iconTip">Github</div>' +
+    '</a>' +
+    // Mail
+    '<a class="iconItem" href="mailto:' + email + '" aria-label="发送邮件">' +
+      '<svg viewBox="0 0 1024 1024" aria-hidden="true">' +
+        '<path d="M926.47619 355.644952V780.190476a73.142857 73.142857 0 0 1-73.142857 73.142857H170.666667a73.142857 73.142857 0 0 1-73.142857-73.142857V355.644952l304.103619 257.828572a170.666667 170.666667 0 0 0 220.745142 0L926.47619 355.644952zM853.333333 170.666667a74.044952 74.044952 0 0 1 26.087619 4.778666 72.704 72.704 0 0 1 30.622477 22.186667 73.508571 73.508571 0 0 1 10.678857 17.67619c3.169524 7.509333 5.12 15.652571 5.607619 24.210286L926.47619 243.809524v24.380952L559.469714 581.241905a73.142857 73.142857 0 0 1-91.306666 2.901333l-3.632762-2.925714L97.52381 268.190476v-24.380952a72.899048 72.899048 0 0 1 40.155428-65.292191A72.97219 72.97219 0 0 1 170.666667 170.666667h682.666666z"></path>' +
+      '</svg>' +
+      '<div class="iconTip">Mail</div>' +
+    '</a>' +
+    // QQ
+    '<a class="iconItem" id="qqIcon" href="javascript:void(0)" aria-label="QQ 好友二维码">' +
+      '<svg viewBox="0 0 1024 1024" aria-hidden="true">' +
+        '<path d="M824.8 613.2c-16-51.4-34.4-94.6-62.7-165.3C766.5 262.2 689.3 112 511.5 112 331.7 112 256.2 265.2 261 447.9c-28.4 70.8-46.7 113.7-62.7 165.3-34 109.5-23 154.8-14.6 155.8 18 2.2 70.1-82.4 70.1-82.4 0 49 25.2 112.9 79.8 159-26.4 8.1-85.7 29.9-71.6 53.8 11.4 19.3 196.2 12.3 249.5 6.3 53.3 6 238.1 13 249.5-6.3 14.1-23.8-45.3-45.7-71.6-53.8 54.6-46.2 79.8-110.1 79.8-159 0 0 52.1 84.6 70.1 82.4 8.5-1.1 19.5-46.4-14.5-155.8z"></path>' +
+      '</svg>' +
+      '<div class="iconTip">QQ</div>' +
+    '</a>' +
+    // 主题开关
+    '<a class="switch" href="javascript:void(0)" aria-label="切换深色/浅色主题">' +
+      '<div class="onoffswitch">' +
+        '<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" aria-label="切换深色/浅色主题" checked />' +
+        '<label class="onoffswitch-label" for="myonoffswitch">' +
+          '<span class="onoffswitch-inner"></span>' +
+          '<span class="onoffswitch-switch"></span>' +
+        '</label>' +
+      '</div>' +
+    '</a>';
+
+  // 重新绑定事件（因为 DOM 是新建的）
+  const qqIcon = document.getElementById('qqIcon');
+  if (qqIcon) {
+    qqIcon.addEventListener('click', function () {
+      pop((CFG.socials && CFG.socials.qq && CFG.socials.qq.image) || '');
+    });
+  }
+
+  const checkbox = document.getElementById('myonoffswitch');
+  if (checkbox) {
+    checkbox.addEventListener('change', function () {
+      const next = document.documentElement.dataset.theme === 'Dark' ? 'Light' : 'Dark';
+      changeTheme(next, true);
+    });
+  }
+}
+
+/* ==================== 技能可视化：Canvas 雷达 + SVG 圆环 ==================== */
+
+const SIMPLE_ICONS_CDN = 'https://cdn.simpleicons.org/';
+const RING_R = 32;
+const RING_CIRC = 2 * Math.PI * RING_R;
+
+/**
+ * 构建技术图标 URL。
+ * @param {string} slug Simple Icons 图标 slug。
+ * @param {string} color 品牌色（带 #）。
+ * @return {string} 完整 URL。
+ */
+function getSkillIconUrl(slug, color) {
+  return SIMPLE_ICONS_CDN + slug + '/' + color.replace('#', '');
+}
+
+/**
+ * 渲染技能模块（雷达图 + 环形进度）。
+ * @return {void}
+ */
+function renderSkillsFromConfig() {
+  const skills = (CFG && CFG.skills) || [];
+  if (!skills.length) return;
+
+  renderSkillRings(skills);
+  renderSkillRadar(skills);
+}
+
+/**
+ * 渲染 SVG 环形进度卡片。
+ * @param {!Array<!Object>} skills 技能列表。
+ * @return {void}
+ */
+function renderSkillRings(skills) {
+  const wrap = document.getElementById('skillRings');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  skills.forEach(function (s) {
+    const card = document.createElement('div');
+    card.className = 'skill-ring-card';
+    card.setAttribute('role', 'listitem');
+    card.setAttribute('aria-label', s.name + ' 熟练度 ' + s.level + '%');
+
+    card.innerHTML =
+      '<svg class="skill-ring-svg" viewBox="0 0 72 72" style="color:' + s.color + '" aria-hidden="true">' +
+      '<circle class="skill-ring-track" cx="36" cy="36" r="' + RING_R + '"></circle>' +
+      '<circle class="skill-ring-fill" cx="36" cy="36" r="' + RING_R + '"' +
+      ' stroke="' + s.color + '"' +
+      ' data-target="' + s.level + '"' +
+      ' style="stroke-dasharray:' + RING_CIRC + ';stroke-dashoffset:' + RING_CIRC + '"></circle>' +
+      '</svg>' +
+      '<div class="skill-icon-wrap">' +
+      '<img src="' + getSkillIconUrl(s.slug, s.color) + '" alt="' + s.name + '" loading="lazy" />' +
+      '</div>' +
+      '<div class="skill-ring-label">' + s.name + '</div>' +
+      '<div class="skill-ring-pct">' + s.level + '%</div>';
+
+    wrap.appendChild(card);
+  });
+
+  const observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      const circle = entry.target;
+      const target = parseInt(circle.dataset.target, 10);
+      const offset = RING_CIRC * (1 - target / 100);
+      requestAnimationFrame(function () {
+        circle.style.strokeDashoffset = offset;
+      });
+      observer.unobserve(circle);
+    });
+  }, { threshold: 0.2 });
+
+  wrap.querySelectorAll('.skill-ring-fill').forEach(function (el) {
+    observer.observe(el);
+  });
+}
+
+/**
+ * 渲染 Canvas 雷达图。
+ * @param {!Array<!Object>} skills 技能列表。
+ * @return {void}
+ */
+function renderSkillRadar(skills) {
+  const canvas = document.getElementById('skillRadar');
+  if (!canvas) return;
+  if (PREFERS_REDUCED_MOTION) return;
+
+  const ctx = canvas.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let rafId = null;
+  let progress = 0;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const size = Math.min(rect.width - 28, rect.height - 28);
+    if (size <= 0) return;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function hexToRgba(hex, alpha) {
+    let h = hex.replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+
+  function draw() {
+    rafId = null;
+    const W = canvas.width / dpr;
+    const H = canvas.height / dpr;
+    if (W <= 0 || H <= 0) return;
+
+    const cx = W / 2;
+    const cy = H / 2;
+    const radius = Math.min(cx, cy) * 0.62;
+    const n = skills.length;
+    const step = (Math.PI * 2) / n;
+    const startAngle = -Math.PI / 2;
+
+    const style = getComputedStyle(document.documentElement);
+    const accent = style.getPropertyValue('--purple_text_color').trim() || '#747bff';
+    const textColor = style.getPropertyValue('--item_left_text_color').trim() || '#888';
+
+    ctx.clearRect(0, 0, W, H);
+
+    for (let layer = 1; layer <= 5; layer++) {
+      const r = (layer / 5) * radius;
+      ctx.beginPath();
+      for (let i = 0; i < n; i++) {
+        const a = startAngle + i * step;
+        const x = cx + r * Math.cos(a);
+        const y = cy + r * Math.sin(a);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = accent;
+      ctx.globalAlpha = layer === 5 ? 0.28 : 0.1;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = 0.14;
+    for (let i = 0; i < n; i++) {
+      const a = startAngle + i * step;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + radius * Math.cos(a), cy + radius * Math.sin(a));
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    const p = easeOutCubic(progress);
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const a = startAngle + i * step;
+      const val = (skills[i].level / 100) * p;
+      const x = cx + radius * val * Math.cos(a);
+      const y = cy + radius * val * Math.sin(a);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    grad.addColorStop(0, hexToRgba(accent, 0.35));
+    grad.addColorStop(1, hexToRgba(accent, 0.08));
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.strokeStyle = accent;
+    ctx.globalAlpha = 0.75 * p;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.globalAlpha = 0.95 * p;
+    for (let i = 0; i < n; i++) {
+      const a = startAngle + i * step;
+      const val = (skills[i].level / 100) * p;
+      const x = cx + radius * val * Math.cos(a);
+      const y = cy + radius * val * Math.sin(a);
+      ctx.beginPath();
+      ctx.arc(x, y, 2.6, 0, Math.PI * 2);
+      ctx.fillStyle = skills[i].color;
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 0.75 * p;
+    ctx.font = '600 11px -apple-system, "Segoe UI", sans-serif';
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (let i = 0; i < n; i++) {
+      const a = startAngle + i * step;
+      const lr = radius + 18;
+      let x = cx + lr * Math.cos(a);
+      let y = cy + lr * Math.sin(a);
+      x = Math.max(24, Math.min(W - 24, x));
+      y = Math.max(10, Math.min(H - 10, y));
+      ctx.fillText(skills[i].name, x, y);
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
+  function animate() {
+    progress += 0.022;
+    if (progress > 1) progress = 1;
+    draw();
+    if (progress < 1) rafId = requestAnimationFrame(animate);
+    else rafId = null;
+  }
+
+  resize();
+  window.addEventListener('resize', function () {
+    resize();
+    if (progress >= 1) draw();
+  }, { passive: true });
+
+  const observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      observer.unobserve(entry.target);
+      progress = 0;
+      if (!rafId) rafId = requestAnimationFrame(animate);
+    });
+  }, { threshold: 0.2 });
+
+  observer.observe(canvas.parentElement);
+}
+
+/* ==================== 一言 ==================== */
+
 function loadHi() {
   fetch('https://v1.hitokoto.cn/?c=j&c=i')
-    .then(function (response) {
-      return response.json();
-    })
+    .then((r) => r.json())
     .then(function (data) {
-      const hitokoto = document.querySelector('#hitokoto_text');
-      const hitokotoFrom = document.querySelector('#hitokoto_from');
-      if (!data.from_who || data.from_who === 'null') {
-        hitokoto.from = '---' + data.from;
-      } else {
-        hitokoto.from = '---' + data.from + ' ' + data.from_who;
-      }
-      hitokoto.innerText = data.hitokoto;
-      hitokotoFrom.innerText = hitokoto.from;
+      const el = document.querySelector('#hitokoto_text');
+      const fromEl = document.querySelector('#hitokoto_from');
+      if (!el) return;
+      const from = !data.from_who || data.from_who === 'null'
+        ? '---' + data.from
+        : '---' + data.from + ' ' + data.from_who;
+      el.innerText = data.hitokoto;
+      fromEl.innerText = from;
     })
     .catch(function (err) {
       console.error('一言加载失败:', err);
-      document.querySelector('#hitokoto_text').innerText =
-        '一言加载失败，点击重试';
-      document.querySelector('#hitokoto_from').innerText = '-- 网络异常';
+      const el = document.querySelector('#hitokoto_text');
+      const fromEl = document.querySelector('#hitokoto_from');
+      if (el) el.innerText = '一言加载失败，点击重试';
+      if (fromEl) fromEl.innerText = '-- 网络异常';
     });
 }
 
@@ -130,28 +430,16 @@ function loadHi() {
 
 (function initSiteRuntime() {
   const el = document.getElementById('siteRuntime');
-  if (!el) {
-    return;
-  }
-  const START_DATE = new Date('2026-01-01T00:00:00');
+  if (!el || !CFG.site) return;
+  const START = new Date(CFG.site.startDate).getTime();
 
   function tick() {
-    const diff = Date.now() - START_DATE.getTime();
-    if (diff < 0) {
-      el.innerHTML = '尚未上线';
-      return;
-    }
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    el.innerHTML =
-      '本站已运行 <b>' +
-      days +
-      '</b> 天 <b>' +
-      hours +
-      '</b> 时 <b>' +
-      mins +
-      '</b> 分';
+    const diff = Date.now() - START;
+    if (diff < 0) { el.innerHTML = '尚未上线'; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    el.innerHTML = '本站已运行 <b>' + d + '</b> 天 <b>' + h + '</b> 时 <b>' + m + '</b> 分';
   }
   tick();
   setInterval(tick, 30000);
@@ -161,183 +449,231 @@ function loadHi() {
 
 (function initVisitStats() {
   const el = document.getElementById('visitStats');
-  if (!el) {
-    return;
-  }
-
-  const LOCAL_KEY = 'KD_visitCount';
-  const BASE_VISITS = 1024;
-  let localCount =
-    parseInt(localStorage.getItem(LOCAL_KEY) || '0', 10) + 1;
-  localStorage.setItem(LOCAL_KEY, localCount);
-  const total = BASE_VISITS + localCount;
-
-  el.innerHTML =
-    '你是第 <b>' + total.toLocaleString() + '</b> 位访客';
+  if (!el) return;
+  const KEY = 'KD_visitCount';
+  const BASE = 1024;
+  const local = parseInt(localStorage.getItem(KEY) || '0', 10) + 1;
+  localStorage.setItem(KEY, local);
+  const total = BASE + local;
+  el.innerHTML = '你是第 <b>' + total.toLocaleString() + '</b> 位访客';
 
   fetch('https://ip.useragentinfo.com/json')
-    .then(function (r) {
-      return r.json();
-    })
+    .then((r) => r.json())
     .then(function (d) {
       const city = d.city || d.province || d.country || '未知';
-      el.innerHTML =
-        '你是第 <b>' +
-        total.toLocaleString() +
-        '</b> 位访客 · 来自 <b>' +
-        city +
-        '</b>';
+      el.innerHTML = '你是第 <b>' + total.toLocaleString() + '</b> 位访客 · 来自 <b>' + city + '</b>';
     })
-    .catch(function () {
-      /* 失败时不修改，保留默认文本 */
-    });
+    .catch(function () { /* 静默 */ });
 })();
 
-/* ==================== 打字机问候语 ==================== */
+/* ==================== 打字机 ==================== */
 
 (function initTypewriter() {
   const target = document.getElementById('welcomeTyped');
-  if (!target) {
-    return;
+  if (!target || !CFG.typewriter) return;
+
+  function getPhrases() {
+    const h = new Date().getHours();
+    const segs = CFG.typewriter.segments || [];
+    for (let i = 0; i < segs.length; i++) {
+      const s = segs[i];
+      const inRange = s.start < s.end ? (h >= s.start && h < s.end) : (h >= s.start || h < s.end);
+      if (inRange) return s.phrases;
+    }
+    return segs[0] ? segs[0].phrases : [];
   }
 
-  /** @type {!Array<!Array<{text: string, hl: boolean}>>} */
-  const PHRASES = [
-    [
-      { text: "Hello, I'm ", hl: false },
-      { text: 'KD_klin', hl: true },
-    ],
-    [
-      { text: '你好，我是 ', hl: false },
-      { text: 'KD_klin', hl: true },
-    ],
-    [
-      { text: 'こんにちは、', hl: false },
-      { text: 'KD_klin', hl: true },
-      { text: ' です', hl: false },
-    ],
-    [
-      { text: 'Bonjour, je suis ', hl: false },
-      { text: 'KD_klin', hl: true },
-    ],
-    [
-      { text: 'Hola, soy ', hl: false },
-      { text: 'KD_klin', hl: true },
-    ],
-  ];
-
-  /**
-   * 按可见字符数渲染片段。
-   * @param {!Array<{text: string, hl: boolean}>} fragments 片段数组。
-   * @param {number} visibleChars 可见字符数。
-   * @return {string} HTML 字符串。
-   */
-  function renderFragments(fragments, visibleChars) {
+  function render(frags, count) {
     let html = '';
-    let remaining = visibleChars;
-    for (let i = 0; i < fragments.length && remaining > 0; i++) {
-      const frag = fragments[i];
-      const slice = frag.text.slice(0, remaining);
-      if (frag.hl) {
-        html += '<span class="gradientText">' + slice + '</span>';
-      } else {
-        html += slice;
-      }
-      remaining -= slice.length;
+    let left = count;
+    for (let i = 0; i < frags.length && left > 0; i++) {
+      const slice = frags[i].text.slice(0, left);
+      html += frags[i].hl ? '<span class="gradientText">' + slice + '</span>' : slice;
+      left -= slice.length;
     }
     return html;
   }
 
-  /**
-   * 计算片段总字符数。
-   * @param {!Array<{text: string, hl: boolean}>} fragments 片段数组。
-   * @return {number} 总长度。
-   */
-  function totalLength(fragments) {
-    return fragments.reduce(function (sum, f) {
-      return sum + f.text.length;
-    }, 0);
+  function totalLen(frags) {
+    return frags.reduce((s, f) => s + f.text.length, 0);
   }
 
-  // 减少动态偏好：直接显示第一条
+  const phrases = getPhrases();
+  if (!phrases.length) return;
+
   if (PREFERS_REDUCED_MOTION) {
-    target.innerHTML = renderFragments(PHRASES[0], totalLength(PHRASES[0]));
+    target.innerHTML = render(phrases[0], totalLen(phrases[0]));
     return;
   }
 
-  let phraseIdx = 0;
-  let charIdx = 0;
+  let idx = 0;
+  let ch = 0;
   let deleting = false;
 
   function tick() {
-    const phrase = PHRASES[phraseIdx];
-    const total = totalLength(phrase);
-
+    const p = phrases[idx];
+    const total = totalLen(p);
     if (!deleting) {
-      charIdx++;
-      if (charIdx >= total) {
-        charIdx = total;
-        target.innerHTML = renderFragments(phrase, charIdx);
-        setTimeout(function () {
-          deleting = true;
-          tick();
-        }, 1600);
+      ch++;
+      if (ch >= total) {
+        ch = total;
+        target.innerHTML = render(p, ch);
+        setTimeout(function () { deleting = true; tick(); }, 1600);
         return;
       }
     } else {
-      charIdx--;
-      if (charIdx <= 0) {
-        charIdx = 0;
+      ch--;
+      if (ch <= 0) {
+        ch = 0;
         target.innerHTML = '';
         deleting = false;
-        phraseIdx = (phraseIdx + 1) % PHRASES.length;
+        idx = (idx + 1) % phrases.length;
         setTimeout(tick, 400);
         return;
       }
     }
-
-    target.innerHTML = renderFragments(phrase, charIdx);
+    target.innerHTML = render(p, ch);
     setTimeout(tick, deleting ? 35 : 85);
   }
-
   tick();
 })();
 
-/* ==================== 鼠标跟随光效 ==================== */
+/* ==================== 鼠标光效 ==================== */
 
 (function initMouseGlow() {
-  if (PREFERS_REDUCED_MOTION) {
-    return;
-  }
-  if (window.matchMedia('(hover: none)').matches) {
-    return;
-  }
+  if (PREFERS_REDUCED_MOTION) return;
+  if (window.matchMedia('(hover: none)').matches) return;
   const root = document.documentElement;
   let rafId = null;
-  let pendingX = null;
-  let pendingY = null;
+  let px = null;
+  let py = null;
 
   function apply() {
     rafId = null;
-    if (pendingX !== null && pendingY !== null) {
-      root.style.setProperty('--mx', pendingX + 'px');
-      root.style.setProperty('--my', pendingY + 'px');
-      pendingX = pendingY = null;
+    if (px !== null && py !== null) {
+      root.style.setProperty('--mx', px + 'px');
+      root.style.setProperty('--my', py + 'px');
+      px = py = null;
+    }
+  }
+  document.addEventListener('mousemove', function (e) {
+    px = e.clientX;
+    py = e.clientY;
+    if (rafId === null) rafId = requestAnimationFrame(apply);
+  }, { passive: true });
+})();
+
+/* ==================== 背景粒子 ==================== */
+
+(function initBgParticles() {
+  const canvas = document.getElementById('bgParticles');
+  if (!canvas || PREFERS_REDUCED_MOTION) return;
+  const ctx = canvas.getContext('2d');
+  let w = 0, h = 0;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let particles = [];
+  let rafId = null;
+  let running = false;
+
+  function resize() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    build();
+  }
+
+  function build() {
+    const count = Math.min(90, Math.floor((w * h) / 22000));
+    particles = [];
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 0.6 + Math.random() * 1.6,
+        vx: (Math.random() - 0.5) * 0.28,
+        vy: (Math.random() - 0.5) * 0.28,
+        a: 0.25 + Math.random() * 0.5,
+      });
     }
   }
 
-  document.addEventListener(
-    'mousemove',
-    function (e) {
-      pendingX = e.clientX;
-      pendingY = e.clientY;
-      if (rafId === null) {
-        rafId = requestAnimationFrame(apply);
+  function step() {
+    rafId = null;
+    ctx.clearRect(0, 0, w, h);
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--purple_text_color').trim() || '#747bff';
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = accent;
+      ctx.globalAlpha = p.a;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < 14000) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = accent;
+          ctx.globalAlpha = (1 - d2 / 14000) * 0.14;
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
       }
-    },
-    { passive: true }
-  );
+    }
+    ctx.globalAlpha = 1;
+    if (running) rafId = requestAnimationFrame(step);
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    if (!rafId) rafId = requestAnimationFrame(step);
+  }
+
+  function stop() {
+    running = false;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    ctx.clearRect(0, 0, w, h);
+  }
+
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stop();
+    else if (document.documentElement.dataset.bg === 'particles') start();
+  });
+
+  window.KD_BG_PARTICLES = { start, stop };
 })();
+
+/* ==================== 背景模式切换 ==================== */
+
+function applyBgMode(mode) {
+  const modes = (CFG.background && CFG.background.modes) || ['glow', 'particles', 'none'];
+  if (modes.indexOf(mode) === -1) mode = 'glow';
+  document.documentElement.dataset.bg = mode;
+  localStorage.setItem('KD_bgMode', mode);
+  const p = window.KD_BG_PARTICLES;
+  if (p) {
+    if (mode === 'particles') p.start();
+    else p.stop();
+  }
+}
 
 /* ==================== 命令面板 ==================== */
 
@@ -347,116 +683,83 @@ function loadHi() {
   const input = document.getElementById('cmdInput');
   const list = document.getElementById('cmdList');
   const hint = document.getElementById('cmdHint');
-  if (!palette || !input || !list) {
-    return;
-  }
+  if (!palette || !input || !list) return;
 
-  /** @type {!Array<!Object>} */
   const COMMANDS = [
     {
-      id: 'theme',
-      icon: '🌓',
-      title: '切换深色 / 浅色主题',
-      hint: 'Theme',
-      keywords: 'theme dark light',
-      action: function () {
+      icon: '🌓', title: '切换深色 / 浅色主题', hint: 'Theme',
+      keywords: 'theme dark light', action: function () {
         document.getElementById('myonoffswitch').click();
       },
     },
     {
-      id: 'music',
-      icon: '🎵',
-      title: '播放 / 暂停音乐',
-      hint: 'Music',
-      keywords: 'music play pause',
-      action: function () {
+      icon: '🌗', title: '主题跟随系统', hint: 'Auto',
+      keywords: 'theme auto system', action: function () {
+        localStorage.setItem('KD_themeMode', 'auto');
+        applyResolvedTheme();
+      },
+    },
+    {
+      icon: '🎨', title: '切换背景模式', hint: 'BG',
+      keywords: 'background bg particles glow none', action: function () {
+        const modes = (CFG.background && CFG.background.modes) || ['glow', 'particles', 'none'];
+        const cur = document.documentElement.dataset.bg || 'glow';
+        const next = modes[(modes.indexOf(cur) + 1) % modes.length];
+        applyBgMode(next);
+      },
+    },
+    {
+      icon: '🎵', title: '播放 / 暂停音乐', hint: 'Music',
+      keywords: 'music play pause', action: function () {
         document.getElementById('musicCover').click();
       },
     },
     {
-      id: 'hitokoto',
-      icon: '💬',
-      title: '刷新一言',
-      hint: 'Hitokoto',
-      keywords: 'hitokoto quote refresh',
-      action: loadHi,
+      icon: '💬', title: '刷新一言', hint: 'Hitokoto',
+      keywords: 'hitokoto quote refresh', action: loadHi,
     },
     {
-      id: 'github',
-      icon: '🐙',
-      title: '打开 GitHub 主页',
-      hint: 'GitHub',
-      keywords: 'github source code',
-      action: function () {
-        window.open('https://github.com/LLKYTA', '_blank', 'noopener');
+      icon: '🐙', title: '打开 GitHub 主页', hint: 'GitHub',
+      keywords: 'github source code', action: function () {
+        window.open((CFG.socials && CFG.socials.github.url) || '#', '_blank', 'noopener');
       },
     },
     {
-      id: 'mail',
-      icon: '📧',
-      title: '发送邮件',
-      hint: 'Mail',
-      keywords: 'mail email contact',
-      action: function () {
-        location.href = 'mailto:010107lys@163.com';
+      icon: '📧', title: '发送邮件', hint: 'Mail',
+      keywords: 'mail email contact', action: function () {
+        location.href = 'mailto:' + ((CFG.socials && CFG.socials.email) || '');
       },
     },
     {
-      id: 'copy-mail',
-      icon: '📋',
-      title: '复制邮箱到剪贴板',
-      hint: 'Copy',
-      keywords: 'copy email clipboard',
-      action: function () {
-        const text = '010107lys@163.com';
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text);
-        }
+      icon: '📋', title: '复制邮箱到剪贴板', hint: 'Copy',
+      keywords: 'copy email clipboard', action: function () {
+        const t = (CFG.socials && CFG.socials.email) || '';
+        if (navigator.clipboard && t) navigator.clipboard.writeText(t);
       },
     },
     {
-      id: 'qq',
-      icon: '💌',
-      title: '查看 QQ 二维码',
-      hint: 'QQ',
-      keywords: 'qq qrcode contact',
-      action: function () {
-        pop('./static/img/qq.jpg');
+      icon: '💌', title: '查看 QQ 二维码', hint: 'QQ',
+      keywords: 'qq qrcode contact', action: function () {
+        pop((CFG.socials && CFG.socials.qq && CFG.socials.qq.image) || '');
       },
     },
     {
-      id: 'skills',
-      icon: '⚡',
-      title: '跳转到技能图',
-      hint: 'Skills',
-      keywords: 'skills stack tech',
-      action: function () {
-        const el = document.querySelector('.skill');
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+      icon: '⚡', title: '跳转到技能图', hint: 'Skills',
+      keywords: 'skills stack tech', action: function () {
+        const el = document.querySelector('.skill-visual');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       },
     },
     {
-      id: 'github-contrib',
-      icon: '📊',
-      title: '跳转到贡献热力图',
-      hint: 'Contrib',
-      keywords: 'github contrib heatmap',
-      action: function () {
+      icon: '📊', title: '跳转到贡献热力图', hint: 'Contrib',
+      keywords: 'github contrib heatmap', action: function () {
         const el = document.querySelector('.github-contrib-card');
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       },
     },
     {
-      id: 'top',
-      icon: '⬆️',
-      title: '回到顶部',
-      hint: 'Scroll',
-      keywords: 'top scroll up',
-      action: function () {
+      icon: '⬆️', title: '回到顶部', hint: 'Scroll',
+      keywords: 'top scroll up', action: function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
     },
@@ -465,37 +768,21 @@ function loadHi() {
   let filtered = COMMANDS.slice();
   let activeIndex = 0;
 
-  /**
-   * 过滤命令列表。
-   * @param {string} keyword 搜索关键字。
-   * @return {void}
-   */
-  function filterCommands(keyword) {
-    const q = (keyword || '').trim().toLowerCase();
-    if (!q) {
-      filtered = COMMANDS.slice();
-    } else {
-      filtered = COMMANDS.filter(function (c) {
-        return (
-          c.title.toLowerCase().indexOf(q) !== -1 ||
-          (c.hint || '').toLowerCase().indexOf(q) !== -1 ||
-          (c.keywords || '').toLowerCase().indexOf(q) !== -1
-        );
-      });
-    }
+  function filterCommands(kw) {
+    const q = (kw || '').trim().toLowerCase();
+    filtered = !q ? COMMANDS.slice() : COMMANDS.filter(function (c) {
+      return c.title.toLowerCase().indexOf(q) !== -1
+        || (c.hint || '').toLowerCase().indexOf(q) !== -1
+        || (c.keywords || '').toLowerCase().indexOf(q) !== -1;
+    });
     activeIndex = 0;
     renderList();
   }
 
-  /**
-   * 渲染命令列表。
-   * @return {void}
-   */
   function renderList() {
     list.innerHTML = '';
-    if (filtered.length === 0) {
-      list.innerHTML =
-        '<div class="cmd-empty">没有匹配的命令</div>';
+    if (!filtered.length) {
+      list.innerHTML = '<div class="cmd-empty">没有匹配的命令</div>';
       return;
     }
     filtered.forEach(function (cmd, idx) {
@@ -503,117 +790,60 @@ function loadHi() {
       item.className = 'cmd-item' + (idx === activeIndex ? ' active' : '');
       item.dataset.index = idx;
       item.innerHTML =
-        '<div class="cmd-item-icon">' +
-        cmd.icon +
-        '</div>' +
-        '<div class="cmd-item-title">' +
-        cmd.title +
-        '</div>' +
-        '<div class="cmd-item-hint">' +
-        (cmd.hint || '') +
-        '</div>';
-      item.addEventListener('click', function () {
-        runCommand(idx);
-      });
-      item.addEventListener('mouseenter', function () {
-        activeIndex = idx;
-        updateActive();
-      });
+        '<div class="cmd-item-icon">' + cmd.icon + '</div>' +
+        '<div class="cmd-item-title">' + cmd.title + '</div>' +
+        '<div class="cmd-item-hint">' + (cmd.hint || '') + '</div>';
+      item.addEventListener('click', function () { runCommand(idx); });
+      item.addEventListener('mouseenter', function () { activeIndex = idx; updateActive(); });
       list.appendChild(item);
     });
   }
 
-  /**
-   * 更新当前高亮项。
-   * @return {void}
-   */
   function updateActive() {
     const items = list.querySelectorAll('.cmd-item');
-    items.forEach(function (el, idx) {
-      el.classList.toggle('active', idx === activeIndex);
-    });
-    const activeEl = items[activeIndex];
-    if (activeEl) {
-      activeEl.scrollIntoView({ block: 'nearest' });
-    }
+    items.forEach(function (el, i) { el.classList.toggle('active', i === activeIndex); });
+    if (items[activeIndex]) items[activeIndex].scrollIntoView({ block: 'nearest' });
   }
 
-  /**
-   * 执行命令。
-   * @param {number} idx 命令索引。
-   * @return {void}
-   */
   function runCommand(idx) {
     const cmd = filtered[idx];
-    if (!cmd) {
-      return;
-    }
+    if (!cmd) return;
     closePalette();
     setTimeout(function () {
-      try {
-        cmd.action();
-      } catch (err) {
-        console.error('命令执行失败:', err);
-      }
+      try { cmd.action(); } catch (e) { console.error('命令执行失败:', e); }
     }, 80);
   }
 
-  /**
-   * 打开命令面板。
-   * @return {void}
-   */
   function openPalette() {
     palette.classList.add('active');
     palette.setAttribute('aria-hidden', 'false');
     input.value = '';
     filterCommands('');
-    setTimeout(function () {
-      input.focus();
-    }, 60);
+    setTimeout(function () { input.focus(); }, 60);
   }
 
-  /**
-   * 关闭命令面板。
-   * @return {void}
-   */
   function closePalette() {
     palette.classList.remove('active');
     palette.setAttribute('aria-hidden', 'true');
   }
 
   document.addEventListener('keydown', function (e) {
-    // Ctrl/Cmd + K 打开
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
-      if (palette.classList.contains('active')) {
-        closePalette();
-      } else {
-        openPalette();
-      }
+      palette.classList.contains('active') ? closePalette() : openPalette();
       return;
     }
-
-    if (!palette.classList.contains('active')) {
-      return;
-    }
-
-    if (e.key === 'Escape') {
+    if (!palette.classList.contains('active')) return;
+    if (e.key === 'Escape') { e.preventDefault(); closePalette(); }
+    else if (e.key === 'ArrowDown') {
       e.preventDefault();
-      closePalette();
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (filtered.length === 0) {
-        return;
-      }
+      if (!filtered.length) return;
       activeIndex = (activeIndex + 1) % filtered.length;
       updateActive();
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      if (filtered.length === 0) {
-        return;
-      }
-      activeIndex =
-        (activeIndex - 1 + filtered.length) % filtered.length;
+      if (!filtered.length) return;
+      activeIndex = (activeIndex - 1 + filtered.length) % filtered.length;
       updateActive();
     } else if (e.key === 'Enter') {
       e.preventDefault();
@@ -621,100 +851,81 @@ function loadHi() {
     }
   });
 
-  input.addEventListener('input', function () {
-    filterCommands(input.value);
-  });
-
-  if (backdrop) {
-    backdrop.addEventListener('click', closePalette);
-  }
-
+  input.addEventListener('input', function () { filterCommands(input.value); });
+  if (backdrop) backdrop.addEventListener('click', closePalette);
   if (hint) {
     hint.addEventListener('click', openPalette);
     hint.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openPalette();
-      }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPalette(); }
     });
   }
-
   renderList();
 })();
 
-/* ==================== 主题切换 ==================== */
+/* ==================== 主题三态 ==================== */
 
-/**
- * 应用主题（不带动画）。
- * @param {string} theme 主题名。
- * @param {!HTMLElement} html html 元素。
- * @param {!HTMLElement} tanChiShe 贪吃蛇图片。
- * @param {function(string, string, number): void} setCookieFn Cookie 写入函数。
- * @return {void}
- */
-function applyTheme(theme, html, tanChiShe, setCookieFn) {
-  tanChiShe.src = './static/svg/snake-' + theme + '.svg';
-  html.dataset.theme = theme;
-  setCookieFn('themeState', theme, 365);
+function applyResolvedTheme() {
+  const mode = localStorage.getItem('KD_themeMode') || getCookie('themeState') || 'auto';
+  const html = document.documentElement;
+  const tanChiShe = document.getElementById('tanChiShe');
+  const checkbox = document.getElementById('myonoffswitch');
+
+  let resolved;
+  if (mode === 'auto') {
+    resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light';
+  } else {
+    resolved = mode === 'dark' ? 'Dark' : 'Light';
+  }
+
+  if (tanChiShe) tanChiShe.src = './static/svg/snake-' + resolved + '.svg';
+  html.dataset.theme = resolved;
+  if (checkbox) checkbox.checked = resolved === 'Light';
+  setCookie('themeState', resolved, 365);
 }
 
+function changeTheme(theme, animate) {
+  const apply = function () {
+    const mode = theme === 'Dark' ? 'dark' : 'light';
+    localStorage.setItem('KD_themeMode', mode);
+    applyResolvedTheme();
+  };
+  if (animate && document.startViewTransition) {
+    document.startViewTransition(apply);
+  } else {
+    apply();
+  }
+}
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+  if ((localStorage.getItem('KD_themeMode') || 'auto') === 'auto') {
+    applyResolvedTheme();
+  }
+});
+
+/* ==================== 页面初始化 ==================== */
+
 document.addEventListener('DOMContentLoaded', function () {
-  const html = document.querySelector('html');
-  let themeState = getCookie('themeState') || 'Light';
-  const tanChiShe = document.getElementById('tanChiShe');
+  renderProfileFromConfig();
+  renderTimelineFromConfig();
+  renderSkillsFromConfig();
+  renderSocialIconsFromConfig();
 
-  /**
-   * 切换主题。
-   * @param {string} theme 主题名。
-   * @param {boolean=} animate 是否使用 View Transitions。
-   * @return {void}
-   */
-  function changeTheme(theme, animate) {
-    const apply = function () {
-      applyTheme(theme, html, tanChiShe, setCookie);
-      themeState = theme;
-    };
-    if (animate && document.startViewTransition) {
-      document.startViewTransition(apply);
-    } else {
-      apply();
-    }
-  }
-
-  const checkbox = document.getElementById('myonoffswitch');
-  checkbox.addEventListener('change', function () {
-    let next;
-    if (themeState === 'Dark') {
-      next = 'Light';
-    } else if (themeState === 'Light') {
-      next = 'Dark';
-    } else {
-      next = 'Dark';
-    }
-    changeTheme(next, true);
-  });
-
-  if (themeState === 'Dark') {
-    checkbox.checked = false;
-  }
-  changeTheme(themeState, false);
-
-  const qqIcon = document.getElementById('qqIcon');
-  if (qqIcon) {
-    qqIcon.addEventListener('click', function () {
-      pop('./static/img/qq.jpg');
-    });
-  }
+  applyResolvedTheme();
+  applyBgMode(localStorage.getItem('KD_bgMode') || (CFG.background && CFG.background.default) || 'glow');
 
   const hitokotoBox = document.getElementById('hitokotoBox');
-  if (hitokotoBox) {
-    hitokotoBox.addEventListener('click', loadHi);
-  }
+  if (hitokotoBox) hitokotoBox.addEventListener('click', loadHi);
 
   const githubRetryBtn = document.getElementById('githubRetryBtn');
-  if (githubRetryBtn) {
-    githubRetryBtn.addEventListener('click', loadGitHubData);
-  }
+  if (githubRetryBtn) githubRetryBtn.addEventListener('click', loadGitHubData);
+
+  const audio = document.getElementById('musicAudio');
+  if (audio && CFG.music) audio.src = CFG.music.src;
+  const mt = document.getElementById('musicTitle');
+  if (mt && CFG.music) mt.textContent = CFG.music.title;
+
+  const footerName = document.getElementById('footerName');
+  if (footerName && CFG.site) footerName.textContent = CFG.site.name;
 
   loadHi();
   loadGitHubData();
@@ -727,74 +938,49 @@ window.addEventListener('load', function () {
   setTimeout(function () {
     if (pageLoading) {
       pageLoading.style.opacity = '0';
-      setTimeout(function () {
-        pageLoading.style.display = 'none';
-      }, 500);
+      setTimeout(function () { pageLoading.style.display = 'none'; }, 500);
     }
   }, 100);
 });
 
-/* ==================== GitHub 数据接入 ==================== */
+/* ==================== GitHub 数据 ==================== */
 
-const GITHUB_API =
-  'https://uapis.cn/api/v1/github/user?user=LLKYTA&activity=true&activity_scope=all&pinned=true&repos=true&repos_limit=6';
 const GITHUB_CACHE_KEY = 'github_data_cache';
 
 const LANG_COLORS = {
-  JavaScript: '#f1e05a',
-  TypeScript: '#3178c6',
-  Python: '#3572A5',
-  HTML: '#e34c26',
-  CSS: '#563d7c',
-  Java: '#b07219',
-  Go: '#00ADD8',
-  Rust: '#dea584',
-  C: '#555555',
-  'C++': '#f34b7d',
-  Shell: '#89e051',
-  Vue: '#41b883',
-  PHP: '#4F5D95',
-  Ruby: '#701516',
-  Kotlin: '#A97BFF',
-  Swift: '#F05138',
-  default: '#8b8b8b',
+  JavaScript: '#f1e05a', TypeScript: '#3178c6', Python: '#3572A5',
+  HTML: '#e34c26', CSS: '#563d7c', Java: '#b07219', Go: '#00ADD8',
+  Rust: '#dea584', C: '#555555', 'C++': '#f34b7d', Shell: '#89e051',
+  Vue: '#41b883', PHP: '#4F5D95', Ruby: '#701516', Kotlin: '#A97BFF',
+  Swift: '#F05138', default: '#8b8b8b',
 };
 
-/**
- * 加载 GitHub 数据。
- * @return {void}
- */
 function loadGitHubData() {
   const loadingEl = document.getElementById('github-loading');
   const errorEl = document.getElementById('github-error');
   const contentEl = document.getElementById('github-content');
+  if (!loadingEl) return;
+  const api = (CFG.github && CFG.github.api) || '';
 
-  const cachedData = sessionStorage.getItem(GITHUB_CACHE_KEY);
-  if (cachedData) {
+  const cached = sessionStorage.getItem(GITHUB_CACHE_KEY);
+  if (cached) {
     try {
-      const data = JSON.parse(cachedData);
+      const data = JSON.parse(cached);
       renderGitHubProfile(data);
       renderContributionGraph(data.activity);
       renderRepositories(data.pinned_repositories || data.repositories || []);
       loadingEl.style.display = 'none';
       contentEl.style.display = 'block';
       return;
-    } catch (e) {
-      sessionStorage.removeItem(GITHUB_CACHE_KEY);
-    }
+    } catch (e) { sessionStorage.removeItem(GITHUB_CACHE_KEY); }
   }
 
   loadingEl.style.display = 'flex';
   errorEl.style.display = 'none';
   contentEl.style.display = 'none';
 
-  fetch(GITHUB_API)
-    .then(function (res) {
-      if (!res.ok) {
-        throw new Error('HTTP ' + res.status);
-      }
-      return res.json();
-    })
+  fetch(api)
+    .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
     .then(function (data) {
       sessionStorage.setItem(GITHUB_CACHE_KEY, JSON.stringify(data));
       renderGitHubProfile(data);
@@ -810,26 +996,17 @@ function loadGitHubData() {
     });
 }
 
-/**
- * 渲染 GitHub 用户信息。
- * @param {!Object} data GitHub 用户数据。
- * @return {void}
- */
 function renderGitHubProfile(data) {
   document.getElementById('gh-avatar').src = data.avatar_url || '';
-  const linkEl = document.getElementById('gh-link');
-  linkEl.href = data.html_url || '#';
-  document.getElementById('gh-name').textContent =
-    data.name || data.login || '';
-  const bioEl = document.getElementById('gh-bio');
-  bioEl.textContent = data.bio || '这个人很懒，什么都没写~';
+  document.getElementById('gh-link').href = data.html_url || '#';
+  document.getElementById('gh-name').textContent = data.name || data.login || '';
+  document.getElementById('gh-bio').textContent = data.bio || '这个人很懒，什么都没写~';
   document.getElementById('gh-repos').textContent = data.public_repos || 0;
   document.getElementById('gh-followers').textContent = data.followers || 0;
   document.getElementById('gh-following').textContent = data.following || 0;
-
   const orgsEl = document.getElementById('gh-orgs');
   orgsEl.innerHTML = '';
-  if (data.organizations && data.organizations.length > 0) {
+  if (data.organizations && data.organizations.length) {
     data.organizations.forEach(function (org) {
       const tag = document.createElement('span');
       tag.className = 'github-org-tag';
@@ -839,173 +1016,94 @@ function renderGitHubProfile(data) {
   }
 }
 
-/**
- * 渲染贡献热力图。
- * @param {!Object} activity GitHub 活动数据。
- * @return {void}
- */
 function renderContributionGraph(activity) {
   const graphEl = document.getElementById('gh-contrib-graph');
   const totalEl = document.getElementById('gh-total-contrib');
-
   if (!activity || !activity.contribution_calendar) {
-    graphEl.innerHTML =
-      '<span style="font-size:13px;opacity:0.6;">暂无贡献数据</span>';
+    graphEl.innerHTML = '<span style="font-size:13px;opacity:0.6;">暂无贡献数据</span>';
     return;
   }
-
   const weeks = activity.contribution_calendar.weeks || [];
-  const total =
-    activity.total_contributions ||
-    activity.contribution_calendar.total_contributions ||
-    0;
-
+  const total = activity.total_contributions || activity.contribution_calendar.total_contributions || 0;
   totalEl.textContent = '共 ' + total + ' 次贡献';
   graphEl.innerHTML = '';
-  const fragment = document.createDocumentFragment();
+  const frag = document.createDocumentFragment();
 
-  function getLevel(count) {
-    if (count === 0) {
-      return 0;
-    }
-    if (count <= 2) {
-      return 1;
-    }
-    if (count <= 5) {
-      return 2;
-    }
-    if (count <= 9) {
-      return 3;
-    }
+  function level(c) {
+    if (c === 0) return 0;
+    if (c <= 2) return 1;
+    if (c <= 5) return 2;
+    if (c <= 9) return 3;
     return 4;
   }
 
   weeks.forEach(function (week) {
-    const weekEl = document.createElement('div');
-    weekEl.className = 'github-contrib-week';
-
+    const wEl = document.createElement('div');
+    wEl.className = 'github-contrib-week';
     const days = week.contribution_days || [];
-    const dayMap = {};
-    days.forEach(function (d) {
-      dayMap[d.weekday] = d;
-    });
-
+    const map = {};
+    days.forEach(function (d) { map[d.weekday] = d; });
     for (let i = 0; i < 7; i++) {
-      const dayEl = document.createElement('div');
-      dayEl.className = 'github-contrib-day';
-
-      if (dayMap[i]) {
-        const count = dayMap[i].contribution_count || 0;
-        const level = getLevel(count);
-        dayEl.classList.add('level-' + level);
-        dayEl.title = dayMap[i].date + ': ' + count + ' 次贡献';
+      const dEl = document.createElement('div');
+      dEl.className = 'github-contrib-day';
+      if (map[i]) {
+        const c = map[i].contribution_count || 0;
+        dEl.classList.add('level-' + level(c));
+        dEl.title = map[i].date + ': ' + c + ' 次贡献';
       } else {
-        dayEl.classList.add('level-0');
-        dayEl.style.opacity = '0.3';
+        dEl.classList.add('level-0');
+        dEl.style.opacity = '0.3';
       }
-
-      weekEl.appendChild(dayEl);
+      wEl.appendChild(dEl);
     }
-
-    fragment.appendChild(weekEl);
+    frag.appendChild(wEl);
   });
-
-  graphEl.appendChild(fragment);
+  graphEl.appendChild(frag);
 }
 
-/**
- * 渲染仓库卡片。
- * @param {!Array<!Object>} repos 仓库列表。
- * @return {void}
- */
 function renderRepositories(repos) {
-  const gridEl = document.getElementById('gh-repos-grid');
-  gridEl.innerHTML = '';
-
-  if (!repos || repos.length === 0) {
-    gridEl.innerHTML =
-      '<span style="font-size:13px;opacity:0.6;">暂无仓库数据</span>';
+  const grid = document.getElementById('gh-repos-grid');
+  grid.innerHTML = '';
+  if (!repos || !repos.length) {
+    grid.innerHTML = '<span style="font-size:13px;opacity:0.6;">暂无仓库数据</span>';
     return;
   }
-
   repos.forEach(function (repo) {
     const card = document.createElement('a');
     card.className = 'github-repo-card';
     card.href = repo.html_url || '#';
     card.target = '_blank';
-
-    const langColor = LANG_COLORS[repo.language] || LANG_COLORS['default'];
-    const repoName = escapeHtml(repo.name);
-    const repoDesc = escapeHtml(repo.description || '暂无描述');
+    card.rel = 'noopener';
+    const langColor = LANG_COLORS[repo.language] || LANG_COLORS.default;
     const langHtml = repo.language
-      ? '<span class="github-repo-lang">' +
-        '<span class="github-repo-lang-dot" style="background:' +
-        langColor +
-        '"></span>' +
-        escapeHtml(repo.language) +
-        '</span>'
+      ? '<span class="github-repo-lang"><span class="github-repo-lang-dot" style="background:' + langColor + '"></span>' + escapeHtml(repo.language) + '</span>'
       : '';
-
     card.innerHTML =
-      '<div class="github-repo-name">' +
-      repoName +
-      '</div>' +
-      '<div class="github-repo-desc">' +
-      repoDesc +
-      '</div>' +
-      '<div class="github-repo-meta">' +
-      langHtml +
-      '<span class="github-repo-stars">⭐ ' +
-      formatNumber(repo.stargazers || 0) +
-      '</span>' +
-      '<span>🍴 ' +
-      formatNumber(repo.forks || 0) +
-      '</span>' +
-      '</div>';
-
-    gridEl.appendChild(card);
+      '<div class="github-repo-name">' + escapeHtml(repo.name) + '</div>' +
+      '<div class="github-repo-desc">' + escapeHtml(repo.description || '暂无描述') + '</div>' +
+      '<div class="github-repo-meta">' + langHtml +
+      '<span class="github-repo-stars">⭐ ' + formatNumber(repo.stargazers || 0) + '</span>' +
+      '<span>🍴 ' + formatNumber(repo.forks || 0) + '</span></div>';
+    grid.appendChild(card);
   });
 }
 
-/**
- * 转义 HTML 特殊字符。
- * @param {string} str 原始字符串。
- * @return {string} 转义后的字符串。
- */
 function escapeHtml(str) {
-  if (!str) {
-    return '';
-  }
+  if (!str) return '';
   return str.replace(/[&<>"']/g, function (m) {
-    return {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;',
-    }[m];
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
   });
 }
 
-/**
- * 格式化数字。
- * @param {number} n 数字。
- * @return {string} 格式化后的字符串。
- */
 function formatNumber(n) {
-  if (n >= 1000) {
-    return (n / 1000).toFixed(1) + 'k';
-  }
-  return n.toString();
+  return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : n.toString();
 }
 
-/* ==================== 音乐播放器 ==================== */
+/* ==================== 音乐播放器（含频谱可视化） ==================== */
 
 (function () {
   const player = document.getElementById('musicPlayer');
-  if (!player) {
-    return;
-  }
+  if (!player) return;
 
   const audio = document.getElementById('musicAudio');
   const cover = document.getElementById('musicCover');
@@ -1014,32 +1112,105 @@ function formatNumber(n) {
   const curEl = document.getElementById('musicCurrent');
   const durEl = document.getElementById('musicDuration');
   const titleEl = document.getElementById('musicTitle');
+  const viz = document.getElementById('musicViz');
 
   const ACCENT = 'var(--purple_text_color)';
   const TRACK = 'var(--item_hover_color)';
-
   let unlocked = false;
 
-  function formatTime(sec) {
-    if (!isFinite(sec) || sec < 0) {
-      return '0:00';
+  let analyser = null;
+  let freqData = null;
+  let audioCtx = null;
+  let usePseudo = false;
+  let vizRaf = null;
+  let pseudoT = 0;
+
+  function setupAnalyser() {
+    if (audioCtx || PREFERS_REDUCED_MOTION) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AC();
+      const src = audioCtx.createMediaElementSource(audio);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 64;
+      src.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      freqData = new Uint8Array(analyser.frequencyBinCount);
+
+      setTimeout(function () {
+        try {
+          analyser.getByteFrequencyData(freqData);
+          const sum = freqData.reduce(function (a, b) { return a + b; }, 0);
+          if (sum === 0) usePseudo = true;
+        } catch (e) { usePseudo = true; }
+      }, 500);
+    } catch (e) { usePseudo = true; }
+  }
+
+  function drawViz() {
+    if (!viz) return;
+    vizRaf = null;
+    const ctx = viz.getContext('2d');
+    const W = viz.width;
+    const H = viz.height;
+    const bars = 24;
+    const gap = 2;
+    const bw = (W - gap * (bars - 1)) / bars;
+
+    const accent = getComputedStyle(document.documentElement)
+      .getPropertyValue('--purple_text_color').trim() || '#747bff';
+
+    ctx.clearRect(0, 0, W, H);
+
+    if (analyser && !usePseudo) {
+      analyser.getByteFrequencyData(freqData);
+      for (let i = 0; i < bars; i++) {
+        const v = freqData[Math.floor(i * freqData.length / bars)] / 255;
+        const bh = Math.max(2, v * H);
+        ctx.fillStyle = accent;
+        ctx.globalAlpha = 0.4 + v * 0.6;
+        ctx.fillRect(i * (bw + gap), H - bh, bw, bh);
+      }
+    } else {
+      pseudoT += 0.08;
+      for (let i = 0; i < bars; i++) {
+        const v = (Math.sin(pseudoT + i * 0.55) + 1) / 2 * 0.6
+          + Math.sin(pseudoT * 1.7 + i * 0.3) * 0.2 + 0.2;
+        const bh = Math.max(2, Math.abs(v) * H * 0.9);
+        ctx.fillStyle = accent;
+        ctx.globalAlpha = 0.4 + Math.abs(v) * 0.5;
+        ctx.fillRect(i * (bw + gap), H - bh, bw, bh);
+      }
     }
+    ctx.globalAlpha = 1;
+
+    if (!audio.paused) vizRaf = requestAnimationFrame(drawViz);
+  }
+
+  function startViz() {
+    if (PREFERS_REDUCED_MOTION) return;
+    setupAnalyser();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    if (!vizRaf) vizRaf = requestAnimationFrame(drawViz);
+  }
+
+  function stopViz() {
+    if (vizRaf) { cancelAnimationFrame(vizRaf); vizRaf = null; }
+    if (viz) {
+      const ctx = viz.getContext('2d');
+      ctx.clearRect(0, 0, viz.width, viz.height);
+    }
+  }
+
+  function formatTime(sec) {
+    if (!isFinite(sec) || sec < 0) return '0:00';
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);
     return m + ':' + (s < 10 ? '0' : '') + s;
   }
 
   function paintSeek(pct) {
-    seek.style.background =
-      'linear-gradient(to right, ' +
-      ACCENT +
-      ' ' +
-      pct +
-      '%, ' +
-      TRACK +
-      ' ' +
-      pct +
-      '%)';
+    seek.style.background = 'linear-gradient(to right, ' + ACCENT + ' ' + pct + '%, ' + TRACK + ' ' + pct + '%)';
   }
 
   function autoPlayMuted() {
@@ -1049,59 +1220,36 @@ function formatNumber(n) {
       p.then(function () {
         player.classList.add('playing');
         armUnlockGesture();
-      }).catch(function () {
-        armUnlockGesture(true);
-      });
+      }).catch(function () { armUnlockGesture(true); });
     }
   }
 
   function armUnlockGesture(needResume) {
     const events = ['pointerdown', 'touchstart', 'keydown'];
-
     const unlock = function () {
-      if (unlocked) {
-        return;
-      }
+      if (unlocked) return;
       unlocked = true;
-
-      events.forEach(function (e) {
-        document.removeEventListener(e, unlock);
-      });
-
+      events.forEach(function (e) { document.removeEventListener(e, unlock); });
       audio.muted = false;
-
       if (needResume || audio.paused) {
-        audio.play().catch(function (err) {
-          console.warn('[Music] 手势补播失败:', err);
-        });
+        audio.play().catch(function (err) { console.warn('[Music] 手势补播失败:', err); });
       }
-
       flashTitle('🔊 已开启声音');
     };
-
-    events.forEach(function (e) {
-      document.addEventListener(e, unlock, { passive: true });
-    });
+    events.forEach(function (e) { document.addEventListener(e, unlock, { passive: true }); });
   }
 
   let titleTimer = null;
-
   function flashTitle(text) {
     const original = titleEl.dataset.original || titleEl.textContent;
     titleEl.dataset.original = original;
     titleEl.textContent = text;
     clearTimeout(titleTimer);
-    titleTimer = setTimeout(function () {
-      titleEl.textContent = titleEl.dataset.original;
-    }, 2000);
+    titleTimer = setTimeout(function () { titleEl.textContent = titleEl.dataset.original; }, 2000);
   }
 
   cover.addEventListener('click', function () {
-    if (!unlocked) {
-      unlocked = true;
-      audio.muted = false;
-    }
-
+    if (!unlocked) { unlocked = true; audio.muted = false; }
     if (audio.paused) {
       audio.play().catch(function (err) {
         console.warn('[Music] 播放失败:', err);
@@ -1114,10 +1262,24 @@ function formatNumber(n) {
 
   audio.addEventListener('play', function () {
     player.classList.add('playing');
+    startViz();
   });
-
   audio.addEventListener('pause', function () {
     player.classList.remove('playing');
+    stopViz();
+  });
+  audio.addEventListener('loadedmetadata', function () {
+    durEl.textContent = formatTime(audio.duration);
+  });
+  audio.addEventListener('timeupdate', function () {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    seek.value = pct;
+    paintSeek(pct);
+    curEl.textContent = formatTime(audio.currentTime);
+  });
+  audio.addEventListener('error', function () {
+    titleEl.textContent = '音源加载失败';
   });
 
   collapse.addEventListener('click', function (e) {
@@ -1125,115 +1287,64 @@ function formatNumber(n) {
     player.classList.toggle('expanded');
   });
 
-  audio.addEventListener('loadedmetadata', function () {
-    durEl.textContent = formatTime(audio.duration);
-  });
-
-  audio.addEventListener('timeupdate', function () {
-    if (!audio.duration) {
-      return;
-    }
-    const pct = (audio.currentTime / audio.duration) * 100;
-    seek.value = pct;
-    paintSeek(pct);
-    curEl.textContent = formatTime(audio.currentTime);
-  });
-
   seek.addEventListener('input', function () {
     paintSeek(seek.value);
-    if (audio.duration) {
-      curEl.textContent = formatTime((seek.value / 100) * audio.duration);
-    }
+    if (audio.duration) curEl.textContent = formatTime((seek.value / 100) * audio.duration);
   });
-
   seek.addEventListener('change', function () {
-    if (!audio.duration) {
-      return;
-    }
+    if (!audio.duration) return;
     audio.currentTime = (seek.value / 100) * audio.duration;
   });
 
-  audio.addEventListener('error', function () {
-    titleEl.textContent = '音源加载失败';
-    console.warn('[Music] 音频加载失败。网易云外链对部分歌曲会返回 404。');
-  });
-
   paintSeek(0);
-
-  if (window.innerWidth > 600) {
-    player.classList.add('expanded');
-  } else {
-    player.classList.remove('expanded');
-  }
-
+  if (window.innerWidth > 600) player.classList.add('expanded');
   autoPlayMuted();
 })();
 
 /* ==================== 标题个性化 ==================== */
 
 (function () {
-  const BASE_TITLE = 'KD_klin · 个人主页';
-  const AWAY_TITLE = '👀 别走嘛，回来看看～';
-  const BLUR_TITLE = '💤 暂时离开了...';
+  const BASE = 'KD_klin · 个人主页';
+  const AWAY = '👀 别走嘛，回来看看～';
+  const BLUR = '💤 暂时离开了...';
+  let timer = null;
+  let idx = 0;
+  let visible = !document.hidden;
+  let focus = document.hasFocus();
 
-  let typeTimer = null;
-  let typeIndex = 0;
-  let isVisible = !document.hidden;
-  let hasFocus = document.hasFocus();
-
-  function typeTitle(text, speed, callback) {
-    clearInterval(typeTimer);
-    typeIndex = 0;
+  function type(text, speed, cb) {
+    clearInterval(timer);
+    idx = 0;
     document.title = '';
-
-    typeTimer = setInterval(function () {
-      if (typeIndex >= text.length) {
-        clearInterval(typeTimer);
-        if (typeof callback === 'function') {
-          callback();
-        }
+    timer = setInterval(function () {
+      if (idx >= text.length) {
+        clearInterval(timer);
+        if (typeof cb === 'function') cb();
         return;
       }
-      document.title += text.charAt(typeIndex);
-      typeIndex++;
+      document.title += text.charAt(idx++);
     }, speed || 100);
   }
 
-  function restoreTitle() {
-    if (document.title === BASE_TITLE) {
-      return;
-    }
-    typeTitle(BASE_TITLE, 100);
+  function restore() {
+    if (document.title === BASE) return;
+    type(BASE, 100);
   }
 
   document.addEventListener('visibilitychange', function () {
-    isVisible = !document.hidden;
-    if (isVisible && hasFocus) {
-      restoreTitle();
-    } else if (!isVisible) {
-      clearInterval(typeTimer);
-      document.title = AWAY_TITLE;
-    }
+    visible = !document.hidden;
+    if (visible && focus) restore();
+    else if (!visible) { clearInterval(timer); document.title = AWAY; }
   });
-
   window.addEventListener('blur', function () {
-    hasFocus = false;
-    if (isVisible) {
-      clearInterval(typeTimer);
-      document.title = BLUR_TITLE;
-    }
+    focus = false;
+    if (visible) { clearInterval(timer); document.title = BLUR; }
   });
-
   window.addEventListener('focus', function () {
-    hasFocus = true;
-    if (isVisible) {
-      restoreTitle();
-    }
+    focus = true;
+    if (visible) restore();
   });
-
   window.addEventListener('load', function () {
-    setTimeout(function () {
-      typeTitle(BASE_TITLE, 100);
-    }, 300);
+    setTimeout(function () { type(BASE, 100); }, 300);
   });
 })();

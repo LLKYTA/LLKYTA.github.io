@@ -1,33 +1,41 @@
-/* static/css/music-player.css */
+/* ============================================================
+   音乐播放器 —— 固定右下角
+   ============================================================ */
+
 .music-player {
   position: fixed;
   right: 20px;
   bottom: 20px;
   z-index: 9998;
+
   display: flex;
   align-items: center;
-  height: 56px;
-  width: 56px;
+  height: 68px;
+  width: 68px;
   overflow: hidden;
-  border-radius: 28px;
+
+  border-radius: 34px;
   background: var(--item_bg_color);
   backdrop-filter: blur(var(--card_filter));
   -webkit-backdrop-filter: blur(var(--card_filter));
   box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+
   color: var(--main_text_color);
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .music-player.expanded {
-  width: 280px;
+  width: 300px;
 }
 
+/* ---------- 圆盘封面（播放/暂停按钮） ---------- */
 .music-cover {
   position: relative;
-  flex: 0 0 56px;
-  width: 56px;
-  height: 56px;
+  flex: 0 0 68px;
+  width: 68px;
+  height: 68px;
   padding: 0;
   border: none;
   background: transparent;
@@ -39,16 +47,18 @@
 
 .music-disc {
   position: absolute;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: repeating-conic-gradient(rgba(255, 255, 255, 0.14) 0 8deg, transparent 8deg 16deg),
+  background:
+    repeating-conic-gradient(rgba(255, 255, 255, 0.14) 0 8deg,
+                             transparent 8deg 16deg),
     linear-gradient(135deg, var(--purple_text_color), #41d1ff);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
 .music-disc::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 50%;
   top: 50%;
@@ -69,6 +79,7 @@
   }
 }
 
+/* 播放/暂停图标 */
 .music-ctrl {
   position: relative;
   z-index: 1;
@@ -100,13 +111,19 @@
   display: block;
 }
 
+/* ---------- 展开面板 ---------- */
 .music-body {
   flex: 1 1 auto;
   min-width: 0;
+  width: 0;
+  overflow: hidden;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 7px;
+  gap: 4px;
+  padding: 8px 0;
+
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease 0.08s;
@@ -120,10 +137,12 @@
 .music-title {
   font-size: 12px;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
+  min-width: 0;
   color: var(--item_left_title_color);
 }
 
@@ -141,7 +160,22 @@
   font-variant-numeric: tabular-nums;
 }
 
-.music-progress input[type='range'] {
+/* ---------- 频谱可视化 canvas ---------- */
+.music-viz {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 16px;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.music-player.playing .music-viz {
+  opacity: 1;
+}
+
+/* ---------- 进度条 ---------- */
+.music-progress input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   flex: 1 1 auto;
@@ -154,7 +188,7 @@
   transition: none;
 }
 
-.music-progress input[type='range']::-webkit-slider-thumb {
+.music-progress input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 10px;
   height: 10px;
@@ -164,11 +198,11 @@
   transition: transform 0.15s ease;
 }
 
-.music-progress input[type='range']:hover::-webkit-slider-thumb {
+.music-progress input[type="range"]:hover::-webkit-slider-thumb {
   transform: scale(1.35);
 }
 
-.music-progress input[type='range']::-moz-range-thumb {
+.music-progress input[type="range"]::-moz-range-thumb {
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -176,6 +210,7 @@
   background: var(--purple_text_color);
 }
 
+/* ---------- 折叠按钮 ---------- */
 .music-collapse {
   flex: 0 0 32px;
   width: 32px;
@@ -209,17 +244,20 @@
   transform: rotate(180deg);
 }
 
+/* ---------- 响应式 ---------- */
 @media (max-width: 600px) {
   .music-player {
     right: 12px;
     bottom: 12px;
   }
+
   .music-player.expanded {
     width: calc(100vw - 24px);
     max-width: 300px;
   }
 }
 
+/* 减少动态偏好 */
 @media (prefers-reduced-motion: reduce) {
   .music-player.playing .music-disc {
     animation: none;

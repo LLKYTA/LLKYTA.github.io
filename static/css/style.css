@@ -1,4 +1,3 @@
-/* static/css/style.css */
 @font-face {
   font-family: 'b';
   src: url(../fonts/Ubuntu-Regular.ttf);
@@ -245,14 +244,14 @@ body {
   display: flex;
   padding: 20px;
   position: relative;
-  padding-bottom: 50px;
+  padding-bottom: 100px;
   flex-direction: column;
 }
 
 .welcome {
   font-size: 65px;
   font-weight: 800;
-  line-height: 1.15;   /* ← 新增这一行 */
+  line-height: 1.15;
   margin: 20px 0;
 }
 
@@ -516,24 +515,54 @@ body {
   display: none;
 }
 
+/* ============================================================
+   页脚：固定底部 + 响应式换行 + 安全区适配
+   ============================================================ */
+
 footer {
-  position: absolute;
-  padding: 10px;
-  text-align: center;
-  width: 100%;
+  position: fixed;
+  left: 0;
+  right: 0;
   bottom: 0;
+  padding: 12px 16px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  text-align: center;
   font-size: 13px;
   pointer-events: none;
+  z-index: 3;
 }
 
-footer span {
+footer > span {
   display: inline-block;
-  padding: 5px 14px;
-  border-radius: 8px;
+  max-width: 100%;
+  padding: 6px 14px;
+  border-radius: 10px;
   background: var(--item_bg_color);
   color: var(--footer_text_color);
   pointer-events: auto;
+  backdrop-filter: blur(var(--card_filter));
+  -webkit-backdrop-filter: blur(var(--card_filter));
+  line-height: 1.7;
+  word-break: break-word;
+  box-sizing: border-box;
+  transition: padding 0.2s ease, font-size 0.2s ease;
 }
+
+.footer-dot {
+  margin: 0 6px;
+  opacity: 0.5;
+}
+
+footer #siteRuntime b,
+footer #visitStats b {
+  color: var(--purple_text_color);
+  font-weight: 700;
+  margin: 0 1px;
+}
+
+/* ============================================================
+   基础响应式：内容宽度 / 项目卡片
+   ============================================================ */
 
 @media (min-width: 800px) {
   .index-logo {
@@ -587,10 +616,6 @@ footer span {
   .welcome {
     font-size: 10vw;
     margin: 2vw 0;
-    font-size: 65px;
-    font-weight: 800;
-    line-height: 1.15;   /* ← 新增这一行 */
-    margin: 20px 0;
   }
   .iconContainer {
     margin-top: 4vw;
@@ -614,6 +639,10 @@ footer span {
     display: none;
   }
 }
+
+/* ============================================================
+   弹窗 / 开关
+   ============================================================ */
 
 .tc {
   position: fixed;
@@ -741,6 +770,10 @@ footer span {
   right: 50%;
 }
 
+/* ============================================================
+   一言
+   ============================================================ */
+
 #hitokoto_text {
   display: block;
   text-align: center;
@@ -818,6 +851,10 @@ footer span {
   aspect-ratio: 1/1;
 }
 
+/* ============================================================
+   时间线细节
+   ============================================================ */
+
 #line li {
   padding: 12px 0 12px 15px;
 }
@@ -870,6 +907,10 @@ footer span {
   text-overflow: ellipsis;
 }
 
+/* ============================================================
+   状态点 / 标语
+   ============================================================ */
+
 .status-dot {
   display: inline-block;
   width: 7px;
@@ -902,27 +943,9 @@ footer span {
 }
 
 /* ============================================================
-   新增功能：footer 统计 / 打字机 / 命令面板 / 鼠标光效 / View Transitions
+   打字机光标
    ============================================================ */
 
-/* ---------- footer 内的分隔符与统计 ---------- */
-.footer-dot {
-  margin: 0 6px;
-  opacity: 0.5;
-}
-
-footer #siteRuntime b,
-footer #visitStats b {
-  color: var(--purple_text_color);
-  font-weight: 700;
-  margin: 0 1px;
-}
-
-footer {
-  z-index: 3;
-}
-
-/* ---------- 打字机问候语 ---------- */
 .welcome-cursor {
   display: inline-block;
   margin-left: 2px;
@@ -943,7 +966,10 @@ footer {
   }
 }
 
-/* ---------- 鼠标跟随光效 ---------- */
+/* ============================================================
+   鼠标跟随光效
+   ============================================================ */
+
 .mouse-glow {
   position: fixed;
   top: 0;
@@ -979,7 +1005,10 @@ footer {
   }
 }
 
-/* ---------- 命令面板触发提示 ---------- */
+/* ============================================================
+   命令面板
+   ============================================================ */
+
 .cmd-hint {
   position: fixed;
   left: 20px;
@@ -1026,7 +1055,6 @@ footer {
   }
 }
 
-/* ---------- 命令面板 ---------- */
 .cmd-palette {
   position: fixed;
   inset: 0;
@@ -1044,10 +1072,6 @@ footer {
   visibility: visible;
   opacity: 1;
   transition: opacity 0.2s ease, visibility 0s;
-  -webkit-transition: opacity 0.2s ease, visibility 0s;
-  -moz-transition: opacity 0.2s ease, visibility 0s;
-  -ms-transition: opacity 0.2s ease, visibility 0s;
-  -o-transition: opacity 0.2s ease, visibility 0s;
 }
 
 .cmd-backdrop {
@@ -1190,7 +1214,10 @@ footer {
   }
 }
 
-/* ---------- View Transitions ---------- */
+/* ============================================================
+   View Transitions
+   ============================================================ */
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 0.4s;
@@ -1214,5 +1241,317 @@ footer {
 @keyframes vt-fade-in {
   from {
     opacity: 0;
+  }
+}
+
+/* ============================================================
+   背景粒子
+   ============================================================ */
+
+.bg-particles {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  will-change: opacity;
+}
+
+html[data-bg='particles'] .bg-particles {
+  opacity: 0.55;
+}
+
+html[data-bg='particles'] .mouse-glow {
+  display: none;
+}
+
+html[data-bg='none'] .mouse-glow {
+  display: none;
+}
+
+/* ============================================================
+   音乐可视化 canvas
+   ============================================================ */
+
+.music-viz {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 24px;
+  margin: 2px 0 4px;
+  opacity: 0.85;
+}
+
+.music-player.playing .music-viz {
+  opacity: 1;
+}
+
+/* ============================================================
+   无障碍：焦点轮廓
+   ============================================================ */
+
+.iconItem:focus-visible,
+.switch:focus-visible,
+.cmd-hint:focus-visible,
+.music-cover:focus-visible,
+.music-collapse:focus-visible,
+.github-retry-btn:focus-visible {
+  outline: 2px solid var(--purple_text_color);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   减少动效：全面降级
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .gradientText,
+  .status-dot,
+  .music-player.playing .music-disc,
+  #KD-loading-center,
+  .tanChiShe,
+  .bg-particles {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================================
+   技能可视化：Canvas 雷达图 + SVG 圆环 + Simple Icons 图标
+   ============================================================ */
+
+.skill-visual {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+  padding: 10px 0;
+  width: 100%;
+}
+
+.skill-radar-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 13px;
+  background: var(--item_bg_color);
+  backdrop-filter: blur(var(--card_filter));
+  -webkit-backdrop-filter: blur(var(--card_filter));
+  padding: 14px;
+  contain: layout style;
+}
+
+.skill-radar-wrap canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.radar-label {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--item_left_text_color);
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.skill-rings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 12px;
+}
+
+.skill-ring-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 8px 14px;
+  border-radius: 12px;
+  background: var(--item_bg_color);
+  backdrop-filter: blur(var(--card_filter));
+  -webkit-backdrop-filter: blur(var(--card_filter));
+  transition: transform 0.25s ease, background 0.2s ease;
+  will-change: transform;
+  contain: layout style;
+}
+
+.skill-ring-card:hover {
+  transform: translateY(-3px);
+  background: var(--item_hover_color);
+}
+
+.skill-ring-svg {
+  width: 72px;
+  height: 72px;
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+
+.skill-ring-track {
+  fill: none;
+  stroke: var(--item_hover_color);
+  stroke-width: 5;
+}
+
+.skill-ring-fill {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px currentColor);
+  transition: stroke-dashoffset 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skill-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-top: -48px;
+  margin-bottom: 22px;
+  pointer-events: none;
+}
+
+.skill-icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.skill-ring-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--item_left_title_color);
+  text-align: center;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.skill-ring-pct {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--item_left_text_color);
+  opacity: 0.65;
+}
+
+@media (max-width: 900px) {
+  .skill-visual {
+    grid-template-columns: 1fr;
+  }
+  .skill-radar-wrap {
+    max-width: 340px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .skill-rings {
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    gap: 10px;
+  }
+  .skill-ring-svg {
+    width: 62px;
+    height: 62px;
+  }
+  .skill-icon-wrap {
+    width: 22px;
+    height: 22px;
+    margin-top: -42px;
+    margin-bottom: 20px;
+  }
+}
+
+/* ============================================================
+   页脚响应式：平板 / 手机 / 超小屏
+   ============================================================ */
+
+@media (max-width: 800px) {
+  footer {
+    padding: 10px 14px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    font-size: 12px;
+  }
+
+  footer > span {
+    padding: 5px 12px;
+    line-height: 1.8;
+  }
+
+  .KD-right {
+    padding-bottom: 90px;
+  }
+}
+
+@media (max-width: 600px) {
+  footer {
+    padding: 8px 10px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    font-size: 12px;
+  }
+
+  footer > span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    line-height: 1.6;
+    max-width: calc(100% - 80px);
+    margin-right: 72px;
+  }
+
+  footer .footer-dot {
+    display: none;
+  }
+
+  .KD-right {
+    padding-bottom: 120px;
+  }
+}
+
+@media (max-width: 420px) {
+  footer {
+    font-size: 11px;
+    padding: 6px 8px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+
+  footer > span {
+    padding: 6px 10px;
+    border-radius: 10px;
+    gap: 1px;
+    max-width: calc(100% - 60px);
+    margin-right: 60px;
+  }
+
+  .KD-right {
+    padding-bottom: 110px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  footer {
+    padding: 4px 12px;
+    font-size: 11px;
+  }
+
+  footer > span {
+    padding: 4px 10px;
+    line-height: 1.4;
   }
 }
