@@ -296,6 +296,10 @@ body {
   font-family: 'title';
   animation: backgroundSizeAnimation 10s ease-in-out infinite;
   background-image: var(--gradient);
+  /* 新增：锁定行高 + 用 inline-block 让基线对齐 */
+  display: inline-block;
+  line-height: 1.15;         /* 与 .welcome 保持一致 */
+  vertical-align: -0.05em;   /* 微调基线下沉，避免上浮 */
 }
 
 @keyframes backgroundSizeAnimation {
@@ -626,8 +630,13 @@ footer #visitStats b {
     font-size: 4vw;
   }
   .welcome {
-    font-size: 10vw;
-    margin: 2vw 0;
+    font-size: 65px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 20px 0;
+    /* 预留两行高度，防止打字机清空/换行时下方内容抖动 */
+    height: 2.3em;
+    overflow: hidden;
   }
   .iconContainer {
     margin-top: 4vw;
@@ -963,6 +972,7 @@ footer #visitStats b {
   margin-left: 2px;
   color: var(--purple_text_color);
   font-weight: 400;
+  vertical-align: -0.06em;
   animation: welcome-cursor-blink 1s steps(1) infinite;
 }
 
@@ -1893,5 +1903,223 @@ html[data-bg='none'] .mouse-glow {
   .weather-icon-glow,
   .weather-particles::before {
     animation: none !important;
+  }
+}
+/* ============================================================
+   侧边栏美化 · 8 项改动（克制版）
+   ============================================================ */
+
+/* ---------- 1. Logo：细描边 + 微弱投影 ---------- */
+.logo {
+  position: relative;
+  isolation: isolate;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 6px 20px -10px rgba(0, 0, 0, 0.5);
+}
+
+.logo::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  z-index: -1;
+  pointer-events: none;
+  transition: border-color 0.35s ease;
+}
+
+.logo:hover {
+  transform: scale(1.025);
+}
+
+.logo:hover::before {
+  border-color: rgba(116, 123, 255, 0.4);
+}
+
+/* 去掉之前的旋转光环、呼吸动画、conic-gradient */
+
+/* ---------- 2. 分类标题：中性灰为主，图标才是紫色 ---------- */
+.left-div-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.left-div-head .head-icon {
+  width: 12px;
+  height: 12px;
+  fill: var(--main_text_color);
+  opacity: 0.35;
+  flex-shrink: 0;
+  transition: opacity 0.3s ease, fill 0.3s ease;
+}
+
+.left-div-head .head-en {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: var(--main_text_color);
+  text-transform: uppercase;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.left-div-head .head-cn {
+  font-size: 10px;
+  color: var(--main_text_color);
+  opacity: 0.3;
+  font-weight: 400;
+}
+
+/* 焦点时，仅图标微微泛紫，文字仍保持中性 */
+.left-div.in-focus .left-div-head .head-icon {
+  fill: var(--purple_text_color);
+  opacity: 0.85;
+}
+.left-div.in-focus .left-div-head .head-en {
+  opacity: 0.65;
+}
+
+/* ---------- 3. 卡片 hover：边框微亮，不上浮不发光 ---------- */
+.left-div {
+  position: relative;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.left-div::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 13px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0);
+  pointer-events: none;
+  transition: box-shadow 0.35s ease;
+  z-index: 0;
+}
+
+.left-div:hover::after {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* 天气卡片完全排除通用 hover */
+.left-weather::after {
+  display: none;
+}
+
+/* 去掉 in-focus 导致的整体透明度变化，改为纯视觉层级 */
+.KD-left .left-div {
+  opacity: 1;
+}
+
+/* ---------- 4. 标签 chip：无渐变描边，仅微弱边界 ---------- */
+.left-tag-body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.left-tag-item {
+  position: relative;
+  border: 1px solid transparent;
+  background: var(--left_tag_item);
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.left-tag-item:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* 去掉 translateY + scale + 紫色阴影 */
+
+/* ---------- 5. 时间线：首项只高亮版本号 ---------- */
+#line li {
+  border-left: 2px solid rgba(255, 255, 255, 0.08);
+  border-image: none;
+}
+
+#line li:first-child {
+  border-left-color: rgba(116, 123, 255, 0.5);
+}
+
+#line li:first-child .line-ver {
+  background: rgba(116, 123, 255, 0.18);
+  color: var(--purple_text_color);
+  opacity: 1;
+}
+
+/* 去掉日期、标题的紫色高亮 —— 它们保持原样即可 */
+
+/* 时间线进度条：保留，但颜色降调 */
+.timeline-progress {
+  position: absolute;
+  right: 6px;
+  top: 62px;
+  bottom: 22px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 1px;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.timeline-progress-fill {
+  width: 100%;
+  height: 0;
+  background: rgba(116, 123, 255, 0.45);
+  border-radius: 1px;
+  transition: height 0.15s ease;
+}
+
+/* ---------- 6. 滚动遮罩：不变 ---------- */
+.left-scroll-mask {
+  position: fixed;
+  height: 60px;
+  background: linear-gradient(to top, var(--back_filter_color, #000), transparent);
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: none;
+}
+
+@media (max-width: 800px) {
+  .left-scroll-mask {
+    display: none !important;
+  }
+}
+
+/* ---------- 7. 入场动画：保留，但幅度更小 ---------- */
+.KD-left > * {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: left-item-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.KD-left > *:nth-child(1) { animation-delay: 0.05s; }
+.KD-left > *:nth-child(2) { animation-delay: 0.11s; }
+.KD-left > *:nth-child(3) { animation-delay: 0.17s; }
+.KD-left > *:nth-child(4) { animation-delay: 0.23s; }
+.KD-left > *:nth-child(5) { animation-delay: 0.29s; }
+.KD-left > *:nth-child(6) { animation-delay: 0.35s; }
+
+@keyframes left-item-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- 8. 减少动效模式 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .KD-left > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .logo {
+    transition: none;
   }
 }

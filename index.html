@@ -56,7 +56,16 @@
     <!-- 左侧边栏 -->
     <div class="KD-left">
       <div class="logo" role="img" aria-label="KD_klin logo"></div>
+
+      <!-- 基本资料 -->
       <div class="left-div left-des">
+        <div class="left-div-head">
+          <svg class="head-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          </svg>
+          <span class="head-en">Profile</span>
+          <span class="head-cn">基本资料</span>
+        </div>
         <div class="left-des-item">
           <svg class="icon" viewBox="0 0 1024 1024" aria-hidden="true">
             <path d="M512 249.976471c-99.388235 0-180.705882 81.317647-180.705882 180.705882s81.317647 180.705882 180.705882 180.705882 180.705882-81.317647 180.705882-180.705882-81.317647-180.705882-180.705882-180.705882z m0 301.17647c-66.258824 0-120.470588-54.211765-120.470588-120.470588s54.211765-120.470588 120.470588-120.470588 120.470588 54.211765 120.470588 120.470588-54.211765 120.470588-120.470588 120.470588z"></path>
@@ -83,8 +92,27 @@
         </div>
       </div>
 
-      <div class="left-div left-tag" id="tagList"></div>
+      <!-- 标签 -->
+      <div class="left-div left-tag">
+        <div class="left-div-head">
+          <svg class="head-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z" />
+          </svg>
+          <span class="head-en">Tags</span>
+          <span class="head-cn">标签</span>
+        </div>
+        <div class="left-tag-body" id="tagList"></div>
+      </div>
+
+      <!-- 时间线 -->
       <div class="left-div left-time">
+        <div class="left-div-head">
+          <svg class="head-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z" />
+          </svg>
+          <span class="head-en">Timeline</span>
+          <span class="head-cn">更新日志</span>
+        </div>
         <ul id="line"></ul>
       </div>
     </div>

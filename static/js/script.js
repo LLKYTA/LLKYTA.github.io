@@ -1699,3 +1699,94 @@ function renderRepositories(repos) {
     setTimeout(function () { type(BASE, 100); }, 300);
   });
 })();
+/* ==================== 侧边栏美化：滚动遮罩 + 焦点高亮 + 时间线进度 ==================== */
+
+/**
+ * 滚动遮罩：当侧边栏还有内容可滚时，在底部显示渐变遮罩。
+ * @return {void}
+ */
+(function initLeftScrollMask() {
+  const left = document.querySelector('.KD-left');
+  if (!left) return;
+
+  const mask = document.createElement('div');
+  mask.className = 'left-scroll-mask';
+  document.body.appendChild(mask);
+
+  function update() {
+    const rect = left.getBoundingClientRect();
+    if (rect.width === 0 || window.innerWidth <= 800) {
+      mask.style.display = 'none';
+      return;
+    }
+    mask.style.display = 'block';
+    mask.style.left = rect.left + 'px';
+    mask.style.width = rect.width + 'px';
+    mask.style.top = (rect.bottom - 60) + 'px';
+
+    const max = left.scrollHeight - left.clientHeight;
+    const isBottom = max <= 0 || (left.scrollTop >= max - 10);
+    mask.style.opacity = isBottom ? '0' : '1';
+  }
+
+  left.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+  // 页面加载完再刷一次，避免字体/图片撑开后高度不准
+  window.addEventListener('load', update);
+})();
+
+/**
+ * 焦点高亮：侧边栏滚动时，将视口中部的卡片标记为 in-focus。
+ * @return {void}
+ */
+(function initLeftFocusHighlight() {
+  const left = document.querySelector('.KD-left');
+  if (!left || PREFERS_REDUCED_MOTION) return;
+
+  const cards = left.querySelectorAll('.left-div:not(.left-weather)');
+  if (!cards.length) return;
+
+  const observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        cards.forEach(function (el) { el.classList.remove('in-focus'); });
+        entry.target.classList.add('in-focus');
+      }
+    });
+  }, {
+    root: left,
+    rootMargin: '-45% 0px -45% 0px',
+    threshold: 0,
+  });
+
+  cards.forEach(function (el) { observer.observe(el); });
+})();
+
+/**
+ * 时间线滚动进度条：随 #line 的滚动位置填充。
+ * @return {void}
+ */
+(function initTimelineProgress() {
+  const line = document.getElementById('line');
+  const container = line ? line.closest('.left-time') : null;
+  if (!line || !container) return;
+
+  const bar = document.createElement('div');
+  bar.className = 'timeline-progress';
+  bar.innerHTML = '<div class="timeline-progress-fill"></div>';
+  container.appendChild(bar);
+
+  const fill = bar.querySelector('.timeline-progress-fill');
+
+  function update() {
+    const max = line.scrollHeight - line.clientHeight;
+    const pct = max > 0 ? (line.scrollTop / max) * 100 : 0;
+    fill.style.height = pct + '%';
+  }
+
+  line.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
+  update();
+})();
