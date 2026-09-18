@@ -235,6 +235,18 @@ body {
   animation: focus 1.8s ease infinite;
 }
 
+@keyframes focus {
+  0% {
+    box-shadow: 0 0 0 0 rgba(170, 255, 205, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(170, 255, 205, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(170, 255, 205, 0);
+  }
+}
+
 #line::-webkit-scrollbar {
   display: none;
 }
@@ -1553,5 +1565,333 @@ html[data-bg='none'] .mouse-glow {
   footer > span {
     padding: 4px 10px;
     line-height: 1.4;
+  }
+}
+
+/* ============================================================
+   沉浸式天气卡片（新增）
+   ============================================================ */
+
+.left-weather {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 13px;
+}
+
+.weather-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  opacity: 0.7;
+  padding: 14px;
+}
+
+.weather-loading-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--item_hover_color);
+  border-top-color: var(--purple_text_color);
+  border-radius: 50%;
+  animation: weather-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes weather-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- 沉浸式内容容器 ---------- */
+.weather-content.immersive {
+  position: relative;
+  padding: 16px 14px;
+  color: #fff;
+  overflow: hidden;
+  transition: background 1.2s ease;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 玻璃拟态叠加层 */
+.weather-content.immersive::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 内发光边框 */
+.weather-content.immersive::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 -20px 40px -20px var(--weather-glow, rgba(255,255,255,0.15));
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 所有子元素置于玻璃层之上 */
+.weather-content.immersive > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---------- 天气图标 ---------- */
+.weather-icon-wrap {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 64px;
+  height: 64px;
+  z-index: 2;
+}
+
+.weather-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  animation: weather-icon-float 4s ease-in-out infinite;
+}
+
+@keyframes weather-icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.weather-icon-glow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: var(--weather-glow, rgba(255,255,255,0.15));
+  filter: blur(16px);
+  z-index: -1;
+  pointer-events: none;
+  animation: weather-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes weather-glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+
+/* ---------- 信息区域 ---------- */
+.weather-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 70%;
+}
+
+.weather-city-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.weather-city {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.weather-district {
+  font-size: 10px;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.weather-temp-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  margin: 2px 0;
+}
+
+.weather-temp {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -2px;
+}
+
+.weather-temp-unit {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+.weather-desc {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.9;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ---------- 辅助信息 ---------- */
+.weather-meta {
+  margin-top: 8px;
+  font-size: 10px;
+  opacity: 0.65;
+  color: #fff;
+  line-height: 1.5;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.weather-atmos {
+  margin-top: 3px;
+  font-size: 10px;
+  opacity: 0.5;
+  color: #fff;
+  letter-spacing: 0.2px;
+}
+
+.weather-aqi {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  font-size: 10px;
+  color: #fff;
+  opacity: 0.8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.weather-aqi-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.weather-alert {
+  margin-top: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  line-height: 1.4;
+  background: rgba(255, 152, 0, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffcc80;
+  border: 1px solid rgba(255, 152, 0, 0.2);
+}
+
+/* ---------- 微粒子效果（纯装饰） ---------- */
+.weather-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* 雨天：斜向雨滴 */
+.effect-rain .weather-particles::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background-image:
+    linear-gradient(15deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%),
+    linear-gradient(15deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+  background-size: 60px 60px, 90px 90px;
+  background-position: 0 0, 30px 30px;
+  animation: rain-fall 0.8s linear infinite;
+}
+
+@keyframes rain-fall {
+  from { transform: translateY(-60px); }
+  to { transform: translateY(60px); }
+}
+
+/* 雪天：飘落雪花 */
+.effect-snow .weather-particles::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 60px 20px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 80px 50px, rgba(255,255,255,0.4), transparent);
+  background-size: 100px 100px;
+  animation: snow-fall 6s linear infinite;
+}
+
+@keyframes snow-fall {
+  from { transform: translateY(-100px) rotate(0deg); }
+  to { transform: translateY(100px) rotate(10deg); }
+}
+
+/* 晴天：光斑飘浮 */
+.effect-sunny .weather-particles::before {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  top: -20px;
+  right: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
+  filter: blur(12px);
+  animation: sunny-glow 5s ease-in-out infinite;
+}
+
+@keyframes sunny-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* ---------- 错误状态 ---------- */
+.weather-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  opacity: 0.75;
+  text-align: center;
+  padding: 14px;
+}
+
+.weather-retry {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--item_hover_color);
+  color: var(--main_text_color);
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease;
+}
+
+.weather-retry:hover {
+  background: var(--left_tag_item);
+}
+
+/* 天气动画在减少动效模式下禁用 */
+@media (prefers-reduced-motion: reduce) {
+  .weather-icon,
+  .weather-icon-glow,
+  .weather-particles::before {
+    animation: none !important;
   }
 }

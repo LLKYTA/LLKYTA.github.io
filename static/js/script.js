@@ -56,6 +56,19 @@ function getCookie(name) {
   return null;
 }
 
+/** 转义 HTML 特殊字符。 */
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>"']/g, function (m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+  });
+}
+
+/** 数字缩写格式化。 */
+function formatNumber(n) {
+  return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : n.toString();
+}
+
 /* ==================== 配置渲染 ==================== */
 
 function renderProfileFromConfig() {
@@ -141,7 +154,6 @@ function renderSocialIconsFromConfig() {
       '</div>' +
     '</a>';
 
-  // 重新绑定事件（因为 DOM 是新建的）
   const qqIcon = document.getElementById('qqIcon');
   if (qqIcon) {
     qqIcon.addEventListener('click', function () {
@@ -158,39 +170,23 @@ function renderSocialIconsFromConfig() {
   }
 }
 
-/* ==================== 技能可视化：Canvas 雷达 + SVG 圆环 ==================== */
+/* ==================== 技能可视化 ==================== */
 
 const SIMPLE_ICONS_CDN = 'https://cdn.simpleicons.org/';
 const RING_R = 32;
 const RING_CIRC = 2 * Math.PI * RING_R;
 
-/**
- * 构建技术图标 URL。
- * @param {string} slug Simple Icons 图标 slug。
- * @param {string} color 品牌色（带 #）。
- * @return {string} 完整 URL。
- */
 function getSkillIconUrl(slug, color) {
   return SIMPLE_ICONS_CDN + slug + '/' + color.replace('#', '');
 }
 
-/**
- * 渲染技能模块（雷达图 + 环形进度）。
- * @return {void}
- */
 function renderSkillsFromConfig() {
   const skills = (CFG && CFG.skills) || [];
   if (!skills.length) return;
-
   renderSkillRings(skills);
   renderSkillRadar(skills);
 }
 
-/**
- * 渲染 SVG 环形进度卡片。
- * @param {!Array<!Object>} skills 技能列表。
- * @return {void}
- */
 function renderSkillRings(skills) {
   const wrap = document.getElementById('skillRings');
   if (!wrap) return;
@@ -237,11 +233,6 @@ function renderSkillRings(skills) {
   });
 }
 
-/**
- * 渲染 Canvas 雷达图。
- * @param {!Array<!Object>} skills 技能列表。
- * @return {void}
- */
 function renderSkillRadar(skills) {
   const canvas = document.getElementById('skillRadar');
   if (!canvas) return;
@@ -689,7 +680,8 @@ function applyBgMode(mode) {
     {
       icon: '🌓', title: '切换深色 / 浅色主题', hint: 'Theme',
       keywords: 'theme dark light', action: function () {
-        document.getElementById('myonoffswitch').click();
+        const sw = document.getElementById('myonoffswitch');
+        if (sw) sw.click();
       },
     },
     {
@@ -711,12 +703,20 @@ function applyBgMode(mode) {
     {
       icon: '🎵', title: '播放 / 暂停音乐', hint: 'Music',
       keywords: 'music play pause', action: function () {
-        document.getElementById('musicCover').click();
+        const c = document.getElementById('musicCover');
+        if (c) c.click();
       },
     },
     {
       icon: '💬', title: '刷新一言', hint: 'Hitokoto',
       keywords: 'hitokoto quote refresh', action: loadHi,
+    },
+    {
+      icon: '🌤️', title: '刷新天气', hint: 'Weather',
+      keywords: 'weather refresh 天气', action: function () {
+        sessionStorage.removeItem(WEATHER_CACHE_KEY);
+        loadWeatherData(true);
+      },
     },
     {
       icon: '🐙', title: '打开 GitHub 主页', hint: 'GitHub',
@@ -865,7 +865,8 @@ function applyBgMode(mode) {
 /* ==================== 主题三态 ==================== */
 
 function applyResolvedTheme() {
-  const mode = localStorage.getItem('KD_themeMode') || getCookie('themeState') || 'auto';
+  const raw = localStorage.getItem('KD_themeMode') || getCookie('themeState') || 'auto';
+  const mode = raw.toLowerCase();
   const html = document.documentElement;
   const tanChiShe = document.getElementById('tanChiShe');
   const checkbox = document.getElementById('myonoffswitch');
@@ -902,6 +903,363 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', fun
   }
 });
 
+/* ==================== 沉浸式天气小组件 ==================== */
+
+const WEATHER_CACHE_KEY = 'KD_weather_cache';
+const WEATHER_API_URL = 'https://uapis.cn/api/v1/misc/weather';
+/**const METEOCONS_CDN = 'https://cdn.jsdelivr.net/gh/basmilius/weather-icons@production/production/fill/svg/';**/
+const METEOCONS_CDN = 'https://cdn.jsdelivr.net/npm/@meteocons/svg@0.1.0/fill/';
+/**
+ * 天气文本 → Meteocons 图标名映射。
+ * 按具体度排序，长键优先匹配。
+ */
+const WEATHER_ICON_MAP = [
+  ['雷阵雨', 'thunderstorms-rain'],
+  ['雨夹雪', 'sleet'],
+  ['强沙尘暴', 'dust'],
+  ['沙尘暴', 'dust'],
+  ['暴雨', 'extreme-rain'],
+  ['大雨', 'extreme-rain'],
+  ['中雨', 'rain'],
+  ['小雨', 'rain'],
+  ['大雪', 'extreme-snow'],
+  ['中雪', 'snow'],
+  ['小雪', 'snow'],
+  ['晴', 'clear'],
+  ['多云', 'partly-cloudy'],
+  ['阴', 'overcast'],
+  ['雾', 'fog'],
+  ['霾', 'fog'],
+  ['沙尘', 'dust'],
+];
+
+/** AQI 等级 1-6 → 颜色。 */
+const AQI_COLORS = {
+  1: '#00e400', 2: '#ffff00', 3: '#ff7e00',
+  4: '#ff0000', 5: '#99004c', 6: '#7e0023',
+};
+
+/**
+ * 获取 Meteocons 图标 URL。
+ * @param {string} text 天气描述文本。
+ * @return {string} 完整图标 URL。
+ */
+function getWeatherIconUrl(text) {
+  if (!text) return METEOCONS_CDN + 'clear-day.svg';
+
+  let baseName = 'clear-day';
+  for (let i = 0; i < WEATHER_ICON_MAP.length; i++) {
+    if (text.indexOf(WEATHER_ICON_MAP[i][0]) !== -1) {
+      baseName = WEATHER_ICON_MAP[i][1];
+      break;
+    }
+  }
+
+  const hour = new Date().getHours();
+  const isNight = hour < 6 || hour >= 18;
+
+  if (baseName === 'clear') baseName = isNight ? 'clear-night' : 'clear-day';
+  else if (baseName === 'partly-cloudy') baseName = isNight ? 'partly-cloudy-night' : 'partly-cloudy-day';
+  else if (baseName === 'overcast') baseName = 'overcast-day';
+
+  return METEOCONS_CDN + baseName + '.svg';
+}
+
+/**
+ * 获取天气对应的背景渐变主题。
+ * @param {string} weatherText 天气文本。
+ * @return {!Object} 包含 gradient / accent / glow。
+ */
+function getWeatherTheme(weatherText) {
+  const t = weatherText || '';
+  const hour = new Date().getHours();
+  const isNight = hour < 6 || hour >= 18;
+  const isDusk = hour >= 17 && hour < 19;
+
+  if (t.indexOf('晴') !== -1) {
+    return isNight
+      ? { gradient: 'linear-gradient(135deg, #1a1a3e 0%, #2d2b55 50%, #1e3a5f 100%)', accent: '#a8c8ff', glow: 'rgba(168,200,255,0.2)' }
+      : isDusk
+        ? { gradient: 'linear-gradient(135deg, #f5af19 0%, #f12711 50%, #7b2d8e 100%)', accent: '#ffeaa7', glow: 'rgba(255,234,167,0.25)' }
+        : { gradient: 'linear-gradient(135deg, #56ccf2 0%, #2f80ed 50%, #1a5276 100%)', accent: '#ffffff', glow: 'rgba(255,255,255,0.2)' };
+  }
+
+  if (t.indexOf('多云') !== -1) {
+    return isNight
+      ? { gradient: 'linear-gradient(135deg, #232526 0%, #414345 50%, #2c3e50 100%)', accent: '#b0bec5', glow: 'rgba(176,190,197,0.15)' }
+      : { gradient: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 40%, #4a6fa5 100%)', accent: '#ffffff', glow: 'rgba(255,255,255,0.18)' };
+  }
+
+  if (t.indexOf('阴') !== -1) {
+    return { gradient: 'linear-gradient(135deg, #4b6cb7 0%, #3a4a6b 50%, #2c3e50 100%)', accent: '#cfd8dc', glow: 'rgba(207,216,220,0.12)' };
+  }
+
+  if (t.indexOf('雨') !== -1 || t.indexOf('雷') !== -1) {
+    return { gradient: 'linear-gradient(135deg, #1a2a6c 0%, #2a3f5f 40%, #0f2027 100%)', accent: '#90caf9', glow: 'rgba(144,202,249,0.2)' };
+  }
+
+  if (t.indexOf('雪') !== -1) {
+    return { gradient: 'linear-gradient(135deg, #e0eafc 0%, #a8c0d8 40%, #7b9cb8 100%)', accent: '#ffffff', glow: 'rgba(255,255,255,0.3)' };
+  }
+
+  if (t.indexOf('雾') !== -1 || t.indexOf('霾') !== -1) {
+    return { gradient: 'linear-gradient(135deg, #606c88 0%, #3f4c6b 50%, #2c3e50 100%)', accent: '#d1d8e0', glow: 'rgba(209,216,224,0.15)' };
+  }
+
+  if (t.indexOf('沙尘') !== -1) {
+    return { gradient: 'linear-gradient(135deg, #b79891 0%, #94716b 50%, #5d4037 100%)', accent: '#ffccbc', glow: 'rgba(255,204,188,0.2)' };
+  }
+
+  return { gradient: 'linear-gradient(135deg, #4b6cb7 0%, #182848 100%)', accent: '#cfd8dc', glow: 'rgba(207,216,220,0.12)' };
+}
+
+/**
+ * 获取天气类型对应的微粒子效果类名。
+ * @param {string} weatherText 天气文本。
+ * @return {string} CSS 类名后缀。
+ */
+function getWeatherEffect(weatherText) {
+  const t = weatherText || '';
+  if (t.indexOf('雨') !== -1 || t.indexOf('雷') !== -1) return 'effect-rain';
+  if (t.indexOf('雪') !== -1) return 'effect-snow';
+  if (t.indexOf('晴') !== -1) return 'effect-sunny';
+  return '';
+}
+
+/**
+ * 构建天气 API 的完整 URL。
+ * @return {string} 完整请求地址。
+ */
+function buildWeatherUrl() {
+  const cfg = CFG.weather || {};
+  const params = new URLSearchParams();
+  if (cfg.adcode) params.set('adcode', cfg.adcode);
+  else if (cfg.city) params.set('city', cfg.city);
+  if (cfg.lang) params.set('lang', cfg.lang);
+  if (cfg.extended) params.set('extended', 'true');
+  if (cfg.forecast) params.set('forecast', 'true');
+  if (cfg.hourly) params.set('hourly', 'true');
+  if (cfg.minutely) params.set('minutely', 'true');
+  if (cfg.indices) params.set('indices', 'true');
+  const qs = params.toString();
+  return WEATHER_API_URL + (qs ? '?' + qs : '');
+}
+
+/**
+ * 发起带超时的天气请求。
+ * @param {string} url 完整请求地址。
+ * @param {!Object} headers 请求头。
+ * @param {number} timeout 超时毫秒。
+ * @return {!Promise<!Object>} 解析后的 JSON。
+ */
+function requestWeather(url, headers, timeout) {
+  return new Promise(function (resolve, reject) {
+    const controller = new AbortController();
+    const timer = setTimeout(function () {
+      controller.abort();
+    }, timeout);
+
+    fetch(url, { headers: headers, signal: controller.signal })
+      .then(function (res) {
+        clearTimeout(timer);
+        if (!res.ok) {
+          return res.json().catch(function () { return {}; }).then(function (body) {
+            const err = new Error(body.message || ('HTTP ' + res.status));
+            err.code = body.code || ('HTTP_' + res.status);
+            err.status = res.status;
+            throw err;
+          });
+        }
+        return res.json();
+      })
+      .then(resolve)
+      .catch(function (err) {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+}
+
+/**
+ * 加载天气数据（优先读缓存）。
+ * @param {boolean=} forceRefresh 是否强制跳过缓存。
+ * @return {void}
+ */
+function loadWeatherData(forceRefresh) {
+  const cfg = CFG.weather || {};
+  if (!cfg.enabled) return;
+
+  const widget = document.getElementById('weatherWidget');
+  if (!widget) return;
+
+  const loadingEl = widget.querySelector('.weather-loading');
+  const contentEl = widget.querySelector('.weather-content');
+  const errorEl = widget.querySelector('.weather-error');
+  if (!loadingEl || !contentEl || !errorEl) return;
+
+  if (!forceRefresh) {
+    const cached = sessionStorage.getItem(WEATHER_CACHE_KEY);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        const ttl = cfg.refreshInterval || 1800000;
+        if (parsed && parsed.data && (Date.now() - parsed.ts) < ttl) {
+          renderWeather(parsed.data, widget);
+          return;
+        }
+      } catch (e) {
+        sessionStorage.removeItem(WEATHER_CACHE_KEY);
+      }
+    }
+  }
+
+  loadingEl.style.display = 'flex';
+  contentEl.style.display = 'none';
+  errorEl.style.display = 'none';
+
+  const headers = {};
+  if (cfg.apiKey && cfg.apiKey.indexOf('uapi-') === 0) {
+    headers['Authorization'] = 'Bearer ' + cfg.apiKey;
+  }
+
+  requestWeather(buildWeatherUrl(), headers, cfg.timeout || 10000)
+    .then(function (data) {
+      sessionStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ data: data, ts: Date.now() }));
+      renderWeather(data, widget);
+    })
+    .catch(function (err) {
+      console.error('[Weather] 加载失败:', err);
+      loadingEl.style.display = 'none';
+      errorEl.style.display = 'flex';
+      const msgEl = errorEl.querySelector('.weather-error-msg');
+      if (!msgEl) return;
+      let msg = '天气加载失败';
+      if (err.name === 'AbortError') msg = '请求超时';
+      else if (err.status === 401 || err.status === 403) msg = '密钥无效或未配置';
+      else if (err.status === 429) msg = '请求过于频繁';
+      else if (err.code === 'NOT_FOUND') msg = '未找到该城市';
+      else if (err.code === 'INVALID_PARAMETER') msg = '参数无效';
+      else if (err.code === 'SERVICE_UNAVAILABLE') msg = '服务暂不可用';
+      else if (err.code === 'INTERNAL_SERVER_ERROR') msg = '服务器错误';
+      else if (err.message) msg = err.message;
+      msgEl.textContent = msg;
+    });
+}
+
+/**
+ * 渲染沉浸式天气卡片。
+ * @param {!Object} data API 返回数据。
+ * @param {!Element} widget 容器元素。
+ * @return {void}
+ */
+function renderWeather(data, widget) {
+  const loadingEl = widget.querySelector('.weather-loading');
+  const contentEl = widget.querySelector('.weather-content');
+  const errorEl = widget.querySelector('.weather-error');
+  if (!contentEl) return;
+
+  loadingEl.style.display = 'none';
+  errorEl.style.display = 'none';
+  contentEl.style.display = 'block';
+
+  const weatherText = data.weather || '';
+  const theme = getWeatherTheme(weatherText);
+  const iconUrl = getWeatherIconUrl(weatherText);
+  const effect = getWeatherEffect(weatherText);
+
+  contentEl.style.background = theme.gradient;
+  contentEl.style.setProperty('--weather-accent', theme.accent);
+  contentEl.style.setProperty('--weather-glow', theme.glow);
+  contentEl.className = 'weather-content immersive ' + effect;
+
+  const cityName = data.city || data.district || data.province || '未知';
+  const subName = (data.district && data.city && data.district !== data.city) ? data.district : '';
+  const temp = (typeof data.temperature === 'number') ? Math.round(data.temperature) : '--';
+
+  const metaParts = [];
+  if (data.wind_direction) {
+    metaParts.push(escapeHtml(data.wind_direction) + (data.wind_power ? ' ' + escapeHtml(data.wind_power) : ''));
+  }
+  if (typeof data.humidity === 'number') metaParts.push('湿度 ' + data.humidity + '%');
+  if (typeof data.feels_like === 'number') metaParts.push('体感 ' + Math.round(data.feels_like) + '°');
+
+  const atmosParts = [];
+  if (typeof data.pressure === 'number') atmosParts.push(data.pressure + ' hPa');
+  if (typeof data.visibility === 'number') atmosParts.push('能见 ' + data.visibility + ' km');
+  if (typeof data.uv === 'number') atmosParts.push('UV ' + data.uv);
+
+  let html =
+    '<div class="weather-icon-wrap">' +
+      '<img class="weather-icon" src="' + iconUrl + '" alt="' + escapeHtml(weatherText) + '" loading="lazy" />' +
+      '<div class="weather-icon-glow"></div>' +
+    '</div>' +
+    '<div class="weather-info">' +
+      '<div class="weather-city-row">' +
+        '<span class="weather-city">' + escapeHtml(cityName) + '</span>' +
+        (subName ? '<span class="weather-district">' + escapeHtml(subName) + '</span>' : '') +
+      '</div>' +
+      '<div class="weather-temp-row">' +
+        '<span class="weather-temp">' + temp + '</span>' +
+        '<span class="weather-temp-unit">°C</span>' +
+      '</div>' +
+      '<div class="weather-desc">' + escapeHtml(weatherText || '--') + '</div>' +
+    '</div>' +
+    '<div class="weather-meta">' + metaParts.join(' · ') + '</div>';
+
+  if (atmosParts.length) {
+    html += '<div class="weather-atmos">' + atmosParts.join(' &nbsp;·&nbsp; ') + '</div>';
+  }
+
+  if (typeof data.aqi === 'number') {
+    const color = AQI_COLORS[data.aqi_level] || '#8b8b8b';
+    html +=
+      '<div class="weather-aqi">' +
+        '<span class="weather-aqi-dot" style="background:' + color + '"></span>' +
+        '空气 ' + escapeHtml(data.aqi_category || '--') + ' · AQI ' + data.aqi +
+      '</div>';
+  }
+
+  if (data.alerts && data.alerts.length) {
+    const alertTitle = data.alerts[0].title || data.alerts[0].type || '气象预警';
+    html += '<div class="weather-alert">⚠️ ' + escapeHtml(alertTitle) + '</div>';
+  }
+
+  html += '<div class="weather-particles" aria-hidden="true"></div>';
+
+  contentEl.innerHTML = html;
+}
+
+/** 天气自动刷新定时器 ID。 */
+let weatherTimer = null;
+
+/**
+ * 启动天气模块（首次加载 + 定时刷新 + 重试按钮）。
+ * @return {void}
+ */
+function initWeatherWidget() {
+  const cfg = CFG.weather || {};
+  if (!cfg.enabled) return;
+
+  const widget = document.getElementById('weatherWidget');
+  if (!widget) return;
+
+  loadWeatherData(false);
+
+  const retryBtn = document.getElementById('weatherRetryBtn');
+  if (retryBtn) {
+    retryBtn.addEventListener('click', function () {
+      sessionStorage.removeItem(WEATHER_CACHE_KEY);
+      loadWeatherData(true);
+    });
+  }
+
+  const interval = cfg.refreshInterval || 1800000;
+  if (weatherTimer) clearInterval(weatherTimer);
+  weatherTimer = setInterval(function () {
+    if (!document.hidden) loadWeatherData(true);
+  }, interval);
+}
+
 /* ==================== 页面初始化 ==================== */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -929,6 +1287,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   loadHi();
   loadGitHubData();
+  initWeatherWidget();
 });
 
 /* ==================== 页面加载 ==================== */
@@ -1078,25 +1437,16 @@ function renderRepositories(repos) {
     const langHtml = repo.language
       ? '<span class="github-repo-lang"><span class="github-repo-lang-dot" style="background:' + langColor + '"></span>' + escapeHtml(repo.language) + '</span>'
       : '';
+    const stars = repo.stargazers_count || repo.stargazers || 0;
+    const forks = repo.forks_count || repo.forks || 0;
     card.innerHTML =
       '<div class="github-repo-name">' + escapeHtml(repo.name) + '</div>' +
       '<div class="github-repo-desc">' + escapeHtml(repo.description || '暂无描述') + '</div>' +
       '<div class="github-repo-meta">' + langHtml +
-      '<span class="github-repo-stars">⭐ ' + formatNumber(repo.stargazers || 0) + '</span>' +
-      '<span>🍴 ' + formatNumber(repo.forks || 0) + '</span></div>';
+      '<span class="github-repo-stars">⭐ ' + formatNumber(stars) + '</span>' +
+      '<span>🍴 ' + formatNumber(forks) + '</span></div>';
     grid.appendChild(card);
   });
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>"']/g, function (m) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-  });
-}
-
-function formatNumber(n) {
-  return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : n.toString();
 }
 
 /* ==================== 音乐播放器（含频谱可视化） ==================== */
@@ -1226,17 +1576,18 @@ function formatNumber(n) {
 
   function armUnlockGesture(needResume) {
     const events = ['pointerdown', 'touchstart', 'keydown'];
-    const unlock = function () {
+    const unlock = function (e) {
       if (unlocked) return;
+      if (e && e.target && e.target.closest && e.target.closest('#musicCollapse')) return;
       unlocked = true;
-      events.forEach(function (e) { document.removeEventListener(e, unlock); });
+      events.forEach(function (ev) { document.removeEventListener(ev, unlock); });
       audio.muted = false;
       if (needResume || audio.paused) {
         audio.play().catch(function (err) { console.warn('[Music] 手势补播失败:', err); });
       }
       flashTitle('🔊 已开启声音');
     };
-    events.forEach(function (e) { document.addEventListener(e, unlock, { passive: true }); });
+    events.forEach(function (ev) { document.addEventListener(ev, unlock, { passive: true }); });
   }
 
   let titleTimer = null;

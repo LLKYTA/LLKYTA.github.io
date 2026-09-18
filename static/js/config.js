@@ -23,6 +23,32 @@ window.KD_CONFIG = {
     qq: { image: './static/img/qq.jpg' },
   },
 
+  /**
+   * 天气小组件配置。
+   * API 文档：https://uapis.cn/docs/api-reference/get-misc-weather
+   * ⚠️ 纯静态站点 apiKey 会暴露在客户端，仅建议本地/私有部署使用；
+   *    公网部署请通过 Cloudflare Workers 等做一层代理。
+   */
+  weather: {
+    enabled: true,
+    // UAPI 密钥（以 uapi- 开头），留空则不携带 Authorization 头
+    apiKey: '',
+    // 两种定位方式二选一：city 或 adcode；都不填则按访客 IP 自动定位
+    city: '',      // 例如：'北京' / 'Tokyo'
+    adcode: '',    // 例如：'110000'（优先级高于 city）
+    lang: 'zh',    // 'zh' | 'en'
+    // 可选功能模块
+    extended: true,    // 体感温度 / 能见度 / 气压 / UV / AQI / 污染物
+    forecast: false,   // 多天预报（最多 7 天）
+    hourly: false,     // 逐小时预报（24 小时）
+    minutely: false,   // 分钟级降水（仅国内城市）
+    indices: false,    // 18 项生活指数
+    // 数据缓存 & 刷新间隔（毫秒，默认 30 分钟）
+    refreshInterval: 30 * 60 * 1000,
+    // 请求超时（毫秒）
+    timeout: 10000,
+  },
+
   github: {
     username: 'LLKYTA',
     api: 'https://uapis.cn/api/v1/github/user?user=LLKYTA&activity=true&activity_scope=all&pinned=true&repos=true&repos_limit=6',

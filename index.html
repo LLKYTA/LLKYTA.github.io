@@ -69,6 +69,20 @@
           </svg><span id="desStatus">高中在读</span>
         </div>
       </div>
+
+      <!-- 沉浸式天气小组件 -->
+      <div class="left-div left-weather" id="weatherWidget">
+        <div class="weather-loading">
+          <div class="weather-loading-spinner"></div>
+          <span>获取天气中...</span>
+        </div>
+        <div class="weather-content immersive" style="display: none"></div>
+        <div class="weather-error" style="display: none">
+          <span class="weather-error-msg">天气加载失败</span>
+          <button class="weather-retry" id="weatherRetryBtn" type="button">重试</button>
+        </div>
+      </div>
+
       <div class="left-div left-tag" id="tagList"></div>
       <div class="left-div left-time">
         <ul id="line"></ul>
