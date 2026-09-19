@@ -1789,4 +1789,4 @@ function renderRepositories(repos) {
   line.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update, { passive: true });
   update();
-})();
+})(); 

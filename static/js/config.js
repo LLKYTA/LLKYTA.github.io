@@ -81,7 +81,7 @@ window.KD_CONFIG = {
     { name: 'Docker', slug: 'docker', level: 60, color: '#2496ED' },
     { name: 'Git', slug: 'git', level: 85, color: '#F05032' },
     { name: 'HTML5', slug: 'html5', level: 90, color: '#E34F26' },
-    { name: 'CSS3', slug: 'css3', level: 85, color: '#1572B6' },
+    { name: 'CSS3', slug: 'css', level: 85, color: '#1572B6' },
     { name: 'MySQL', slug: 'mysql', level: 60, color: '#4479A1' },
   ],
 
