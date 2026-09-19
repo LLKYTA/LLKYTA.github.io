@@ -55,8 +55,26 @@ window.KD_CONFIG = {
   },
 
   music: {
-    src: 'https://music.163.com/song/media/outer/url?id=3342074799.mp3',
-    title: '失眠',
+    // 是否启用音乐播放器
+    enabled: true,
+    // 首次进入是否尝试自动播放（浏览器可能仍会拦截）
+    autoplay: true,
+    // 默认音量 0 - 1
+    volume: 0.7,
+    // 默认播放模式：list 列表循环 | single 单曲循环 | shuffle 随机播放
+    mode: 'list',
+    // 是否记住音量 / 模式 / 上次播放曲目（localStorage）
+    persist: true,
+    // 播放列表
+    playlist: [
+      {
+        src: './static/music/失眠.mp3', // 音频文件 URL
+        title: '失眠',
+        artist: '',
+        cover: '', // 可选，封面图 URL
+      },
+      // 继续添加更多曲目...
+    ],
   },
 
   timeline: [

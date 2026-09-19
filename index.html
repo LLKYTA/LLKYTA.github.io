@@ -258,27 +258,71 @@
     </div>
   </div>
 
-  <div class="music-player" id="musicPlayer">
-    <audio id="musicAudio" loop preload="auto"></audio>
+    <div class="music-player" id="musicPlayer">
+    <audio id="musicAudio" preload="metadata"></audio>
+
     <button class="music-cover" id="musicCover" aria-label="播放 / 暂停">
       <span class="music-disc"></span>
       <span class="music-ctrl">
-        <svg class="music-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-        <svg class="music-pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+        <svg class="music-play-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+        <svg class="music-pause-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+        </svg>
       </span>
     </button>
+
     <div class="music-body">
-      <div class="music-title" id="musicTitle">加载中...</div>
-      <canvas class="music-viz" id="musicViz" width="220" height="24" aria-hidden="true"></canvas>
+      <!-- 第一行：曲目信息 -->
+      <div class="music-info">
+        <div class="music-title" id="musicTitle">加载中...</div>
+        <div class="music-artist" id="musicArtist"></div>
+      </div>
+
+      <!-- 第二行：进度条 -->
       <div class="music-progress">
         <span class="music-time" id="musicCurrent">0:00</span>
         <input type="range" id="musicSeek" min="0" max="100" step="0.1" value="0" aria-label="播放进度" />
         <span class="music-time" id="musicDuration">0:00</span>
       </div>
-    </div>  
-    <button class="music-collapse" id="musicCollapse" aria-label="收起 / 展开">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+      
+      <canvas class="music-viz" id="musicViz" width="240" height="14" aria-hidden="true"></canvas>
+      
+      <!-- 第三行：控制按钮 -->
+      <div class="music-controls">
+        <button class="music-btn" id="musicPrev" type="button" aria-label="上一首">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" /></svg>
+        </button>
+        <button class="music-btn" id="musicNext" type="button" aria-label="下一首">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z" /></svg>
+        </button>
+        <button class="music-btn" id="musicMode" type="button" aria-label="播放模式"></button>
+
+        <div class="music-volume">
+          <button class="music-btn" id="musicVolumeBtn" type="button" aria-label="静音切换"></button>
+          <input type="range" id="musicVolume" class="music-volume-slider" min="0" max="1" step="0.01" value="0.7" aria-label="音量" />
+        </div>
+
+        <button class="music-btn" id="musicPlaylistBtn" type="button" aria-label="播放列表">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h13v2H3zm0 5h13v2H3zm0 5h9v2H3zm13-5v6.18A3 3 0 1 0 18 20V8h3V6h-5z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <button class="music-collapse" id="musicCollapse" type="button" aria-label="收起 / 展开">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+      </svg>
     </button>
+  </div>
+
+  <div class="music-playlist-panel" id="musicPlaylistPanel" aria-hidden="true">
+    <div class="music-playlist-header">
+      <span class="music-playlist-title">播放列表</span>
+      <span class="music-playlist-count" id="musicPlaylistCount"></span>
+    </div>
+    <ul class="music-playlist-list" id="musicPlaylistList"></ul>
   </div>
 
   <div class="tc">
@@ -288,6 +332,7 @@
   </div>
 
   <script src="./static/js/config.js"></script>
+  <script src="./static/js/music-player.js"></script>
   <script src="./static/js/script.js"></script>
   <script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
   <script>

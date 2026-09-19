@@ -1277,11 +1277,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const githubRetryBtn = document.getElementById('githubRetryBtn');
   if (githubRetryBtn) githubRetryBtn.addEventListener('click', loadGitHubData);
 
-  const audio = document.getElementById('musicAudio');
-  if (audio && CFG.music) audio.src = CFG.music.src;
-  const mt = document.getElementById('musicTitle');
-  if (mt && CFG.music) mt.textContent = CFG.music.title;
-
   const footerName = document.getElementById('footerName');
   if (footerName && CFG.site) footerName.textContent = CFG.site.name;
 
