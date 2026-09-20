@@ -296,10 +296,9 @@ body {
   font-family: 'title';
   animation: backgroundSizeAnimation 10s ease-in-out infinite;
   background-image: var(--gradient);
-  /* 新增：锁定行高 + 用 inline-block 让基线对齐 */
   display: inline-block;
-  line-height: 1.15;         /* 与 .welcome 保持一致 */
-  vertical-align: -0.05em;   /* 微调基线下沉，避免上浮 */
+  line-height: 1.15;
+  vertical-align: -0.05em;
 }
 
 @keyframes backgroundSizeAnimation {
@@ -549,6 +548,8 @@ footer {
 }
 
 footer > span {
+  /* 播放器避让：由 body 状态类驱动，默认 0 */
+  --footer-avoid-right: 0px;
   display: inline-block;
   max-width: 100%;
   padding: 6px 14px;
@@ -561,7 +562,13 @@ footer > span {
   line-height: 1.7;
   word-break: break-word;
   box-sizing: border-box;
-  transition: padding 0.2s ease, font-size 0.2s ease;
+  margin-right: var(--footer-avoid-right);
+  transition:
+    padding 0.2s ease,
+    font-size 0.2s ease,
+    margin-right 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease,
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .footer-dot {
@@ -634,7 +641,6 @@ footer #visitStats b {
     font-weight: 800;
     line-height: 1.15;
     margin: 20px 0;
-    /* 预留两行高度，防止打字机清空/换行时下方内容抖动 */
     height: 2.3em;
     overflow: hidden;
   }
@@ -1516,8 +1522,8 @@ html[data-bg='none'] .mouse-glow {
     padding: 8px 12px;
     border-radius: 12px;
     line-height: 1.6;
-    max-width: calc(100% - 80px);
-    margin-right: 72px;
+    /* 由 --footer-avoid-right 变量控制，见文件末尾播放器状态规则 */
+    max-width: calc(100% - var(--footer-avoid-right, 80px) - 4px);
   }
 
   footer .footer-dot {
@@ -1540,8 +1546,7 @@ html[data-bg='none'] .mouse-glow {
     padding: 6px 10px;
     border-radius: 10px;
     gap: 1px;
-    max-width: calc(100% - 60px);
-    margin-right: 60px;
+    max-width: calc(100% - var(--footer-avoid-right, 60px) - 4px);
   }
 
   .KD-right {
@@ -1594,7 +1599,6 @@ html[data-bg='none'] .mouse-glow {
   to { transform: rotate(360deg); }
 }
 
-/* ---------- 沉浸式内容容器 ---------- */
 .weather-content.immersive {
   position: relative;
   padding: 16px 14px;
@@ -1607,7 +1611,6 @@ html[data-bg='none'] .mouse-glow {
   justify-content: center;
 }
 
-/* 玻璃拟态叠加层 */
 .weather-content.immersive::before {
   content: '';
   position: absolute;
@@ -1619,7 +1622,6 @@ html[data-bg='none'] .mouse-glow {
   z-index: 0;
 }
 
-/* 内发光边框 */
 .weather-content.immersive::after {
   content: '';
   position: absolute;
@@ -1631,13 +1633,11 @@ html[data-bg='none'] .mouse-glow {
   z-index: 1;
 }
 
-/* 所有子元素置于玻璃层之上 */
 .weather-content.immersive > * {
   position: relative;
   z-index: 2;
 }
 
-/* ---------- 天气图标 ---------- */
 .weather-icon-wrap {
   position: absolute;
   top: 10px;
@@ -1676,7 +1676,6 @@ html[data-bg='none'] .mouse-glow {
   50% { opacity: 0.9; transform: scale(1.15); }
 }
 
-/* ---------- 信息区域 ---------- */
 .weather-info {
   display: flex;
   flex-direction: column;
@@ -1737,7 +1736,6 @@ html[data-bg='none'] .mouse-glow {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* ---------- 辅助信息 ---------- */
 .weather-meta {
   margin-top: 8px;
   font-size: 10px;
@@ -1787,7 +1785,6 @@ html[data-bg='none'] .mouse-glow {
   border: 1px solid rgba(255, 152, 0, 0.2);
 }
 
-/* ---------- 微粒子效果（纯装饰） ---------- */
 .weather-particles {
   position: absolute;
   inset: 0;
@@ -1796,7 +1793,6 @@ html[data-bg='none'] .mouse-glow {
   z-index: 1;
 }
 
-/* 雨天：斜向雨滴 */
 .effect-rain .weather-particles::before {
   content: '';
   position: absolute;
@@ -1814,7 +1810,6 @@ html[data-bg='none'] .mouse-glow {
   to { transform: translateY(60px); }
 }
 
-/* 雪天：飘落雪花 */
 .effect-snow .weather-particles::before {
   content: '';
   position: absolute;
@@ -1833,7 +1828,6 @@ html[data-bg='none'] .mouse-glow {
   to { transform: translateY(100px) rotate(10deg); }
 }
 
-/* 晴天：光斑飘浮 */
 .effect-sunny .weather-particles::before {
   content: '';
   position: absolute;
@@ -1852,7 +1846,6 @@ html[data-bg='none'] .mouse-glow {
   50% { opacity: 0.8; transform: scale(1.2); }
 }
 
-/* ---------- 错误状态 ---------- */
 .weather-error {
   display: flex;
   flex-direction: column;
@@ -1880,7 +1873,6 @@ html[data-bg='none'] .mouse-glow {
   background: var(--left_tag_item);
 }
 
-/* 天气动画在减少动效模式下禁用 */
 @media (prefers-reduced-motion: reduce) {
   .weather-icon,
   .weather-icon-glow,
@@ -1888,11 +1880,11 @@ html[data-bg='none'] .mouse-glow {
     animation: none !important;
   }
 }
+
 /* ============================================================
    侧边栏美化 · 8 项改动（克制版）
    ============================================================ */
 
-/* ---------- 1. Logo：细描边 + 微弱投影 ---------- */
 .logo {
   position: relative;
   isolation: isolate;
@@ -1919,9 +1911,6 @@ html[data-bg='none'] .mouse-glow {
   border-color: rgba(116, 123, 255, 0.4);
 }
 
-/* 去掉之前的旋转光环、呼吸动画、conic-gradient */
-
-/* ---------- 2. 分类标题：中性灰为主，图标才是紫色 ---------- */
 .left-div-head {
   display: flex;
   align-items: center;
@@ -1957,7 +1946,6 @@ html[data-bg='none'] .mouse-glow {
   font-weight: 400;
 }
 
-/* 焦点时，仅图标微微泛紫，文字仍保持中性 */
 .left-div.in-focus .left-div-head .head-icon {
   fill: var(--purple_text_color);
   opacity: 0.85;
@@ -1966,7 +1954,6 @@ html[data-bg='none'] .mouse-glow {
   opacity: 0.65;
 }
 
-/* ---------- 3. 卡片 hover：边框微亮，不上浮不发光 ---------- */
 .left-div {
   position: relative;
   transition: background 0.3s ease, border-color 0.3s ease;
@@ -1987,17 +1974,14 @@ html[data-bg='none'] .mouse-glow {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-/* 天气卡片完全排除通用 hover */
 .left-weather::after {
   display: none;
 }
 
-/* 去掉 in-focus 导致的整体透明度变化，改为纯视觉层级 */
 .KD-left .left-div {
   opacity: 1;
 }
 
-/* ---------- 4. 标签 chip：无渐变描边，仅微弱边界 ---------- */
 .left-tag-body {
   display: flex;
   flex-direction: row;
@@ -2015,9 +1999,6 @@ html[data-bg='none'] .mouse-glow {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* 去掉 translateY + scale + 紫色阴影 */
-
-/* ---------- 5. 时间线：首项只高亮版本号 ---------- */
 #line li {
   border-left: 2px solid rgba(255, 255, 255, 0.08);
   border-image: none;
@@ -2033,9 +2014,6 @@ html[data-bg='none'] .mouse-glow {
   opacity: 1;
 }
 
-/* 去掉日期、标题的紫色高亮 —— 它们保持原样即可 */
-
-/* 时间线进度条：保留，但颜色降调 */
 .timeline-progress {
   position: absolute;
   right: 6px;
@@ -2056,7 +2034,6 @@ html[data-bg='none'] .mouse-glow {
   transition: height 0.15s ease;
 }
 
-/* ---------- 6. 滚动遮罩：不变 ---------- */
 .left-scroll-mask {
   position: fixed;
   height: 60px;
@@ -2074,7 +2051,6 @@ html[data-bg='none'] .mouse-glow {
   }
 }
 
-/* ---------- 7. 入场动画：保留，但幅度更小 ---------- */
 .KD-left > * {
   opacity: 0;
   transform: translateY(8px);
@@ -2095,7 +2071,6 @@ html[data-bg='none'] .mouse-glow {
   }
 }
 
-/* ---------- 8. 减少动效模式 ---------- */
 @media (prefers-reduced-motion: reduce) {
   .KD-left > * {
     opacity: 1;
@@ -2104,5 +2079,212 @@ html[data-bg='none'] .mouse-glow {
   }
   .logo {
     transition: none;
+  }
+}
+
+/* ============================================================
+   移动端侧边栏抽屉 · 定制版
+   ============================================================ */
+
+:root {
+  --drawer-width: 268px;
+  --drawer-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --drawer-duration: 0.36s;
+}
+
+.mobile-sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 9997;
+  width: 42px;
+  height: 42px;
+  padding: 11px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: var(--item_bg_color);
+  backdrop-filter: blur(calc(var(--card_filter) + 4px));
+  -webkit-backdrop-filter: blur(calc(var(--card_filter) + 4px));
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  box-sizing: border-box;
+  transition: background 0.25s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-sidebar-toggle:active {
+  transform: scale(0.94);
+}
+
+.msb-line {
+  display: block;
+  height: 2px;
+  width: 100%;
+  border-radius: 2px;
+  background: var(--main_text_color);
+  transition:
+    transform var(--drawer-duration) var(--drawer-ease),
+    opacity 0.2s ease,
+    width var(--drawer-duration) var(--drawer-ease);
+  transform-origin: center;
+}
+
+.mobile-sidebar-toggle.open .msb-line:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+.mobile-sidebar-toggle.open .msb-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.mobile-sidebar-toggle.open .msb-line:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+.mobile-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9995;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0.15) 100%);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--drawer-duration) ease;
+}
+
+.mobile-sidebar-backdrop.active {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 800px) {
+  .mobile-sidebar-toggle {
+    display: flex;
+  }
+
+  /* 解除 .KD-main 的层叠上下文，避免 backdrop 盖住抽屉 */
+  .KD-main {
+    z-index: auto;
+  }
+
+  .KD-left {
+    display: flex !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--drawer-width);
+    max-width: 84vw;
+    height: 100dvh;
+    padding: 66px 15px 24px 15px;
+    box-sizing: border-box;
+    background: var(--item_bg_color);
+    backdrop-filter: blur(calc(var(--card_filter) + 12px)) saturate(1.2);
+    -webkit-backdrop-filter: blur(calc(var(--card_filter) + 12px)) saturate(1.2);
+    box-shadow:
+      4px 0 32px -12px rgba(0, 0, 0, 0.55),
+      inset -1px 0 0 rgba(255, 255, 255, 0.06);
+    transform: translateX(-102%);
+    transition:
+      transform var(--drawer-duration) var(--drawer-ease),
+      box-shadow var(--drawer-duration) ease;
+    z-index: 9996;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    will-change: transform;
+  }
+
+  .KD-left.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* 抽屉内子项 stagger 入场 */
+  .KD-left > * {
+    opacity: 0;
+    transform: translateX(-16px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s var(--drawer-ease);
+    animation: none;
+  }
+
+  .KD-left.mobile-open > * {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .KD-left.mobile-open > *:nth-child(1) { transition-delay: 0.06s; }
+  .KD-left.mobile-open > *:nth-child(2) { transition-delay: 0.10s; }
+  .KD-left.mobile-open > *:nth-child(3) { transition-delay: 0.14s; }
+  .KD-left.mobile-open > *:nth-child(4) { transition-delay: 0.18s; }
+  .KD-left.mobile-open > *:nth-child(5) { transition-delay: 0.22s; }
+  .KD-left.mobile-open > *:nth-child(6) { transition-delay: 0.26s; }
+
+  /* iOS 锁 body 滚动 */
+  body.mobile-sidebar-locked {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* 抽屉内的滚动条隐藏 */
+  .KD-left::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .KD-left,
+  .msb-line,
+  .KD-left > * {
+    transition: none !important;
+  }
+}
+
+/* ============================================================
+   播放器状态 与 底栏的折叠关系
+   ============================================================ */
+
+/* ---------- 桌面端：展开 / 列表打开时整体左移避让 ---------- */
+@media (min-width: 801px) {
+  footer {
+    transition: padding-right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body.music-expanded footer {
+    padding-right: 360px;
+  }
+  body.music-playlist-open footer {
+    padding-right: 340px;
+  }
+}
+
+/* ---------- 移动端：折叠时避让，展开 / 列表打开时淡出 ---------- */
+@media (max-width: 800px) {
+  footer > span {
+    /* 折叠圆形播放器占 80px（68 宽 + 12 右边距） */
+    --footer-avoid-right: 80px;
+  }
+
+  body.music-expanded footer > span,
+  body.music-playlist-open footer > span {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    --footer-avoid-right: 0px;
+  }
+}
+
+/* 减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  footer > span,
+  footer {
+    transition: none !important;
   }
 }

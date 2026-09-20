@@ -628,6 +628,7 @@
     playlistBtn.addEventListener("click", function (e) {
       e.stopPropagation();
       togglePlaylistPanel();
+      syncBodyState();
     });
   }
 
@@ -642,6 +643,7 @@
     collapse.addEventListener("click", function (e) {
       e.stopPropagation();
       player.classList.toggle("expanded");
+      syncBodyState();
       if (!player.classList.contains("expanded")) togglePlaylistPanel(false);
     });
   }
@@ -727,8 +729,28 @@
   loadTrack(currentIndex, false);
   paintSeek(0);
 
-  if (window.innerWidth > 600) player.classList.add("expanded");
+  /* ==================== body 状态同步 ==================== */
 
+  /**
+   * 将播放器的展开 / 列表状态同步到 body，
+   * 供 CSS 控制底栏避让与淡出。
+   * @return {void}
+   */
+  function syncBodyState() {
+    if (!document.body) return;
+    document.body.classList.toggle(
+      "music-expanded",
+      player.classList.contains("expanded"),
+    );
+    if (playlistPanel) {
+      document.body.classList.toggle(
+        "music-playlist-open",
+        playlistPanel.classList.contains("active"),
+      );
+    }
+  }
+  if (window.innerWidth > 600) player.classList.add("expanded");
+  syncBodyState();
   if (raw.autoplay) {
     audio.muted = true;
     audio

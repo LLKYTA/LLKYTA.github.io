@@ -10,6 +10,16 @@
   <meta name="keywords" content="LD_klin,刘岩主页,LD引导页,LD" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- 预连接关键域名 -->
+  <link rel="preconnect" href="https://cdn.simpleicons.org" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="preconnect" href="https://v1.hitokoto.cn" />
+  <link rel="preconnect" href="https://uapis.cn" />
+  <link rel="dns-prefetch" href="https://sdk.51.la" />
+
+  <!-- 字体预加载 -->
+  <link rel="preload" href="./static/fonts/Ubuntu-Regular.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="./static/fonts/Pacifico-Regular.ttf" as="font" type="font/ttf" crossorigin />
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="profile" />
   <meta property="og:title" content="KD_klin · 个人主页" />
@@ -51,6 +61,13 @@
   <div class="KD-filter"></div>
   <div class="mouse-glow" id="mouseGlow" aria-hidden="true"></div>
   <canvas class="bg-particles" id="bgParticles" aria-hidden="true"></canvas>
+
+  <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" type="button" aria-label="打开侧边栏" aria-expanded="false">
+    <span class="msb-line"></span>
+    <span class="msb-line"></span>
+    <span class="msb-line"></span>
+  </button>
+  <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop" aria-hidden="true"></div>
 
   <div class="KD-main">
     <!-- 左侧边栏 -->
