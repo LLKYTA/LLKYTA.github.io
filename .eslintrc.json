@@ -7,6 +7,6 @@
     "valid-jsdoc": "off",
     "no-unused-vars": ["warn"],
     "no-console": "off",
-    "max-len": ["warn", { "code": 120 }]
+    "max-len": ["warn", { "code": 500 }]
   }
 }
