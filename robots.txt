@@ -1,0 +1,17 @@
+# robots.txt for https://kd.of.cd
+User-agent: *
+Allow: /
+
+# 不收录静态资源目录，节省爬虫抓取配额
+Disallow: /static/css/
+Disallow: /static/js/
+Disallow: /static/fonts/
+Disallow: /static/music/
+Disallow: /static/svg/
+
+# 不收录项目文件
+Disallow: /README.md
+Disallow: /launch.json
+
+# 声明 Sitemap 地址
+Sitemap: https://kd.of.cd/sitemap.xml
