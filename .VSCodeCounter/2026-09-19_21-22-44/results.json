@@ -1,0 +1,74 @@
+{
+  "file:///d%3A/github/LLKYTA.github.io/static/svg/snake-Light.svg": {
+    "language": "XML",
+    "code": 1,
+    "comment": 0,
+    "blank": 0
+  },
+  "file:///d%3A/github/LLKYTA.github.io/static/svg/snake-Dark.svg": {
+    "language": "XML",
+    "code": 1,
+    "comment": 0,
+    "blank": 0
+  },
+  "file:///d%3A/github/LLKYTA.github.io/static/svg/skillWap.svg": {
+    "language": "XML",
+    "code": 206,
+    "comment": 0,
+    "blank": 50
+  },
+  "file:///d%3A/github/LLKYTA.github.io/static/svg/skillPc.svg": {
+    "language": "XML",
+    "code": 206,
+    "comment": 0,
+    "blank": 50
+  },
+  "file:///d%3A/github/LLKYTA.github.io/static/js/script.js": {
+    "language": "JavaScript",
+    "code": 1481,
+    "comment": 98,
+    "blank": 213
+  },
+  "file:///d%3A/github/LLKYTA.github.io/static/js/config.js": {
+    "language": "JavaScript",
+    "code": 102,
+    "comment": 20,
+    "blank": 9
+  },
+  "file:///d%3A/github/LLKYTA.github.io/static/css/style.css": {
+    "language": "PostCSS",
+    "code": 1778,
+    "comment": 84,
+    "blank": 263
+  },
+  "file:///d%3A/github/LLKYTA.github.io/static/css/root.css": {
+    "language": "PostCSS",
+    "code": 36,
+    "comment": 1,
+    "blank": 1
+  },
+  "file:///d%3A/github/LLKYTA.github.io/static/css/music-player.css": {
+    "language": "PostCSS",
+    "code": 219,
+    "comment": 11,
+    "blank": 35
+  },
+  "file:///d%3A/github/LLKYTA.github.io/static/css/github-card.css": {
+    "language": "PostCSS",
+    "code": 365,
+    "comment": 1,
+    "blank": 60
+  },
+  "file:///d%3A/github/LLKYTA.github.io/README.md": {
+    "language": "Markdown",
+    "code": 64,
+    "comment": 1,
+    "blank": 23
+  },
+  "file:///d%3A/github/LLKYTA.github.io/index.html": {
+    "language": "HTML",
+    "code": 268,
+    "comment": 8,
+    "blank": 25
+  }
+}

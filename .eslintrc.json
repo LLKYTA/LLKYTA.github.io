@@ -1,0 +1,12 @@
+{
+  "extends": ["google"],
+  "env": { "browser": true, "es2021": true },
+  "parserOptions": { "ecmaVersion": "latest", "sourceType": "script" },
+  "rules": {
+    "require-jsdoc": "off",
+    "valid-jsdoc": "off",
+    "no-unused-vars": ["warn"],
+    "no-console": "off",
+    "max-len": ["warn", { "code": 120 }]
+  }
+}

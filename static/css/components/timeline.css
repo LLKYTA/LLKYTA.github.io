@@ -1,0 +1,131 @@
+/* static/css/components/timeline.css */
+.timeline-list {
+  width: 100%;
+  height: 200px;
+  font-size: 13px;
+  padding-left: 8px;
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+}
+
+.timeline-list::-webkit-scrollbar {
+  display: none;
+}
+
+.timeline-list li {
+  list-style: none;
+  position: relative;
+  padding: 12px 0 12px 15px;
+  border-left: 2px solid rgb(255 255 255 / 8%);
+  border-radius: 0;
+  scroll-snap-align: end;
+  color: var(--main_text_color);
+}
+
+.timeline-list li:first-child {
+  border-left-color: rgb(116 123 255 / 50%);
+}
+
+.timeline-list li:first-child .line-ver {
+  background: rgb(116 123 255 / 18%);
+  color: var(--purple_text_color);
+  opacity: 1;
+}
+
+.focus {
+  width: 8px;
+  height: 8px;
+  border-radius: 22px;
+  background-color: rgb(255 255 255);
+  border: 2px solid #fff;
+  position: absolute;
+  left: -5px;
+  top: 50%;
+}
+
+.timeline-list li:first-child .focus:first-child {
+  background-color: #aaffcd;
+  animation: focus 1.8s ease infinite;
+}
+
+@keyframes focus {
+  0% {
+    box-shadow: 0 0 0 0 rgb(170 255 205 / 70%);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgb(170 255 205 / 0%);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgb(170 255 205 / 0%);
+  }
+}
+
+.line-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+.line-ver {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--left_tag_item);
+  color: var(--main_text_color);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  opacity: 0.9;
+}
+
+.line-title {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--main_text_color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.line-date {
+  flex-shrink: 0;
+  font-size: 10px;
+  opacity: 0.5;
+  font-variant-numeric: tabular-nums;
+  color: var(--main_text_color);
+}
+
+.line-desc {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0.65;
+  color: var(--main_text_color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeline-progress {
+  position: absolute;
+  right: 6px;
+  top: 62px;
+  bottom: 22px;
+  width: 2px;
+  background: rgb(255 255 255 / 4%);
+  border-radius: 1px;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.timeline-progress-fill {
+  width: 100%;
+  height: 0;
+  background: rgb(116 123 255 / 45%);
+  border-radius: 1px;
+  transition: height 0.15s ease;
+}

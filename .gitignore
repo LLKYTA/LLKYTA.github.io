@@ -1,10 +1,10 @@
-# 代码统计报告
-details.md
-diff-*.md
-diff.csv
-diff.txt
-diff.md
-results.*
-
-# 编辑器
-.vscode/launch.json
+node_modules/
+package-lock.json
+backup_*/
+.vscode/*
+!.vscode/launch.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+*.log

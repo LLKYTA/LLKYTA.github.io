@@ -1,4 +1,5 @@
 <!-- README.md -->
+
 # KD_klin 的个人主页
 
 > 整天半吊子和不学无术的坏孩子，
@@ -79,19 +80,19 @@
 ├── index.html
 ├── README.md
 └── static/
-    ├── css/
-    │   ├── style.css
-    │   ├── root.css
-    │   ├── github-card.css
-    │   └── music-player.css
-    ├── js/
-    │   ├── config.js
-    │   ├── script.js
-    │   └── music-player.js
-    ├── img/
-    ├── svg/
-    ├── music/
-    └── fonts/
+├── css/
+│ ├── style.css
+│ ├── root.css
+│ ├── github-card.css
+│ └── music-player.css
+├── js/
+│ ├── config.js
+│ ├── script.js
+│ └── music-player.js
+├── img/
+├── svg/
+├── music/
+└── fonts/
 
 ## 🚀 本地运行
 
@@ -102,6 +103,7 @@
 ## 📌 已完成计划
 
 ### 🎨 UI / 交互
+
 - [x] 明暗主题切换 + View Transitions 过渡
 - [x] 响应式布局（桌面 / 平板 / 移动端）
 - [x] 移动端侧边栏抽屉（汉堡按钮 + 遮罩 + 右滑关闭）
@@ -113,6 +115,7 @@
 - [x] 音乐播放器折叠态动效优化（双层脉冲 / hover 反馈）
 
 ### ⚙️ 功能
+
 - [x] 接入 GitHub 用户数据展示（资料 / 贡献热力图 / 仓库）
 - [x] 一言（Hitokoto）随机语录 + 点击刷新
 - [x] 音乐播放器（歌单 / 音量 / 播放模式 / 频谱可视化 / Media Session）
@@ -123,6 +126,7 @@
 - [x] 删除冗余的 site 项目列表
 
 ### 🚀 性能与体验
+
 - [x] 关键域名 preconnect（simpleicons / jsdelivr / hitokoto / uapis）
 - [x] 字体 preload
 - [x] 脚本 defer 非阻塞加载
@@ -133,6 +137,7 @@
 ## 📌 未来计划
 
 ### 🎨 UI / 交互
+
 - [ ] 优化侧边栏交互，支持拖拽排序卡片
 - [ ] 增加更多主题配色（日落 / 森林 / 赛博朋克）
 - [ ] 首页加入骨架屏，避免首屏闪白
@@ -140,6 +145,7 @@
 - [ ] 播放器支持歌词滚动
 
 ### ⚙️ 功能
+
 - [ ] 完善时间线模块，支持从外部 JSON / API 动态加载
 - [ ] 接入评论系统（Giscus / Waline / Artalk）
 - [ ] 增加博客 / 文章列表模块
@@ -150,6 +156,7 @@
 - [ ] 多语言切换（中 / 英）
 
 ### 🚀 性能与工程化
+
 - [ ] 拆分 `style.css` 为多个模块文件，配合构建工具打包
 - [ ] 引入 Vite / esbuild，做资源压缩与 tree-shaking
 - [ ] 天气 API 通过 Cloudflare Workers 代理，隐藏密钥
@@ -158,6 +165,7 @@
 - [ ] 添加单元测试（核心工具函数）
 
 ### 📚 文档
+
 - [ ] 完善 README 部署指南（Vercel / Netlify / Cloudflare Pages）
 - [ ] 补全 `config.js` 每项配置的详细说明
 - [ ] 录制演示视频或 GIF 动图

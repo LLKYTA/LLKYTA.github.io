@@ -1,0 +1,14 @@
+"filename", "language", "XML", "JavaScript", "PostCSS", "Markdown", "HTML", "comment", "blank", "total"
+"d:\github\LLKYTA.github.io\README.md", "Markdown", 0, 0, 0, 64, 0, 1, 23, 88
+"d:\github\LLKYTA.github.io\index.html", "HTML", 0, 0, 0, 0, 268, 8, 25, 301
+"d:\github\LLKYTA.github.io\static\css\github-card.css", "PostCSS", 0, 0, 365, 0, 0, 1, 60, 426
+"d:\github\LLKYTA.github.io\static\css\music-player.css", "PostCSS", 0, 0, 219, 0, 0, 11, 35, 265
+"d:\github\LLKYTA.github.io\static\css\root.css", "PostCSS", 0, 0, 36, 0, 0, 1, 1, 38
+"d:\github\LLKYTA.github.io\static\css\style.css", "PostCSS", 0, 0, 1778, 0, 0, 84, 263, 2125
+"d:\github\LLKYTA.github.io\static\js\config.js", "JavaScript", 0, 102, 0, 0, 0, 20, 9, 131
+"d:\github\LLKYTA.github.io\static\js\script.js", "JavaScript", 0, 1481, 0, 0, 0, 98, 213, 1792
+"d:\github\LLKYTA.github.io\static\svg\skillPc.svg", "XML", 206, 0, 0, 0, 0, 0, 50, 256
+"d:\github\LLKYTA.github.io\static\svg\skillWap.svg", "XML", 206, 0, 0, 0, 0, 0, 50, 256
+"d:\github\LLKYTA.github.io\static\svg\snake-Dark.svg", "XML", 1, 0, 0, 0, 0, 0, 0, 1
+"d:\github\LLKYTA.github.io\static\svg\snake-Light.svg", "XML", 1, 0, 0, 0, 0, 0, 0, 1
+"Total", "-", 414, 1583, 2398, 64, 268, 224, 729, 5680

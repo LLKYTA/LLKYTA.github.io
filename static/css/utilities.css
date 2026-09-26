@@ -1,0 +1,57 @@
+/* static/css/utilities.css - 工具类、无障碍、动效降级、View Transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: ease;
+}
+
+::view-transition-old(root) {
+  animation-name: vt-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: vt-fade-in;
+}
+
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.iconItem:focus-visible,
+.switch:focus-visible,
+.cmd-hint:focus-visible,
+.music-cover:focus-visible,
+.music-collapse:focus-visible,
+.github-retry-btn:focus-visible {
+  outline: 2px solid var(--purple_text_color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html .gradientText,
+  html .status-dot,
+  html .music-player.playing .music-disc,
+  html #KD-loading-center,
+  html .tanChiShe,
+  html .bg-particles {
+    animation: none;
+    transition: none;
+  }
+
+  html .welcome-cursor {
+    animation: none;
+  }
+
+  html footer > span,
+  html footer {
+    transition: none;
+  }
+}

@@ -1,38 +1,38 @@
-/* static/css/root.css */
+/* static/css/root.css - 主题变量 */
 html[data-theme='Light'] {
   --back_filter: 4px;
   --back_filter_color: #00000030;
   --card_filter: 10px;
   --fill: #3494e6;
-  --footer_text_color: #ffffff;
+  --footer_text_color: #fff;
   --gradient: linear-gradient(90deg, #3494e6 0%, #ec6ead 100%);
   --item_bg_color: #00000038;
   --item_hover_color: #33333338;
-  --item_left_text_color: #ffffff;
-  --item_left_title_color: #ffffff;
+  --item_left_text_color: #fff;
+  --item_left_title_color: #fff;
   --left_tag_item: rgb(27 42 57 / 20%);
-  --main_bg_color: url(../img/background.jpg);
-  --main_text_color: #ffffff;
-  --name: Light;
+  --main_bg_color: url("../img/background.jpg");
+  --main_text_color: #fff;
+  --name: light;
   --purple_text_color: #747bff;
   --text_bg_color: #00000040;
 }
 
 html[data-theme='Dark'] {
-  --back_filter: 0px;
-  --back_filter_color: #000000;
-  --card_filter: 0px;
-  --fill: #ffffff;
+  --back_filter: 0;
+  --back_filter_color: #000;
+  --card_filter: 0;
+  --fill: #fff;
   --footer_text_color: #646464;
-  --gradient: linear-gradient(120deg, rgb(133, 62, 255), #f76cc6 30%, rgb(255, 255, 255) 60%);
-  --item_bg_color: rgb(19, 20, 24);
-  --item_hover_color: rgb(19, 23, 27);
-  --item_left_text_color: rgb(142, 142, 142);
-  --item_left_title_color: rgb(255, 255, 255);
-  --left_tag_item: linear-gradient(50deg, #1f2327, #000000);
-  --main_bg_color: url(../img/background.jpg);
+  --gradient: linear-gradient(120deg, rgb(133 62 255), #f76cc6 30%, rgb(255 255 255) 60%);
+  --item_bg_color: rgb(19 20 24);
+  --item_hover_color: rgb(19 23 27);
+  --item_left_text_color: rgb(142 142 142);
+  --item_left_title_color: rgb(255 255 255);
+  --left_tag_item: linear-gradient(50deg, #1f2327, #000);
+  --main_bg_color: url("../img/background.jpg");
   --main_text_color: #fff;
-  --name: Dark;
+  --name: dark;
   --purple_text_color: #747bff;
-  --text_bg_color: rgb(26, 4, 48);
+  --text_bg_color: rgb(26 4 48);
 }

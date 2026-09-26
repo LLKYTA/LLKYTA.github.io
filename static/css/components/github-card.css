@@ -1,4 +1,4 @@
-/* static/css/github-card.css */
+/* static/css/components/github-card.css */
 .github-section {
   width: 100%;
 }
@@ -48,8 +48,10 @@
   cursor: pointer;
   font-size: 13px;
   backdrop-filter: blur(var(--card_filter));
-  -webkit-backdrop-filter: blur(var(--card_filter));
-  transition: background 0.2s ease, transform 0.2s ease;
+  backdrop-filter: blur(var(--card_filter));
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .github-retry-btn:hover {
@@ -64,8 +66,10 @@
   border-radius: 13px;
   background: var(--item_bg_color);
   backdrop-filter: blur(var(--card_filter));
-  -webkit-backdrop-filter: blur(var(--card_filter));
-  transition: transform 0.3s ease, background 0.2s ease;
+  backdrop-filter: blur(var(--card_filter));
+  transition:
+    transform 0.3s ease,
+    background 0.2s ease;
   margin-bottom: 15px;
 }
 
@@ -171,7 +175,7 @@
   border-radius: 13px;
   background: var(--item_bg_color);
   backdrop-filter: blur(var(--card_filter));
-  -webkit-backdrop-filter: blur(var(--card_filter));
+  backdrop-filter: blur(var(--card_filter));
   margin-bottom: 15px;
   transition: transform 0.3s ease;
 }
@@ -217,7 +221,9 @@
   aspect-ratio: 1 / 1;
   border-radius: 30%;
   background: var(--item_hover_color);
-  transition: transform 0.15s ease, border-radius 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    border-radius 0.15s ease;
 }
 
 .github-contrib-day:hover {
@@ -329,8 +335,10 @@ html[data-theme='Dark'] .github-contrib-level.level-4 {
   border-radius: 10px;
   background: var(--item_bg_color);
   backdrop-filter: blur(var(--card_filter));
-  -webkit-backdrop-filter: blur(var(--card_filter));
-  transition: transform 0.25s ease, background 0.2s ease;
+  backdrop-filter: blur(var(--card_filter));
+  transition:
+    transform 0.25s ease,
+    background 0.2s ease;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -388,37 +396,43 @@ html[data-theme='Dark'] .github-contrib-level.level-4 {
   gap: 4px;
 }
 
-@media (max-width: 800px) {
+@media (width <= 800px) {
   .github-profile-card {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
+
   .github-stats {
     justify-content: center;
   }
+
   .github-orgs {
     justify-content: center;
   }
+
   .github-repo-card {
     flex: 1 1 100%;
     min-width: unset;
   }
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .github-contrib-graph {
     gap: 2px;
     overflow-x: auto;
     padding-bottom: 4px;
   }
+
   .github-contrib-week {
     min-width: 4px;
     gap: 2px;
   }
+
   .github-contrib-graph::-webkit-scrollbar {
     height: 4px;
   }
+
   .github-contrib-graph::-webkit-scrollbar-thumb {
     background: var(--left_tag_item);
     border-radius: 4px;
