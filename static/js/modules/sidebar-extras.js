@@ -1,7 +1,7 @@
 /**
  * @fileoverview 侧边栏美化：滚动遮罩 + 焦点高亮 + 时间线进度。
  */
-(function() {
+(function () {
   'use strict';
 
   const left = document.querySelector('.KD-left');
@@ -36,19 +36,19 @@
   const cards = left.querySelectorAll('.left-div:not(.left-weather)');
   if (cards.length && !PREFERS_REDUCED_MOTION) {
     const observer = new IntersectionObserver(
-        function(entries) {
-          entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-              cards.forEach(function(el) {
-                el.classList.remove('in-focus');
-              });
-              entry.target.classList.add('in-focus');
-            }
-          });
-        },
-        {root: left, rootMargin: '-45% 0px -45% 0px', threshold: 0},
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            cards.forEach(function (el) {
+              el.classList.remove('in-focus');
+            });
+            entry.target.classList.add('in-focus');
+          }
+        });
+      },
+      {root: left, rootMargin: '-45% 0px -45% 0px', threshold: 0}
     );
-    cards.forEach(function(el) {
+    cards.forEach(function (el) {
       observer.observe(el);
     });
   }

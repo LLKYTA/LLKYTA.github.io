@@ -123,6 +123,38 @@
       },
     },
     {
+  icon: '🧲',
+  title: '切换鼠标引力模式',
+  hint: 'Mouse',
+  keywords: 'mouse attract repel gravity 鼠标 引力 排斥',
+  action: function () {
+    const order = ['attract', 'repel', 'off'];
+    const labels = { attract: '🧲 吸引', repel: '💥 排斥', off: '🚫 关闭' };
+    const cur = localStorage.getItem('KD_mouseMode') || 'attract';
+    const next = order[(order.indexOf(cur) + 1) % order.length];
+    if (typeof window.setMouseMode === 'function') {
+      window.setMouseMode(next);
+    } else {
+      localStorage.setItem('KD_mouseMode', next);
+    }
+    // 底部提示
+    const tip = document.createElement('div');
+    tip.textContent = '鼠标引力：' + (labels[next] || next);
+    tip.style.cssText =
+      'position:fixed;left:50%;bottom:80px;transform:translateX(-50%);' +
+      'padding:8px 16px;border-radius:8px;background:rgba(0,0,0,0.75);' +
+      'color:#fff;font-size:13px;z-index:99999;pointer-events:none;' +
+      'transition:opacity 0.3s ease;';
+    document.body.appendChild(tip);
+    setTimeout(function () {
+      tip.style.opacity = '0';
+      setTimeout(function () {
+        if (tip.parentNode) tip.parentNode.removeChild(tip);
+      }, 300);
+    }, 1000);
+  },
+},
+    {
       icon: '📊',
       title: '跳转到贡献热力图',
       hint: 'Contrib',

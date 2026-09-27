@@ -1,7 +1,7 @@
 /**
  * @fileoverview 站点运行时间显示模块。
  */
-(function() {
+(function () {
   'use strict';
   const el = document.getElementById('siteRuntime');
   if (!el || !CFG.site) return;

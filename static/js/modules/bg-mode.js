@@ -1,10 +1,10 @@
 /**
  * @fileoverview 背景模式切换模块。
  */
-(function() {
+(function () {
   'use strict';
 
-  window.applyBgMode = function(mode) {
+  window.applyBgMode = function (mode) {
     const modes = (CFG.background && CFG.background.modes) || ['glow', 'particles', 'none'];
     if (modes.indexOf(mode) === -1) mode = 'glow';
     document.documentElement.dataset.bg = mode;

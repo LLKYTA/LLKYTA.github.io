@@ -1,7 +1,7 @@
 /**
  * @fileoverview 技能可视化（Canvas 雷达图 + SVG 环形进度）。
  */
-(function() {
+(function () {
   'use strict';
 
   const SIMPLE_ICONS_CDN = 'https://cdn.simpleicons.org/';
@@ -17,7 +17,7 @@
     if (!wrap) return;
     wrap.innerHTML = '';
 
-    skills.forEach(function(s) {
+    skills.forEach(function (s) {
       const card = document.createElement('div');
       card.className = 'skill-ring-card';
       card.setAttribute('role', 'listitem');
@@ -59,22 +59,22 @@
     });
 
     const observer = new IntersectionObserver(
-        function(entries) {
-          entries.forEach(function(entry) {
-            if (!entry.isIntersecting) return;
-            const circle = entry.target;
-            const target = parseInt(circle.dataset.target, 10);
-            const offset = RING_CIRC * (1 - target / 100);
-            requestAnimationFrame(function() {
-              circle.style.strokeDashoffset = offset;
-            });
-            observer.unobserve(circle);
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          const circle = entry.target;
+          const target = parseInt(circle.dataset.target, 10);
+          const offset = RING_CIRC * (1 - target / 100);
+          requestAnimationFrame(function () {
+            circle.style.strokeDashoffset = offset;
           });
-        },
-        {threshold: 0.2},
+          observer.unobserve(circle);
+        });
+      },
+      {threshold: 0.2}
     );
 
-    wrap.querySelectorAll('.skill-ring-fill').forEach(function(el) {
+    wrap.querySelectorAll('.skill-ring-fill').forEach(function (el) {
       observer.observe(el);
     });
   }
@@ -208,28 +208,28 @@
     }
     resize();
     window.addEventListener(
-        'resize',
-        function() {
-          resize();
-          if (progress >= 1) draw();
-        },
-        {passive: true},
+      'resize',
+      function () {
+        resize();
+        if (progress >= 1) draw();
+      },
+      {passive: true}
     );
     const observer = new IntersectionObserver(
-        function(entries) {
-          entries.forEach(function(entry) {
-            if (!entry.isIntersecting) return;
-            observer.unobserve(entry.target);
-            progress = 0;
-            if (!rafId) rafId = requestAnimationFrame(animate);
-          });
-        },
-        {threshold: 0.2},
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          observer.unobserve(entry.target);
+          progress = 0;
+          if (!rafId) rafId = requestAnimationFrame(animate);
+        });
+      },
+      {threshold: 0.2}
     );
     observer.observe(canvas.parentElement);
   }
 
-  window.renderSkillsFromConfig = function() {
+  window.renderSkillsFromConfig = function () {
     const skills = (CFG && CFG.skills) || [];
     if (!skills.length) return;
     renderSkillRings(skills);

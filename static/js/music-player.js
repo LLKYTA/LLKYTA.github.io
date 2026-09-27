@@ -2,7 +2,7 @@
  * @fileoverview KD_klin 音乐播放器模块（独立）。
  * @description 支持播放列表、音量、播放模式与 Media Session。
  */
-(function() {
+(function () {
   'use strict';
 
   const CFG_MUSIC = (window.KD_CONFIG && window.KD_CONFIG.music) || {};
@@ -26,8 +26,8 @@
 
   function escapeHtml(str) {
     if (!str) return '';
-    return String(str).replace(/[&<>"']/g, function(m) {
-      return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'}[m];
+    return String(str).replace(/[&<>"']/g, function (m) {
+      return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[m];
     });
   }
   function formatTime(sec) {
@@ -77,35 +77,35 @@
     return;
   }
   playlist = playlist
-      .filter(function(t) {
-        return t && t.src;
-      })
-      .map(function(t) {
-        return {
-          src: t.src,
-          title: t.title || '未知曲目',
-          artist: t.artist || '',
-          cover: t.cover || '',
-        };
-      });
+    .filter(function (t) {
+      return t && t.src;
+    })
+    .map(function (t) {
+      return {
+        src: t.src,
+        title: t.title || '未知曲目',
+        artist: t.artist || '',
+        cover: t.cover || '',
+      };
+    });
   if (!playlist.length) {
     player.style.display = 'none';
     return;
   }
 
   const PERSIST = CFG_MUSIC.persist !== false;
-  let currentIndex = PERSIST ?
-    Math.max(
+  let currentIndex = PERSIST
+    ? Math.max(
         0,
         Math.min(
-            playlist.length - 1,
-            parseInt(localStorage.getItem(STORAGE_KEYS.index) || '0', 10) || 0,
-        ),
-    ) :
-    0;
-  let mode = PERSIST ?
-    localStorage.getItem(STORAGE_KEYS.mode) || CFG_MUSIC.mode || 'list' :
-    CFG_MUSIC.mode || 'list';
+          playlist.length - 1,
+          parseInt(localStorage.getItem(STORAGE_KEYS.index) || '0', 10) || 0
+        )
+      )
+    : 0;
+  let mode = PERSIST
+    ? localStorage.getItem(STORAGE_KEYS.mode) || CFG_MUSIC.mode || 'list'
+    : CFG_MUSIC.mode || 'list';
   if (MODES.indexOf(mode) === -1) mode = 'list';
   let volume = PERSIST ? parseFloat(localStorage.getItem(STORAGE_KEYS.volume)) : NaN;
   if (!isFinite(volume)) volume = typeof CFG_MUSIC.volume === 'number' ? CFG_MUSIC.volume : 0.7;
@@ -170,7 +170,7 @@
     if (!playlistList) return;
     playlistList.innerHTML = '';
     playlistCount.textContent = playlist.length + ' 首';
-    playlist.forEach(function(t, i) {
+    playlist.forEach(function (t, i) {
       const li = document.createElement('li');
       li.className = 'music-playlist-item' + (i === currentIndex ? ' playing' : '');
       li.dataset.index = i;
@@ -181,10 +181,10 @@
         '<span class="music-playlist-item-name">' +
         escapeHtml(t.title) +
         '</span>' +
-        (t.artist ?
-          '<span class="music-playlist-item-artist">' + escapeHtml(t.artist) + '</span>' :
-          '');
-      li.addEventListener('click', function() {
+        (t.artist
+          ? '<span class="music-playlist-item-artist">' + escapeHtml(t.artist) + '</span>'
+          : '');
+      li.addEventListener('click', function () {
         if (i === currentIndex) {
           togglePlay();
           return;
@@ -232,7 +232,7 @@
     saveState();
     updateMediaSession();
     if (autoplay) {
-      audio.play().catch(function(err) {
+      audio.play().catch(function (err) {
         console.warn('[Music] 播放失败:', err);
       });
     }
@@ -244,7 +244,7 @@
       paintVolume();
     }
     if (audio.paused) {
-      audio.play().catch(function(err) {
+      audio.play().catch(function (err) {
         console.warn('[Music] 播放失败:', err);
         titleEl.textContent = '播放失败，请检查音源';
       });
@@ -291,10 +291,10 @@
       src.connect(analyser);
       analyser.connect(audioCtx.destination);
       freqData = new Uint8Array(analyser.frequencyBinCount);
-      setTimeout(function() {
+      setTimeout(function () {
         try {
           analyser.getByteFrequencyData(freqData);
-          const sum = freqData.reduce(function(a, b) {
+          const sum = freqData.reduce(function (a, b) {
             return a + b;
           }, 0);
           if (sum === 0) usePseudo = true;
@@ -360,31 +360,31 @@
   }
   function armUnlockGesture(needResume) {
     const events = ['pointerdown', 'touchstart', 'keydown'];
-    const unlock = function(e) {
+    const unlock = function (e) {
       if (unlocked) return;
       if (e && e.target && e.target.closest) {
         if (e.target.closest('#musicCollapse')) return;
         if (
           e.target.closest(
-              '#musicVolumeBtn, #musicVolume, #musicPlaylistBtn, #musicMode, #musicPrev, #musicNext, #musicCover',
+            '#musicVolumeBtn, #musicVolume, #musicPlaylistBtn, #musicMode, #musicPrev, #musicNext, #musicCover'
           )
         ) {
           return;
         }
       }
       unlocked = true;
-      events.forEach(function(ev) {
+      events.forEach(function (ev) {
         document.removeEventListener(ev, unlock);
       });
       audio.muted = false;
       paintVolume();
       if (needResume || audio.paused) {
-        audio.play().catch(function(err) {
+        audio.play().catch(function (err) {
           console.warn('[Music] 手势补播失败:', err);
         });
       }
     };
-    events.forEach(function(ev) {
+    events.forEach(function (ev) {
       document.addEventListener(ev, unlock, {passive: true});
     });
   }
@@ -392,12 +392,12 @@
   cover.addEventListener('click', togglePlay);
   if (prevBtn) prevBtn.addEventListener('click', playPrev);
   if (nextBtn) {
-    nextBtn.addEventListener('click', function() {
+    nextBtn.addEventListener('click', function () {
       playNext(false);
     });
   }
   if (modeBtn) {
-    modeBtn.addEventListener('click', function() {
+    modeBtn.addEventListener('click', function () {
       const i = MODES.indexOf(mode);
       mode = MODES[(i + 1) % MODES.length];
       paintModeBtn();
@@ -405,7 +405,7 @@
     });
   }
   if (volumeBtn) {
-    volumeBtn.addEventListener('click', function() {
+    volumeBtn.addEventListener('click', function () {
       if (audio.muted || volume === 0) {
         audio.muted = false;
         volume = lastVolume || 0.7;
@@ -419,7 +419,7 @@
     });
   }
   if (volumeSlider) {
-    volumeSlider.addEventListener('input', function() {
+    volumeSlider.addEventListener('input', function () {
       volume = parseFloat(volumeSlider.value);
       if (volume > 0) {
         audio.muted = false;
@@ -431,79 +431,79 @@
     });
   }
   if (playlistBtn) {
-    playlistBtn.addEventListener('click', function(e) {
+    playlistBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       togglePlaylistPanel();
       syncBodyState();
     });
   }
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     if (!playlistPanel || !playlistPanel.classList.contains('active')) return;
     if (playlistPanel.contains(e.target)) return;
     if (playlistBtn && playlistBtn.contains(e.target)) return;
     togglePlaylistPanel(false);
   });
   if (collapse) {
-    collapse.addEventListener('click', function(e) {
+    collapse.addEventListener('click', function (e) {
       e.stopPropagation();
       player.classList.toggle('expanded');
       syncBodyState();
       if (!player.classList.contains('expanded')) togglePlaylistPanel(false);
     });
   }
-  seek.addEventListener('input', function() {
+  seek.addEventListener('input', function () {
     paintSeek(seek.value);
     if (audio.duration) curEl.textContent = formatTime((seek.value / 100) * audio.duration);
   });
-  seek.addEventListener('change', function() {
+  seek.addEventListener('change', function () {
     if (!audio.duration) return;
     audio.currentTime = (seek.value / 100) * audio.duration;
   });
-  audio.addEventListener('play', function() {
+  audio.addEventListener('play', function () {
     player.classList.add('playing');
     startViz();
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
   });
-  audio.addEventListener('pause', function() {
+  audio.addEventListener('pause', function () {
     player.classList.remove('playing');
     stopViz();
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
   });
-  audio.addEventListener('loadedmetadata', function() {
+  audio.addEventListener('loadedmetadata', function () {
     durEl.textContent = formatTime(audio.duration);
   });
-  audio.addEventListener('timeupdate', function() {
+  audio.addEventListener('timeupdate', function () {
     if (!audio.duration) return;
     const pct = (audio.currentTime / audio.duration) * 100;
     seek.value = pct;
     paintSeek(pct);
     curEl.textContent = formatTime(audio.currentTime);
   });
-  audio.addEventListener('ended', function() {
+  audio.addEventListener('ended', function () {
     if (mode === 'single') {
       audio.currentTime = 0;
-      audio.play().catch(function() {});
+      audio.play().catch(function () {});
       return;
     }
     playNext(true);
   });
-  audio.addEventListener('error', function() {
+  audio.addEventListener('error', function () {
     titleEl.textContent = '音源加载失败';
   });
 
   if ('mediaSession' in navigator) {
     try {
-      navigator.mediaSession.setActionHandler('play', function() {
+      navigator.mediaSession.setActionHandler('play', function () {
         audio.play();
       });
-      navigator.mediaSession.setActionHandler('pause', function() {
+      navigator.mediaSession.setActionHandler('pause', function () {
         audio.pause();
       });
       navigator.mediaSession.setActionHandler('previoustrack', playPrev);
-      navigator.mediaSession.setActionHandler('nexttrack', function() {
+      navigator.mediaSession.setActionHandler('nexttrack', function () {
         playNext(false);
       });
-      navigator.mediaSession.setActionHandler('seekto', function(details) {
+      navigator.mediaSession.setActionHandler('seekto', function (details) {
         if (details.seekTime != null) audio.currentTime = details.seekTime;
       });
     } catch (e) {}
@@ -524,8 +524,8 @@
     document.body.classList.toggle('music-expanded', player.classList.contains('expanded'));
     if (playlistPanel) {
       document.body.classList.toggle(
-          'music-playlist-open',
-          playlistPanel.classList.contains('active'),
+        'music-playlist-open',
+        playlistPanel.classList.contains('active')
       );
     }
   }
@@ -534,12 +534,12 @@
   if (CFG_MUSIC.autoplay) {
     audio.muted = true;
     audio
-        .play()
-        .then(function() {
-          armUnlockGesture();
-        })
-        .catch(function() {
-          armUnlockGesture(true);
-        });
+      .play()
+      .then(function () {
+        armUnlockGesture();
+      })
+      .catch(function () {
+        armUnlockGesture(true);
+      });
   }
 })();

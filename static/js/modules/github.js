@@ -1,28 +1,28 @@
 /**
  * @fileoverview GitHub 数据展示模块。
  */
-(function() {
+(function () {
   'use strict';
 
   const GITHUB_CACHE_KEY = 'github_data_cache';
   const LANG_COLORS = {
-    'JavaScript': '#f1e05a',
-    'TypeScript': '#3178c6',
-    'Python': '#3572a5',
-    'HTML': '#e34c26',
-    'CSS': '#563d7c',
-    'Java': '#b07219',
-    'Go': '#00add8',
-    'Rust': '#dea584',
-    'C': '#555555',
+    JavaScript: '#f1e05a',
+    TypeScript: '#3178c6',
+    Python: '#3572a5',
+    HTML: '#e34c26',
+    CSS: '#563d7c',
+    Java: '#b07219',
+    Go: '#00add8',
+    Rust: '#dea584',
+    C: '#555555',
     'C++': '#f34b7d',
-    'Shell': '#89e051',
-    'Vue': '#41b883',
-    'PHP': '#4f5d95',
-    'Ruby': '#701516',
-    'Kotlin': '#a97bff',
-    'Swift': '#f05138',
-    'default': '#8b8b8b',
+    Shell: '#89e051',
+    Vue: '#41b883',
+    PHP: '#4f5d95',
+    Ruby: '#701516',
+    Kotlin: '#a97bff',
+    Swift: '#f05138',
+    default: '#8b8b8b',
   };
 
   function renderGitHubProfile(data) {
@@ -36,7 +36,7 @@
     const orgsEl = document.getElementById('gh-orgs');
     orgsEl.innerHTML = '';
     if (data.organizations && data.organizations.length) {
-      data.organizations.forEach(function(org) {
+      data.organizations.forEach(function (org) {
         const tag = document.createElement('span');
         tag.className = 'github-org-tag';
         tag.textContent = org.login;
@@ -64,12 +64,12 @@
       if (c <= 9) return 3;
       return 4;
     }
-    weeks.forEach(function(week) {
+    weeks.forEach(function (week) {
       const wEl = document.createElement('div');
       wEl.className = 'github-contrib-week';
       const days = week.contribution_days || [];
       const map = {};
-      days.forEach(function(d) {
+      days.forEach(function (d) {
         map[d.weekday] = d;
       });
       for (let i = 0; i < 7; i++) {
@@ -96,20 +96,20 @@
       grid.innerHTML = '<span style="font-size:13px;opacity:0.6;">暂无仓库数据</span>';
       return;
     }
-    repos.forEach(function(repo) {
+    repos.forEach(function (repo) {
       const card = document.createElement('a');
       card.className = 'github-repo-card';
       card.href = repo.html_url || '#';
       card.target = '_blank';
       card.rel = 'noopener';
       const langColor = LANG_COLORS[repo.language] || LANG_COLORS.default;
-      const langHtml = repo.language ?
-        '<span class="github-repo-lang"><span class="github-repo-lang-dot" style="background:' +
+      const langHtml = repo.language
+        ? '<span class="github-repo-lang"><span class="github-repo-lang-dot" style="background:' +
           langColor +
           '"></span>' +
           window.escapeHtml(repo.language) +
-          '</span>' :
-        '';
+          '</span>'
+        : '';
       const stars = repo.stargazers_count || repo.stargazers || 0;
       const forks = repo.forks_count || repo.forks || 0;
       card.innerHTML =
@@ -130,7 +130,7 @@
       grid.appendChild(card);
     });
   }
-  window.loadGitHubData = function() {
+  window.loadGitHubData = function () {
     const loadingEl = document.getElementById('github-loading');
     const errorEl = document.getElementById('github-error');
     const contentEl = document.getElementById('github-content');
@@ -156,22 +156,22 @@
     contentEl.style.display = 'none';
 
     fetch(api)
-        .then(function(res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json();
-        })
-        .then(function(data) {
-          sessionStorage.setItem(GITHUB_CACHE_KEY, JSON.stringify(data));
-          renderGitHubProfile(data);
-          renderContributionGraph(data.activity);
-          renderRepositories(data.pinned_repositories || data.repositories || []);
-          loadingEl.style.display = 'none';
-          contentEl.style.display = 'block';
-        })
-        .catch(function(err) {
-          console.error('GitHub API Error:', err);
-          loadingEl.style.display = 'none';
-          errorEl.style.display = 'block';
-        });
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        sessionStorage.setItem(GITHUB_CACHE_KEY, JSON.stringify(data));
+        renderGitHubProfile(data);
+        renderContributionGraph(data.activity);
+        renderRepositories(data.pinned_repositories || data.repositories || []);
+        loadingEl.style.display = 'none';
+        contentEl.style.display = 'block';
+      })
+      .catch(function (err) {
+        console.error('GitHub API Error:', err);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+      });
   };
 })();

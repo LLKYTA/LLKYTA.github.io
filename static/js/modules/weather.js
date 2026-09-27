@@ -1,7 +1,7 @@
 /**
  * @fileoverview 沉浸式天气小组件模块。
  */
-(function() {
+(function () {
   'use strict';
 
   const WEATHER_CACHE_KEY = 'KD_weather_cache';
@@ -58,36 +58,36 @@
     const isNight = hour < 6 || hour >= 18;
     const isDusk = hour >= 17 && hour < 19;
     if (t.indexOf('晴') !== -1) {
-      return isNight ?
-        {
-          gradient: 'linear-gradient(135deg, #1a1a3e 0%, #2d2b55 50%, #1e3a5f 100%)',
-          accent: '#a8c8ff',
-          glow: 'rgba(168,200,255,0.2)',
-        } :
-        isDusk ?
-          {
-            gradient: 'linear-gradient(135deg, #f5af19 0%, #f12711 50%, #7b2d8e 100%)',
-            accent: '#ffeaa7',
-            glow: 'rgba(255,234,167,0.25)',
-          } :
-          {
-            gradient: 'linear-gradient(135deg, #56ccf2 0%, #2f80ed 50%, #1a5276 100%)',
-            accent: '#ffffff',
-            glow: 'rgba(255,255,255,0.2)',
-          };
+      return isNight
+        ? {
+            gradient: 'linear-gradient(135deg, #1a1a3e 0%, #2d2b55 50%, #1e3a5f 100%)',
+            accent: '#a8c8ff',
+            glow: 'rgba(168,200,255,0.2)',
+          }
+        : isDusk
+          ? {
+              gradient: 'linear-gradient(135deg, #f5af19 0%, #f12711 50%, #7b2d8e 100%)',
+              accent: '#ffeaa7',
+              glow: 'rgba(255,234,167,0.25)',
+            }
+          : {
+              gradient: 'linear-gradient(135deg, #56ccf2 0%, #2f80ed 50%, #1a5276 100%)',
+              accent: '#ffffff',
+              glow: 'rgba(255,255,255,0.2)',
+            };
     }
     if (t.indexOf('多云') !== -1) {
-      return isNight ?
-        {
-          gradient: 'linear-gradient(135deg, #232526 0%, #414345 50%, #2c3e50 100%)',
-          accent: '#b0bec5',
-          glow: 'rgba(176,190,197,0.15)',
-        } :
-        {
-          gradient: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 40%, #4a6fa5 100%)',
-          accent: '#ffffff',
-          glow: 'rgba(255,255,255,0.18)',
-        };
+      return isNight
+        ? {
+            gradient: 'linear-gradient(135deg, #232526 0%, #414345 50%, #2c3e50 100%)',
+            accent: '#b0bec5',
+            glow: 'rgba(176,190,197,0.15)',
+          }
+        : {
+            gradient: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 40%, #4a6fa5 100%)',
+            accent: '#ffffff',
+            glow: 'rgba(255,255,255,0.18)',
+          };
     }
     if (t.indexOf('阴') !== -1) {
       return {
@@ -152,34 +152,34 @@
     return WEATHER_API_URL + (qs ? '?' + qs : '');
   }
   function requestWeather(url, headers, timeout) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       const controller = new AbortController();
-      const timer = setTimeout(function() {
+      const timer = setTimeout(function () {
         controller.abort();
       }, timeout);
       fetch(url, {headers: headers, signal: controller.signal})
-          .then(function(res) {
-            clearTimeout(timer);
-            if (!res.ok) {
-              return res
-                  .json()
-                  .catch(function() {
-                    return {};
-                  })
-                  .then(function(body) {
-                    const err = new Error(body.message || 'HTTP ' + res.status);
-                    err.code = body.code || 'HTTP_' + res.status;
-                    err.status = res.status;
-                    throw err;
-                  });
-            }
-            return res.json();
-          })
-          .then(resolve)
-          .catch(function(err) {
-            clearTimeout(timer);
-            reject(err);
-          });
+        .then(function (res) {
+          clearTimeout(timer);
+          if (!res.ok) {
+            return res
+              .json()
+              .catch(function () {
+                return {};
+              })
+              .then(function (body) {
+                const err = new Error(body.message || 'HTTP ' + res.status);
+                err.code = body.code || 'HTTP_' + res.status;
+                err.status = res.status;
+                throw err;
+              });
+          }
+          return res.json();
+        })
+        .then(resolve)
+        .catch(function (err) {
+          clearTimeout(timer);
+          reject(err);
+        });
     });
   }
   function loadWeatherData(forceRefresh) {
@@ -216,27 +216,27 @@
       headers['Authorization'] = 'Bearer ' + cfg.apiKey;
     }
     requestWeather(buildWeatherUrl(), headers, cfg.timeout || 10000)
-        .then(function(data) {
-          sessionStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({data: data, ts: Date.now()}));
-          renderWeather(data, widget);
-        })
-        .catch(function(err) {
-          console.error('[Weather] 加载失败:', err);
-          loadingEl.style.display = 'none';
-          errorEl.style.display = 'flex';
-          const msgEl = errorEl.querySelector('.weather-error-msg');
-          if (!msgEl) return;
-          let msg = '天气加载失败';
-          if (err.name === 'AbortError') msg = '请求超时';
-          else if (err.status === 401 || err.status === 403) msg = '密钥无效或未配置';
-          else if (err.status === 429) msg = '请求过于频繁';
-          else if (err.code === 'NOT_FOUND') msg = '未找到该城市';
-          else if (err.code === 'INVALID_PARAMETER') msg = '参数无效';
-          else if (err.code === 'SERVICE_UNAVAILABLE') msg = '服务暂不可用';
-          else if (err.code === 'INTERNAL_SERVER_ERROR') msg = '服务器错误';
-          else if (err.message) msg = err.message;
-          msgEl.textContent = msg;
-        });
+      .then(function (data) {
+        sessionStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({data: data, ts: Date.now()}));
+        renderWeather(data, widget);
+      })
+      .catch(function (err) {
+        console.error('[Weather] 加载失败:', err);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'flex';
+        const msgEl = errorEl.querySelector('.weather-error-msg');
+        if (!msgEl) return;
+        let msg = '天气加载失败';
+        if (err.name === 'AbortError') msg = '请求超时';
+        else if (err.status === 401 || err.status === 403) msg = '密钥无效或未配置';
+        else if (err.status === 429) msg = '请求过于频繁';
+        else if (err.code === 'NOT_FOUND') msg = '未找到该城市';
+        else if (err.code === 'INVALID_PARAMETER') msg = '参数无效';
+        else if (err.code === 'SERVICE_UNAVAILABLE') msg = '服务暂不可用';
+        else if (err.code === 'INTERNAL_SERVER_ERROR') msg = '服务器错误';
+        else if (err.message) msg = err.message;
+        msgEl.textContent = msg;
+      });
   }
   function renderWeather(data, widget) {
     const loadingEl = widget.querySelector('.weather-loading');
@@ -263,8 +263,8 @@
     const metaParts = [];
     if (data.wind_direction) {
       metaParts.push(
-          window.escapeHtml(data.wind_direction) +
-          (data.wind_power ? ' ' + window.escapeHtml(data.wind_power) : ''),
+        window.escapeHtml(data.wind_direction) +
+          (data.wind_power ? ' ' + window.escapeHtml(data.wind_power) : '')
       );
     }
     if (typeof data.humidity === 'number') metaParts.push('湿度 ' + data.humidity + '%');
@@ -326,7 +326,7 @@
   window.loadWeatherData = loadWeatherData;
 
   let weatherTimer = null;
-  window.initWeatherWidget = function() {
+  window.initWeatherWidget = function () {
     const cfg = CFG.weather || {};
     if (!cfg.enabled) return;
     const widget = document.getElementById('weatherWidget');
@@ -334,14 +334,14 @@
     loadWeatherData(false);
     const retryBtn = document.getElementById('weatherRetryBtn');
     if (retryBtn) {
-      retryBtn.addEventListener('click', function() {
+      retryBtn.addEventListener('click', function () {
         sessionStorage.removeItem(WEATHER_CACHE_KEY);
         loadWeatherData(true);
       });
     }
     const interval = cfg.refreshInterval || 1800000;
     if (weatherTimer) clearInterval(weatherTimer);
-    weatherTimer = setInterval(function() {
+    weatherTimer = setInterval(function () {
       if (!document.hidden) loadWeatherData(true);
     }, interval);
   };

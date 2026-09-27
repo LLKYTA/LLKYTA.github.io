@@ -1,13 +1,13 @@
 /* static/css/base.css - 全局、布局、左侧边栏、右侧主内容 */
 @font-face {
   font-family: b;
-  src: url("../fonts/Ubuntu-Regular.ttf");
+  src: url('../fonts/Ubuntu-Regular.ttf');
   font-display: swap;
 }
 
 @font-face {
   font-family: title;
-  src: url("../fonts/Pacifico-Regular.ttf");
+  src: url('../fonts/Pacifico-Regular.ttf');
   font-display: swap;
 }
 
@@ -144,7 +144,7 @@ body {
   position: relative;
   aspect-ratio: 1 / 1;
   margin-top: 50px;
-  background: url("../img/logo.png") center / cover;
+  background: url('../img/logo.png') center / cover;
   border-radius: 50%;
 }
 
@@ -155,7 +155,7 @@ body {
   margin-top: 30px;
   position: relative;
   aspect-ratio: 1 / 1;
-  background: url("../img/logo.png") center / cover;
+  background: url('../img/logo.png') center / cover;
   border-radius: 50%;
   border: 0.5px solid #fff;
 }

@@ -1,12 +1,31 @@
 {
   "extends": ["google"],
-  "env": { "browser": true, "es2021": true },
-  "parserOptions": { "ecmaVersion": "latest", "sourceType": "script" },
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "script"
+  },
   "rules": {
     "require-jsdoc": "off",
     "valid-jsdoc": "off",
     "no-unused-vars": ["warn"],
     "no-console": "off",
-    "max-len": ["warn", { "code": 500 }]
-  }
+    "max-len": ["warn", {"code": 120}]
+  },
+  "linebreak-style": "off",
+  "overrides": [
+    {
+      "files": ["static/js/modules/three-bg.js"],
+      "parserOptions": {
+        "sourceType": "module"
+      },
+      "env": {
+        "browser": true,
+        "es2021": true
+      }
+    }
+  ]
 }

@@ -1,7 +1,7 @@
 /**
  * @fileoverview 主题三态（浅色 / 深色 / 自动）与 View Transitions。
  */
-(function() {
+(function () {
   'use strict';
 
   /**
@@ -34,8 +34,8 @@
    * @param {boolean} animate 是否使用 View Transitions。
    * @return {void}
    */
-  window.changeTheme = function(theme, animate) {
-    const apply = function() {
+  window.changeTheme = function (theme, animate) {
+    const apply = function () {
       const mode = theme === 'Dark' ? 'dark' : 'light';
       localStorage.setItem('KD_themeMode', mode);
       applyResolvedTheme();
@@ -49,7 +49,7 @@
 
   window.applyResolvedTheme = applyResolvedTheme;
 
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
     if ((localStorage.getItem('KD_themeMode') || 'auto') === 'auto') {
       applyResolvedTheme();
     }

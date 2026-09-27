@@ -1,7 +1,7 @@
 /**
  * @fileoverview 打字机欢迎语模块。
  */
-(function() {
+(function () {
   'use strict';
   const target = document.getElementById('welcomeTyped');
   if (!target || !CFG.typewriter) return;
@@ -27,7 +27,7 @@
     return html;
   }
   function totalLen(frags) {
-    return frags.reduce(function(s, f) {
+    return frags.reduce(function (s, f) {
       return s + f.text.length;
     }, 0);
   }
@@ -52,7 +52,7 @@
       if (ch >= total) {
         ch = total;
         target.innerHTML = render(p, ch);
-        setTimeout(function() {
+        setTimeout(function () {
           deleting = true;
           tick();
         }, 1600);

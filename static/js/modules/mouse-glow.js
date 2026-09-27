@@ -1,7 +1,7 @@
 /**
  * @fileoverview 鼠标跟随光效模块。
  */
-(function() {
+(function () {
   'use strict';
   if (PREFERS_REDUCED_MOTION || window.matchMedia('(hover: none)').matches) return;
   const root = document.documentElement;
@@ -18,12 +18,12 @@
     }
   }
   document.addEventListener(
-      'mousemove',
-      function(e) {
-        px = e.clientX;
-        py = e.clientY;
-        if (rafId === null) rafId = requestAnimationFrame(apply);
-      },
-      {passive: true},
+    'mousemove',
+    function (e) {
+      px = e.clientX;
+      py = e.clientY;
+      if (rafId === null) rafId = requestAnimationFrame(apply);
+    },
+    {passive: true}
   );
 })();

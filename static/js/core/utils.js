@@ -1,7 +1,7 @@
 /**
  * @fileoverview 通用工具函数模块。
  */
-(function() {
+(function () {
   'use strict';
 
   /**
@@ -10,8 +10,8 @@
    * @param {string} className 要切换的类名。
    * @return {void}
    */
-  window.toggleClass = function(selector, className) {
-    document.querySelectorAll(selector).forEach(function(el) {
+  window.toggleClass = function (selector, className) {
+    document.querySelectorAll(selector).forEach(function (el) {
       el.classList.toggle(className);
     });
   };
@@ -21,7 +21,7 @@
    * @param {string=} imageURL 图片地址。
    * @return {void}
    */
-  window.pop = function(imageURL) {
+  window.pop = function (imageURL) {
     const img = document.querySelector('.tc-img');
     if (imageURL && img) img.src = imageURL;
     window.toggleClass('.tc-main', 'active');
@@ -35,7 +35,7 @@
    * @param {number} days 过期天数。
    * @return {void}
    */
-  window.setCookie = function(name, value, days) {
+  window.setCookie = function (name, value, days) {
     let expires = '';
     if (days) {
       const date = new Date();
@@ -50,7 +50,7 @@
    * @param {string} name 名称。
    * @return {?string} Cookie 值或 null。
    */
-  window.getCookie = function(name) {
+  window.getCookie = function (name) {
     const eq = name + '=';
     const parts = document.cookie.split(';');
     for (let i = 0; i < parts.length; i++) {
@@ -66,10 +66,10 @@
    * @param {string} str 原始字符串。
    * @return {string} 转义后的字符串。
    */
-  window.escapeHtml = function(str) {
+  window.escapeHtml = function (str) {
     if (!str) return '';
-    return String(str).replace(/[&<>"']/g, function(m) {
-      return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'}[m];
+    return String(str).replace(/[&<>"']/g, function (m) {
+      return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[m];
     });
   };
 
@@ -78,19 +78,19 @@
    * @param {number} n 数字。
    * @return {string} 缩写字符串。
    */
-  window.formatNumber = function(n) {
+  window.formatNumber = function (n) {
     return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : n.toString();
   };
 
   const tc = document.getElementsByClassName('tc');
   const tcMain = document.getElementsByClassName('tc-main');
   if (tc[0]) {
-    tc[0].addEventListener('click', function() {
+    tc[0].addEventListener('click', function () {
       window.pop();
     });
   }
   if (tcMain[0]) {
-    tcMain[0].addEventListener('click', function(e) {
+    tcMain[0].addEventListener('click', function (e) {
       e.stopPropagation();
     });
   }

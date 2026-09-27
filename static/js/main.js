@@ -3,8 +3,8 @@
  * @author KD_klin
  */
 console.log(
-    '%cCopyright © 2024 KD_klin',
-    'background-color: #ff00ff; color: white; font-size: 24px; font-weight: bold; padding: 10px;',
+  '%cCopyright © 2024 KD_klin',
+  'background-color: #ff00ff; color: white; font-size: 24px; font-weight: bold; padding: 10px;'
 );
 
 /* ==================== 社交图标 / 主题开关 ==================== */
@@ -37,13 +37,13 @@ function renderSocialIconsFromConfig() {
 
   const qqIcon = document.getElementById('qqIcon');
   if (qqIcon) {
-    qqIcon.addEventListener('click', function() {
+    qqIcon.addEventListener('click', function () {
       window.pop((CFG.socials && CFG.socials.qq && CFG.socials.qq.image) || '');
     });
   }
   const checkbox = document.getElementById('myonoffswitch');
   if (checkbox) {
-    checkbox.addEventListener('change', function() {
+    checkbox.addEventListener('change', function () {
       const next = document.documentElement.dataset.theme === 'Dark' ? 'Light' : 'Dark';
       window.changeTheme(next, true);
     });
@@ -52,7 +52,7 @@ function renderSocialIconsFromConfig() {
 
 /* ==================== 页面初始化 ==================== */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   window.renderProfileFromConfig();
   window.renderTimelineFromConfig();
   window.renderSkillsFromConfig();
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   window.applyResolvedTheme();
   window.applyBgMode(
-      localStorage.getItem('KD_bgMode') || (CFG.background && CFG.background.default) || 'glow',
+    localStorage.getItem('KD_bgMode') || (CFG.background && CFG.background.default) || 'glow'
   );
 
   const hitokotoBox = document.getElementById('hitokotoBox');

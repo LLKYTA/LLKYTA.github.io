@@ -1,7 +1,7 @@
 /**
  * @fileoverview 个人信息 / 标签 / 时间线渲染模块。
  */
-(function() {
+(function () {
   'use strict';
 
   function renderProfileFromConfig() {
@@ -16,7 +16,7 @@
     const tagList = document.getElementById('tagList');
     if (tagList && c.profile.tags) {
       tagList.innerHTML = '';
-      c.profile.tags.forEach(function(t) {
+      c.profile.tags.forEach(function (t) {
         const d = document.createElement('div');
         d.className = 'left-tag-item';
         d.textContent = t;
@@ -29,7 +29,7 @@
     const list = document.querySelector('.timeline-list');
     if (!list || !CFG.timeline) return;
     list.innerHTML = '';
-    CFG.timeline.forEach(function(item) {
+    CFG.timeline.forEach(function (item) {
       const li = document.createElement('li');
       li.innerHTML =
         '<div class="focus"></div>' +

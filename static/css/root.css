@@ -11,7 +11,7 @@ html[data-theme='Light'] {
   --item_left_text_color: #fff;
   --item_left_title_color: #fff;
   --left_tag_item: rgb(27 42 57 / 20%);
-  --main_bg_color: url("../img/background.jpg");
+  --main_bg_color: url('../img/background.jpg');
   --main_text_color: #fff;
   --name: light;
   --purple_text_color: #747bff;
@@ -30,7 +30,7 @@ html[data-theme='Dark'] {
   --item_left_text_color: rgb(142 142 142);
   --item_left_title_color: rgb(255 255 255);
   --left_tag_item: linear-gradient(50deg, #1f2327, #000);
-  --main_bg_color: url("../img/background.jpg");
+  --main_bg_color: url('../img/background.jpg');
   --main_text_color: #fff;
   --name: dark;
   --purple_text_color: #747bff;

@@ -86,7 +86,6 @@
     </div>
     <div class="KD-filter"></div>
     <div class="mouse-glow" id="mouseGlow" aria-hidden="true"></div>
-    <canvas class="bg-particles" id="bgParticles" aria-hidden="true"></canvas>
 
     <button
       class="mobile-sidebar-toggle"
@@ -473,7 +472,15 @@
         <img class="tc-img" src="" alt="二维码" />
       </div>
     </div>
-
+    <!-- Three.js CDN（放在现有脚本之前） -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.182.0/examples/jsm/"
+        }
+      }
+    </script>
     <script src="./static/js/config.js"></script>
     <script src="./static/js/core/globals.js"></script>
     <script src="./static/js/core/utils.js"></script>
@@ -486,7 +493,7 @@
     <script src="./static/js/modules/visits.js"></script>
     <script src="./static/js/modules/typewriter.js"></script>
     <script src="./static/js/modules/mouse-glow.js"></script>
-    <script src="./static/js/modules/particles.js"></script>
+    <script type="module" src="./static/js/modules/three-bg.js"></script>
     <script src="./static/js/modules/bg-mode.js"></script>
     <script src="./static/js/modules/command-palette.js"></script>
     <script src="./static/js/modules/weather.js"></script>
@@ -498,7 +505,7 @@
     <script src="./static/js/main.js"></script>
     <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
     <script>
-      LA.init({id:"3RJpmxKH3r4dvx15",ck:"3RJpmxKH3r4dvx15"})
+      LA.init({id: '3RJpmxKH3r4dvx15', ck: '3RJpmxKH3r4dvx15'});
     </script>
   </body>
 </html>
