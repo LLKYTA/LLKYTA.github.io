@@ -1,12 +1,34 @@
 {
   "extends": "stylelint-config-standard",
+  "plugins": ["stylelint-order"],
   "rules": {
+    "order/properties-alphabetical-order": true,
     "selector-id-pattern": null,
-    "selector-class-pattern": null,
+    "selector-class-pattern": [
+      "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      {
+        "message": "Google HTML/CSS 规范：class 名用小写字母加连字符（kebab-case）"
+      }
+    ],
+    "custom-property-pattern": [
+      "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      {
+        "message": "Google HTML/CSS 规范：自定义属性用小写字母加连字符（kebab-case）"
+      }
+    ],
     "no-descending-specificity": null,
+    "no-duplicate-selectors": null,
+    "declaration-block-no-duplicate-custom-properties": null,
     "color-hex-length": "short",
-    "color-hex-case": "lower",
     "length-zero-no-unit": true,
-    "shorthand-property-no-redundant-values": true
+    "shorthand-property-no-redundant-values": true,
+    "declaration-block-single-line-max-declarations": null,
+    "alpha-value-notation": null,
+    "color-function-notation": null,
+    "value-keyword-case": null,
+    "font-family-name-quotes": null,
+    "media-feature-range-notation": null,
+    "keyframes-name-pattern": null,
+    "declaration-property-value-no-unknown": null
   }
 }

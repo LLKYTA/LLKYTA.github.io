@@ -1,71 +1,68 @@
 /**
- * @fileoverview 侧边栏美化：滚动遮罩 + 焦点高亮 + 时间线进度。
+ * @fileoverview 侧边栏增强：滚动焦点高亮与时间线阅读进度条。
  */
 (function () {
   'use strict';
 
-  const left = document.querySelector('.KD-left');
+  const left = document.querySelector('.kd-left');
   if (!left) return;
+
   const line = document.querySelector('.timeline-list');
   const container = line ? line.closest('.left-time') : null;
 
-  const mask = document.createElement('div');
-  mask.className = 'left-scroll-mask';
-  document.body.appendChild(mask);
-
-  function updateMask() {
-    const rect = left.getBoundingClientRect();
-    if (rect.width === 0 || window.innerWidth <= 800) {
-      mask.style.display = 'none';
-      return;
-    }
-    mask.style.display = 'block';
-    mask.style.left = rect.left + 'px';
-    mask.style.width = rect.width + 'px';
-    mask.style.top = rect.bottom - 60 + 'px';
-    const max = left.scrollHeight - left.clientHeight;
-    const isBottom = max <= 0 || left.scrollTop >= max - 10;
-    mask.style.opacity = isBottom ? '0' : '1';
-  }
-  left.addEventListener('scroll', updateMask, {passive: true});
-  window.addEventListener('resize', updateMask, {passive: true});
-  window.addEventListener('scroll', updateMask, {passive: true});
-  updateMask();
-  window.addEventListener('load', updateMask);
-
-  const cards = left.querySelectorAll('.left-div:not(.left-weather)');
-  if (cards.length && !PREFERS_REDUCED_MOTION) {
-    const observer = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
+  // 卡片焦点高亮：滚到视口中央的卡片加 .in-focus。
+  if (!PREFERS_REDUCED_MOTION) {
+    const cards = left.querySelectorAll('.left-div:not(.left-weather)');
+    if (cards.length) {
+      const observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
             cards.forEach(function (el) {
               el.classList.remove('in-focus');
             });
             entry.target.classList.add('in-focus');
-          }
-        });
-      },
-      {root: left, rootMargin: '-45% 0px -45% 0px', threshold: 0}
-    );
-    cards.forEach(function (el) {
-      observer.observe(el);
-    });
+          });
+        },
+        {root: left, rootMargin: '-45% 0px -45% 0px', threshold: 0},
+      );
+      cards.forEach(function (el) {
+        observer.observe(el);
+      });
+    }
   }
 
+  // 时间线阅读进度：在卡片右侧绘制一条进度线。
   if (line && container) {
     const bar = document.createElement('div');
     bar.className = 'timeline-progress';
     bar.innerHTML = '<div class="timeline-progress-fill"></div>';
     container.appendChild(bar);
     const fill = bar.querySelector('.timeline-progress-fill');
+
+    let rafId = null;
+
+    /**
+     * 按时间线滚动位置更新进度条高度。
+     * @return {void}
+     */
     function updateProgress() {
+      rafId = null;
       const max = line.scrollHeight - line.clientHeight;
       const pct = max > 0 ? (line.scrollTop / max) * 100 : 0;
       fill.style.height = pct + '%';
     }
-    line.addEventListener('scroll', updateProgress, {passive: true});
-    window.addEventListener('resize', updateProgress, {passive: true});
+
+    /**
+     * 用 requestAnimationFrame 合并高频滚动事件。
+     * @return {void}
+     */
+    function scheduleProgress() {
+      if (rafId === null) rafId = requestAnimationFrame(updateProgress);
+    }
+
+    line.addEventListener('scroll', scheduleProgress, {passive: true});
+    window.addEventListener('resize', scheduleProgress, {passive: true});
     updateProgress();
   }
 })();

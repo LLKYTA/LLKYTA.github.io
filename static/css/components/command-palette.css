@@ -1,26 +1,25 @@
 /* static/css/components/command-palette.css */
 .cmd-hint {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  z-index: 9997;
-  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: var(--item_bg_color);
-  backdrop-filter: blur(var(--card_filter));
-  backdrop-filter: blur(var(--card_filter));
-  color: var(--main_text_color);
-  font-size: 12px;
-  cursor: pointer;
-  opacity: 0.6;
+  backdrop-filter: blur(var(--card-filter));
+  background: var(--item-bg-color);
   border: 1px solid rgb(255 255 255 / 6%);
+  border-radius: 8px;
+  bottom: 20px;
+  color: var(--main-text-color);
+  cursor: pointer;
+  display: flex;
+  font-size: 12px;
+  gap: 6px;
+  left: 20px;
+  opacity: 0.6;
+  padding: 8px 12px;
+  position: fixed;
+  -webkit-tap-highlight-color: transparent;
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
+  z-index: 9997;
 }
 
 .cmd-hint:hover {
@@ -33,68 +32,66 @@
 }
 
 .cmd-hint kbd {
+  background: var(--item-hover-color);
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 3px;
+  font-family: inherit;
   font-size: 10px;
   padding: 2px 5px;
-  border-radius: 3px;
-  background: var(--item_hover_color);
-  border: 1px solid rgb(255 255 255 / 8%);
-  font-family: inherit;
 }
 
-@media (width <= 800px) {
+@media (max-width: 800px) {
   .cmd-hint {
     display: none;
   }
 }
 
 .cmd-palette {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  display: flex;
   align-items: flex-start;
+  display: flex;
+  inset: 0;
   justify-content: center;
-  padding-top: 15vh;
-  visibility: hidden;
   opacity: 0;
+  padding-top: 15vh;
+  position: fixed;
   transition:
     opacity 0.2s ease,
     visibility 0s 0.2s;
+  visibility: hidden;
+  z-index: 99999;
 }
 
 .cmd-palette.active {
-  visibility: visible;
   opacity: 1;
   transition:
     opacity 0.2s ease,
     visibility 0s;
+  visibility: visible;
 }
 
 .cmd-backdrop {
-  position: absolute;
-  inset: 0;
+  backdrop-filter: blur(8px);
   background: rgb(0 0 0 / 45%);
-  backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  inset: 0;
+  position: absolute;
 }
 
 .cmd-panel {
-  position: relative;
-  width: 90%;
-  max-width: 520px;
-  max-height: 60vh;
+  backdrop-filter: blur(24px) saturate(180%);
+  background: var(--item-bg-color);
+  border: 1px solid rgb(255 255 255 / 8%);
   border-radius: 14px;
-  background: var(--item_bg_color);
-  backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
   box-shadow: 0 20px 60px -12px rgb(0 0 0 / 50%);
-  overflow: hidden;
+  color: var(--main-text-color);
   display: flex;
   flex-direction: column;
-  color: var(--main_text_color);
-  border: 1px solid rgb(255 255 255 / 8%);
+  max-height: 60vh;
+  max-width: 520px;
+  overflow: hidden;
+  position: relative;
   transform: scale(0.95) translateY(-10px);
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 90%;
 }
 
 .cmd-palette.active .cmd-panel {
@@ -102,26 +99,26 @@
 }
 
 .cmd-input-wrap {
-  display: flex;
   align-items: center;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  display: flex;
   gap: 10px;
   padding: 14px 18px;
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
 }
 
 .cmd-icon {
-  opacity: 0.6;
   flex-shrink: 0;
+  opacity: 0.6;
 }
 
 .cmd-input {
-  flex: 1;
-  border: none;
-  outline: none;
   background: transparent;
-  font-size: 15px;
+  border: none;
   color: inherit;
+  flex: 1;
   font-family: inherit;
+  font-size: 15px;
+  outline: none;
   padding: 0;
 }
 
@@ -130,14 +127,14 @@
 }
 
 .cmd-kbd {
-  font-size: 10px;
-  padding: 3px 6px;
-  border-radius: 4px;
-  background: var(--item_hover_color);
+  background: var(--item-hover-color);
   border: 1px solid rgb(255 255 255 / 10%);
-  opacity: 0.7;
-  font-family: inherit;
+  border-radius: 4px;
   flex-shrink: 0;
+  font-family: inherit;
+  font-size: 10px;
+  opacity: 0.7;
+  padding: 3px 6px;
 }
 
 .cmd-list {
@@ -147,31 +144,31 @@
 }
 
 .cmd-item {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  display: flex;
   font-size: 14px;
+  gap: 12px;
+  padding: 10px 12px;
+  transition: background 0.15s ease;
   user-select: none;
 }
 
 .cmd-item.active {
-  background: var(--item_hover_color);
+  background: var(--item-hover-color);
 }
 
 .cmd-item-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  background: var(--item_bg_color);
-  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 15px;
+  background: var(--item-bg-color);
+  border-radius: 6px;
+  display: flex;
   flex-shrink: 0;
+  font-size: 15px;
+  height: 30px;
+  justify-content: center;
+  width: 30px;
 }
 
 .cmd-item-title {
@@ -182,20 +179,20 @@
 }
 
 .cmd-item-hint {
+  flex-shrink: 0;
+  font-family: inherit;
   font-size: 11px;
   opacity: 0.5;
-  font-family: inherit;
-  flex-shrink: 0;
 }
 
 .cmd-empty {
+  font-size: 13px;
+  opacity: 0.5;
   padding: 30px 20px;
   text-align: center;
-  opacity: 0.5;
-  font-size: 13px;
 }
 
-@media (width <= 600px) {
+@media (max-width: 600px) {
   .cmd-palette {
     padding-top: 10vh;
   }

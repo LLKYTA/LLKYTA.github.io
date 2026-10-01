@@ -10,14 +10,17 @@
     "fix:js": "eslint \"static/js/**/*.js\" --fix",
     "fix:css": "stylelint \"static/css/**/*.css\" --fix",
     "format": "prettier --write \"**/*.{html,css,js,json,md,yml,yaml}\"",
-    "fix": "npm run format && npm run fix:js && npm run fix:css",
-    "check": "npm run lint && npm run format -- --check"
+    "format:check": "prettier --check \"**/*.{html,css,js,json,md,yml,yaml}\"",
+    "fix": "npm run fix:js && npm run fix:css && npm run format",
+    "check:dom": "node tools/check-dom.js",
+    "check": "npm run lint && npm run format:check && npm run check:dom"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
     "eslint-config-google": "^0.14.0",
     "prettier": "^3.3.0",
     "stylelint": "^16.6.0",
-    "stylelint-config-standard": "^36.0.0"
+    "stylelint-config-standard": "^36.0.0",
+    "stylelint-order": "^6.0.4"
   }
 }

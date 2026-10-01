@@ -6,7 +6,7 @@ window.KD_CONFIG = {
     name: 'KD_klin',
     url: 'https://kd.of.cd',
     startDate: '2026-01-01T00:00:00',
-    ogImage: './static/img/logokuang.png',
+    ogImage: './static/img/og-cover.png',
     description: '整天半吊子和不学无术的坏孩子，梦想成为庄稼地里的读书人。',
   },
 
@@ -60,14 +60,36 @@ window.KD_CONFIG = {
     volume: 0.7,
     mode: 'list',
     persist: true,
-    playlist: [{src: './static/music/失眠.mp3', title: '失眠', artist: '', cover: ''}],
+    playlist: [
+      {src: './static/music/失眠.mp3', title: '失眠', artist: '', cover: ''},
+    ],
   },
 
   timeline: [
-    {ver: 'v1.2', title: '内容扩展', date: '2026.09', desc: '接入 GitHub 动态与音乐播放器'},
-    {ver: 'v1.1', title: '域名迁移', date: '2026.02', desc: '正式迁移至 KD.of.cd'},
-    {ver: 'v1.0', title: '主题重构', date: '2026.01', desc: '基于 CSS 变量重写主题系统'},
-    {ver: 'v0.1', title: '首次上线', date: '2026.01', desc: '完成基础框架与个人信息展示'},
+    {
+      ver: 'v1.2',
+      title: '内容扩展',
+      date: '2026.09',
+      desc: '接入 GitHub 动态与音乐播放器',
+    },
+    {
+      ver: 'v1.1',
+      title: '域名迁移',
+      date: '2026.02',
+      desc: '正式迁移至 KD.of.cd',
+    },
+    {
+      ver: 'v1.0',
+      title: '主题重构',
+      date: '2026.01',
+      desc: '基于 CSS 变量重写主题系统',
+    },
+    {
+      ver: 'v0.1',
+      title: '首次上线',
+      date: '2026.01',
+      desc: '完成基础框架与个人信息展示',
+    },
   ],
 
   skills: [

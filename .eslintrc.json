@@ -1,30 +1,84 @@
 {
+  "root": true,
   "extends": ["google"],
   "env": {
     "browser": true,
-    "es2021": true
+    "es2022": true
   },
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "script"
   },
   "rules": {
-    "require-jsdoc": "off",
-    "valid-jsdoc": "off",
-    "no-unused-vars": ["warn"],
     "no-console": "off",
-    "max-len": ["warn", {"code": 120}]
+
+    "require-jsdoc": [
+      "error",
+      {
+        "require": {
+          "FunctionDeclaration": true,
+          "ClassDeclaration": true,
+          "MethodDefinition": true
+        }
+      }
+    ],
+
+    "max-len": [
+      "error",
+      {
+        "code": 80,
+        "tabWidth": 2,
+        "ignoreUrls": true,
+        "ignoreStrings": false,
+        "ignoreTemplateLiterals": false,
+        "ignoreRegExpLiterals": true
+      }
+    ],
+
+    "camelcase": [
+      "error",
+      {
+        "properties": "never",
+        "allow": ["^opt_[a-z]", "^var_args$"]
+      }
+    ],
+
+    "wrap-iife": ["error", "inside"],
+    "quote-props": ["error", "as-needed"],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }
+    ],
+    "space-before-function-paren": [
+      "error",
+      {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
+    "linebreak-style": ["error", "unix"],
+    "object-curly-spacing": ["error", "never"],
+    "comma-dangle": ["error", "always-multiline"],
+
+    "indent": "off",
+    "operator-linebreak": "off",
+    "no-multi-spaces": "off",
+    "padded-blocks": "off",
+    "array-bracket-newline": "off",
+    "array-element-newline": "off",
+    "function-paren-newline": "off",
+    "implicit-arrow-linebreak": "off"
   },
-  "linebreak-style": "off",
   "overrides": [
     {
       "files": ["static/js/modules/three-bg.js"],
       "parserOptions": {
         "sourceType": "module"
-      },
-      "env": {
-        "browser": true,
-        "es2021": true
       }
     }
   ]

@@ -3,21 +3,43 @@
  */
 (function () {
   'use strict';
-  const el = document.getElementById('siteRuntime');
-  if (!el || !CFG.site) return;
-  const START = new Date(CFG.site.startDate).getTime();
 
+  const el = document.getElementById('site-runtime');
+  if (!el || !CFG.site || !CFG.site.startDate) return;
+
+  const START = new Date(CFG.site.startDate).getTime();
+  if (isNaN(START)) return;
+
+  const DAY = 86400000;
+  const HOUR = 3600000;
+  const MINUTE = 60000;
+
+  /**
+   * 计算并渲染运行时长。
+   * @return {void}
+   */
   function tick() {
     const diff = Date.now() - START;
     if (diff < 0) {
-      el.innerHTML = '尚未上线';
+      el.textContent = '尚未上线';
       return;
     }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    el.innerHTML = '本站已运行 <b>' + d + '</b> 天 <b>' + h + '</b> 时 <b>' + m + '</b> 分';
+    const days = Math.floor(diff / DAY);
+    const hours = Math.floor((diff % DAY) / HOUR);
+    const minutes = Math.floor((diff % HOUR) / MINUTE);
+    el.innerHTML =
+      '本站已运行 <b>' +
+      days +
+      '</b> 天 <b>' +
+      hours +
+      '</b> 时 <b>' +
+      minutes +
+      '</b> 分';
   }
+
   tick();
-  setInterval(tick, 30000);
+  // 页面不可见时不刷新，避免后台标签页的无效计算。
+  setInterval(function () {
+    if (!document.hidden) tick();
+  }, 30000);
 })();

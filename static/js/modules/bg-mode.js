@@ -4,15 +4,31 @@
 (function () {
   'use strict';
 
+  const FALLBACK_MODES = ['glow', 'particles', 'none'];
+
+  /**
+   * 读取配置中允许的背景模式列表。
+   * @return {!Array<string>} 模式列表。
+   */
+  function getAllowedModes() {
+    const modes = CFG.background && CFG.background.modes;
+    return Array.isArray(modes) && modes.length ? modes : FALLBACK_MODES;
+  }
+
+  /**
+   * 应用背景模式并持久化选择。
+   * @param {string} mode 'glow'、'particles' 或 'none'。
+   * @return {void}
+   */
   window.applyBgMode = function (mode) {
-    const modes = (CFG.background && CFG.background.modes) || ['glow', 'particles', 'none'];
-    if (modes.indexOf(mode) === -1) mode = 'glow';
-    document.documentElement.dataset.bg = mode;
-    localStorage.setItem('KD_bgMode', mode);
-    const p = window.KD_BG_PARTICLES;
-    if (p) {
-      if (mode === 'particles') p.start();
-      else p.stop();
-    }
+    const modes = getAllowedModes();
+    const next = modes.indexOf(mode) === -1 ? modes[0] : mode;
+    document.documentElement.dataset.bg = next;
+    window.KD_STORAGE.write('KD_bgMode', next);
+
+    const particles = window.KD_BG_PARTICLES;
+    if (!particles) return;
+    if (next === 'particles') particles.start();
+    else particles.stop();
   };
 })();

@@ -1,54 +1,74 @@
 /**
- * @fileoverview 标题个性化（切换标签页时改变标题）。
+ * @fileoverview 页面标题个性化：切换标签页时改变标题并做打字效果。
  */
 (function () {
   'use strict';
-  const BASE = 'KD_klin · 个人主页';
-  const AWAY = '👀 别走嘛，回来看看～';
-  const BLUR = '💤 暂时离开了...';
-  let timer = null;
-  let idx = 0;
-  let visible = !document.hidden;
-  let focus = document.hasFocus();
 
-  function type(text, speed, cb) {
+  const BASE_TITLE = 'KD_klin · 个人主页';
+  const AWAY_TITLE = '👀 别走嘛，回来看看～';
+  const BLUR_TITLE = '💤 暂时离开了...';
+  const TYPE_SPEED = 100;
+  const START_DELAY = 300;
+
+  let timer = null;
+  let cursor = 0;
+  let visible = !document.hidden;
+  let focused = document.hasFocus();
+
+  /**
+   * 逐字输入标题。
+   * @param {string} text 目标标题。
+   * @param {number} speed 每个字符的间隔（毫秒）。
+   * @return {void}
+   */
+  function typeTitle(text, speed) {
     clearInterval(timer);
-    idx = 0;
+    cursor = 0;
     document.title = '';
     timer = setInterval(function () {
-      if (idx >= text.length) {
+      if (cursor >= text.length) {
         clearInterval(timer);
-        if (typeof cb === 'function') cb();
         return;
       }
-      document.title += text.charAt(idx++);
-    }, speed || 100);
+      document.title += text.charAt(cursor++);
+    }, speed);
   }
-  function restore() {
-    if (document.title !== BASE) type(BASE, 100);
+
+  /**
+   * 需要时把标题恢复为默认文案。
+   * @return {void}
+   */
+  function restoreTitle() {
+    if (document.title !== BASE_TITLE) typeTitle(BASE_TITLE, TYPE_SPEED);
   }
+
   document.addEventListener('visibilitychange', function () {
     visible = !document.hidden;
-    if (visible && focus) restore();
-    else if (!visible) {
+    if (visible && focused) {
+      restoreTitle();
+      return;
+    }
+    if (!visible) {
       clearInterval(timer);
-      document.title = AWAY;
+      document.title = AWAY_TITLE;
     }
   });
+
   window.addEventListener('blur', function () {
-    focus = false;
-    if (visible) {
-      clearInterval(timer);
-      document.title = BLUR;
-    }
+    focused = false;
+    if (!visible) return;
+    clearInterval(timer);
+    document.title = BLUR_TITLE;
   });
+
   window.addEventListener('focus', function () {
-    focus = true;
-    if (visible) restore();
+    focused = true;
+    if (visible) restoreTitle();
   });
+
   window.addEventListener('load', function () {
     setTimeout(function () {
-      type(BASE, 100);
-    }, 300);
+      typeTitle(BASE_TITLE, TYPE_SPEED);
+    }, START_DELAY);
   });
 })();

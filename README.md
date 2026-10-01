@@ -61,11 +61,12 @@
 
 ## 🛠️ 技术栈
 
-- 原生 HTML5 / CSS3 / JavaScript
-- CSS 变量驱动主题（root.css）
-- 毛玻璃效果（backdrop-filter）
+- 原生 HTML5 / CSS3 / JavaScript（ES2022，无框架、无构建步骤）
+- CSS 自定义属性驱动主题（`static/css/root.css`）
+- 毛玻璃效果（`backdrop-filter`）
 - Web Audio API（音频频谱分析）
-- Canvas 2D（雷达图 / 粒子 / 频谱）
+- Canvas 2D（雷达图 / 频谱）
+- Three.js（3D 粒子星云，经 importmap 从 CDN 加载）
 - View Transitions API（主题切换过渡）
 - 一言 API：v1.hitokoto.cn
 - GitHub 用户 API：uapis.cn
@@ -76,29 +77,72 @@
 
 ## 📁 目录结构
 
+```
 .
-├── index.html
+├── index.html                     单页结构 + 内联 SVG sprite
 ├── README.md
+├── robots.txt / sitemap.xml / CNAME
+├── tools/
+│   ├── check-dom.js               静态自检：id / class / 变量 / 资源 / HTML 结构
+│   └── build-og-cover.py          生成社交分享卡片 og-cover.png
 └── static/
-├── css/
-│ ├── style.css
-│ ├── root.css
-│ ├── github-card.css
-│ └── music-player.css
-├── js/
-│ ├── config.js
-│ ├── script.js
-│ └── music-player.js
-├── img/
-├── svg/
-├── music/
-└── fonts/
+    ├── css/
+    │   ├── root.css               设计令牌（颜色 / 阴影 / 强调色）
+    │   ├── base.css               全局、布局、侧边栏、主内容
+    │   ├── utilities.css          工具类、无障碍、动效降级
+    │   └── components/            github-card / music-player / weather /
+    │                              skill / timeline / sidebar /
+    │                              command-palette / mobile-drawer
+    ├── js/
+    │   ├── config.js              站点配置（所有可自定义内容）
+    │   ├── analytics.js           51.la 统计初始化
+    │   ├── main.js                入口：绑定交互并初始化各模块
+    │   ├── music-player.js        音乐播放器
+    │   ├── core/                  globals / storage / utils / theme / loading
+    │   └── modules/               profile / skills / hitokoto / runtime /
+    │                              visits / typewriter / mouse-glow /
+    │                              three-bg / bg-mode / command-palette /
+    │                              weather / github / title /
+    │                              sidebar-extras / mobile-sidebar
+    ├── img/                       logo / 背景 / 二维码 / og-cover
+    ├── svg/                       明暗主题插画
+    ├── music/                     音频
+    └── fonts/                     Ubuntu / Pacifico
+```
 
 ## 🚀 本地运行
 
 直接双击 `index.html` 即可在浏览器中打开。
 若需部署，将整个目录上传至任意静态托管服务，
 如 Vercel、Netlify、GitHub Pages。
+
+天气、GitHub、一言等模块依赖线上接口，需要联网才能看到数据。
+
+## 🧹 代码规范
+
+项目遵循 **Google 代码规范**：
+
+- [Google JavaScript 风格指南](https://zh-google-styleguide.readthedocs.io/en/latest/google-javascript-styleguide/)
+  —— 单引号、2 空格缩进、行宽 80、`const`/`let`、JSDoc 注释公开函数。
+- [Google HTML/CSS 风格指南](https://zh-google-styleguide.readthedocs.io/en/latest/google-html-css-styleguide/)
+  —— class / id / 自定义属性统一 kebab-case、声明按字母序、
+  零值省略单位、属性值使用单引号。
+- 格式化由 Prettier 统一执行（`printWidth: 80`），
+  ESLint 负责语义规则、Stylelint 负责 CSS 规则，
+  三者互不冲突。
+
+```bash
+npm install        # 安装开发依赖（仅 lint / 格式化工具）
+npm run lint       # ESLint + Stylelint
+npm run check      # 上述检查 + Prettier 格式校验 + 静态自检
+npm run fix        # 自动修复格式与可自动修复的规范问题
+node tools/check-dom.js   # 单独运行静态自检
+```
+
+`tools/check-dom.js` 会校验四件事：JS 引用的 id / class 是否都存在于 HTML、
+CSS 与 JS 用到的自定义属性是否都有定义、本地资源引用是否存在，
+以及 HTML 的标签配对 / 属性引号 / id 唯一性 / sprite 引用有效性。
+改完结构或批量改名之后建议跑一次，避免「改名漏改」这类问题。
 
 ## 📌 已完成计划
 
@@ -125,6 +169,18 @@
 - [x] 底栏与播放器状态联动避让
 - [x] 删除冗余的 site 项目列表
 
+### 🧱 工程化与规范（2024 重构）
+
+- [x] 修复 ESLint / Stylelint 配置错误，`npm run lint` 可正常通过
+- [x] 统一为 Google 代码规范并通过 Prettier 固化格式
+- [x] class / id / CSS 自定义属性全部改为 kebab-case
+- [x] CSS 拆分为令牌层 + 基础层 + 工具层 + 组件层
+- [x] 内联 SVG sprite 复用图标，去掉 JS 中的大段 SVG 字符串
+- [x] `localStorage` / `sessionStorage` 统一封装，隐私模式不再抛错
+- [x] 脚本全部 `defer`，加载遮罩由 CSS 先渲染，消除首屏闪白
+- [x] `prefers-reduced-motion` 覆盖全部装饰性动画
+- [x] 恢复键盘焦点轮廓（`focus-visible`），移除全局 `user-select: none`
+
 ### 🚀 性能与体验
 
 - [x] 关键域名 preconnect（simpleicons / jsdelivr / hitokoto / uapis）
@@ -133,6 +189,8 @@
 - [x] Simple Icons 图标加载失败回退占位
 - [x] `prefers-reduced-motion` 全面降级
 - [x] 无障碍焦点轮廓
+- [x] GitHub / 天气数据会话级缓存 + TTL，避免重复请求
+- [x] 雷达图 resize 节流、时间线进度条 rAF 合并
 
 ## 📌 未来计划
 
@@ -157,7 +215,6 @@
 
 ### 🚀 性能与工程化
 
-- [ ] 拆分 `style.css` 为多个模块文件，配合构建工具打包
 - [ ] 引入 Vite / esbuild，做资源压缩与 tree-shaking
 - [ ] 天气 API 通过 Cloudflare Workers 代理，隐藏密钥
 - [ ] 图片资源 WebP / AVIF 转换

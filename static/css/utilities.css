@@ -25,23 +25,74 @@
   }
 }
 
-.iconItem:focus-visible,
+.icon-item:focus-visible,
 .switch:focus-visible,
 .cmd-hint:focus-visible,
 .music-cover:focus-visible,
 .music-collapse:focus-visible,
-.github-retry-btn:focus-visible {
-  outline: 2px solid var(--purple_text_color);
+.github-retry-btn:focus-visible,
+.weather-retry:focus-visible {
+  outline: 2px solid var(--purple-text-color);
   outline-offset: 2px;
 }
 
+/* 由图数据决定的占位/隐藏状态 */
+.is-hidden {
+  display: none !important;
+}
+
+.github-empty {
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+/* 贡献热力图中的无数据格子 */
+.github-contrib-day.is-empty {
+  opacity: 0.3;
+}
+
+/* 轻量浮动提示（复制成功、模式切换等） */
+.kd-toast {
+  background: rgb(0 0 0 / 78%);
+  border-radius: 8px;
+  bottom: 80px;
+  color: #fff;
+  font-size: 13px;
+  left: 50%;
+  max-width: calc(100% - 32px);
+  opacity: 0;
+  padding: 8px 16px;
+  pointer-events: none;
+  position: fixed;
+  transform: translate(-50%, 8px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  z-index: 99999;
+}
+
+.kd-toast-show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* 降低动效偏好：关闭装饰性动画与过渡（无障碍） */
 @media (prefers-reduced-motion: reduce) {
-  html .gradientText,
+  html .gradient-text,
   html .status-dot,
   html .music-player.playing .music-disc,
-  html #KD-loading-center,
-  html .tanChiShe,
-  html .bg-particles {
+  html .kd-loading,
+  html .kd-loading-center,
+  html .snake-art,
+  html .left-div,
+  html .title,
+  html .hitokoto-card,
+  html .icon-item,
+  html .github-profile-card,
+  html .github-contrib-card,
+  html .github-repo-card,
+  html .skill-ring-card,
+  html .weather-content {
     animation: none;
     transition: none;
   }
@@ -50,8 +101,8 @@
     animation: none;
   }
 
-  html footer > span,
-  html footer {
+  html footer,
+  html footer > span {
     transition: none;
   }
 }

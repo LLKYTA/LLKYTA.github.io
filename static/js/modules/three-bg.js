@@ -46,8 +46,9 @@ import * as THREE from 'three';
   canvas.id = 'bgParticlesThree';
   canvas.setAttribute('aria-hidden', 'true');
   canvas.style.cssText =
-    'position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;' +
-    'opacity:0;transition:opacity 0.6s ease;will-change:opacity;';
+    'position:fixed;inset:0;width:100%;height:100%;z-index:0;' +
+    'pointer-events:none;opacity:0;transition:opacity 0.6s ease;' +
+    'will-change:opacity;';
   document.body.appendChild(canvas);
 
   /* ==================== 配置 ==================== */
@@ -58,9 +59,13 @@ import * as THREE from 'three';
   const CONFIG = {
     particleCount: threeCfg.particleCount || 2000,
     particleSize: threeCfg.particleSize || 3,
-    particleColor: parseInt((threeCfg.particleColor || '#747bff').replace('#', ''), 16),
+    particleColor: parseInt(
+      (threeCfg.particleColor || '#747bff').replace('#', ''),
+      16,
+    ),
     connectionDistance: threeCfg.connectionDistance || 120,
-    connectionOpacity: threeCfg.connectionOpacity != null ? threeCfg.connectionOpacity : 0.12,
+    connectionOpacity:
+      threeCfg.connectionOpacity != null ? threeCfg.connectionOpacity : 0.12,
     mouseMode: threeCfg.mouseMode || 'attract',
     mouseRadius: threeCfg.mouseRadius || 250,
     mouseStrength: threeCfg.mouseStrength || 0.003,
@@ -76,7 +81,12 @@ import * as THREE from 'three';
   /* ==================== 场景 ==================== */
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+  const camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    2000,
+  );
   camera.position.z = CONFIG.cameraZ;
 
   let renderer;
@@ -153,7 +163,10 @@ import * as THREE from 'three';
   const lineGeometry = new THREE.BufferGeometry();
   const maxConnections = isMobile ? 600 : 2000;
   const linePositions = new Float32Array(maxConnections * 6);
-  lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+  lineGeometry.setAttribute(
+    'position',
+    new THREE.BufferAttribute(linePositions, 3),
+  );
 
   const lineMaterial = new THREE.LineBasicMaterial({
     color: CONFIG.particleColor,
@@ -177,7 +190,7 @@ import * as THREE from 'three';
       targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       targetMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     },
-    {passive: true}
+    {passive: true},
   );
 
   document.addEventListener(
@@ -189,7 +202,7 @@ import * as THREE from 'three';
         targetMouse.y = -(t.clientY / window.innerHeight) * 2 + 1;
       }
     },
-    {passive: true}
+    {passive: true},
   );
 
   document.addEventListener(
@@ -198,7 +211,7 @@ import * as THREE from 'three';
       targetMouse.x = -9999;
       targetMouse.y = -9999;
     },
-    {passive: true}
+    {passive: true},
   );
 
   /* ==================== 动画 ==================== */
@@ -207,6 +220,11 @@ import * as THREE from 'three';
   let running = false;
   let clock = null;
 
+  /**
+   * 推进粒子运动并重建粒子间的连线。
+   * @param {number} delta 距上一帧的秒数。
+   * @return {void}
+   */
   function updateParticles(delta) {
     const posArray = geometry.attributes.position.array;
     const lineArray = lineGeometry.attributes.position.array;
@@ -214,7 +232,8 @@ import * as THREE from 'three';
 
     mouse.lerp(targetMouse, 0.08);
     const tanHalfFov = Math.tan((camera.fov * Math.PI) / 180 / 2);
-    const mouseWorldX = mouse.x * camera.position.z * tanHalfFov * camera.aspect;
+    const mouseWorldX =
+      mouse.x * camera.position.z * tanHalfFov * camera.aspect;
     const mouseWorldY = mouse.y * camera.position.z * tanHalfFov;
 
     for (let i = 0; i < CONFIG.particleCount; i++) {
@@ -225,7 +244,11 @@ import * as THREE from 'three';
       const dx = mouseWorldX - px;
       const dy = mouseWorldY - py;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (CONFIG.mouseMode !== 'off' && dist < CONFIG.mouseRadius && dist > 0.1) {
+      if (
+        CONFIG.mouseMode !== 'off' &&
+        dist < CONFIG.mouseRadius &&
+        dist > 0.1
+      ) {
         const force = (1 - dist / CONFIG.mouseRadius) * CONFIG.mouseStrength;
         const sign = CONFIG.mouseMode === 'repel' ? -1 : 1;
         posArray[i3] += dx * force * sign * delta * 60;
@@ -250,9 +273,17 @@ import * as THREE from 'three';
 
     if (!isMobile) {
       const connSq = CONFIG.connectionDistance * CONFIG.connectionDistance;
-      for (let i = 0; i < CONFIG.particleCount && lineIndex < maxConnections * 6; i++) {
+      for (
+        let i = 0;
+        i < CONFIG.particleCount && lineIndex < maxConnections * 6;
+        i++
+      ) {
         const i3 = i * 3;
-        for (let j = i + 1; j < CONFIG.particleCount && lineIndex < maxConnections * 6; j++) {
+        for (
+          let j = i + 1;
+          j < CONFIG.particleCount && lineIndex < maxConnections * 6;
+          j++
+        ) {
           const j3 = j * 3;
           const dx = posArray[i3] - posArray[j3];
           const dy = posArray[i3 + 1] - posArray[j3 + 1];
@@ -279,6 +310,10 @@ import * as THREE from 'three';
     lineGeometry.setDrawRange(0, lineIndex / 3);
   }
 
+  /**
+   * 每帧渲染回调。
+   * @return {void}
+   */
   function animate() {
     rafId = null;
     if (!running) return;
@@ -292,6 +327,10 @@ import * as THREE from 'three';
     rafId = requestAnimationFrame(animate);
   }
 
+  /**
+   * 启动渲染循环并显示画布。
+   * @return {void}
+   */
   function start() {
     if (running) return;
     running = true;
@@ -302,6 +341,10 @@ import * as THREE from 'three';
     console.log('[three-bg] 已启动，粒子数：', CONFIG.particleCount);
   }
 
+  /**
+   * 停止渲染循环并隐藏画布。
+   * @return {void}
+   */
   function stop() {
     running = false;
     canvas.style.opacity = '0';
@@ -334,7 +377,7 @@ import * as THREE from 'three';
         renderer.setSize(window.innerWidth, window.innerHeight);
       }, 200);
     },
-    {passive: true}
+    {passive: true},
   );
 
   /**
@@ -343,7 +386,9 @@ import * as THREE from 'three';
    * @return {string} 切换后的模式。
    */
   window.setMouseMode = function (mode) {
-    if (['attract', 'repel', 'off'].indexOf(mode) === -1) return CONFIG.mouseMode;
+    if (['attract', 'repel', 'off'].indexOf(mode) === -1) {
+      return CONFIG.mouseMode;
+    }
     CONFIG.mouseMode = mode;
     localStorage.setItem('KD_mouseMode', mode);
     console.log('[three-bg] 鼠标模式 →', mode);
@@ -352,7 +397,10 @@ import * as THREE from 'three';
 
   // 启动时恢复上次的鼠标模式
   const savedMouseMode = localStorage.getItem('KD_mouseMode');
-  if (savedMouseMode && ['attract', 'repel', 'off'].indexOf(savedMouseMode) !== -1) {
+  if (
+    savedMouseMode &&
+    ['attract', 'repel', 'off'].indexOf(savedMouseMode) !== -1
+  ) {
     CONFIG.mouseMode = savedMouseMode;
   }
 
@@ -367,6 +415,10 @@ import * as THREE from 'three';
   if (document.documentElement.dataset.bg === 'particles') {
     start();
   } else {
-    console.log('[three-bg] 待命（当前模式：' + document.documentElement.dataset.bg + '）');
+    console.log(
+      '[three-bg] 待命（当前模式：' +
+        document.documentElement.dataset.bg +
+        '）',
+    );
   }
 })();
