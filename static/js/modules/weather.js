@@ -36,13 +36,6 @@
     ['沙尘', 'dust'],
   ];
 
-  // 夜间需要换用的图标名。
-  const NIGHT_ICON = {
-    clear: 'clear-night',
-    'partly-cloudy': 'partly-cloudy-night',
-    overcast: 'overcast-day',
-  };
-
   /**
    * 拼装三段式线性渐变，便于复用与保持行宽。
    * @param {string} angle 渐变角度。
@@ -67,7 +60,7 @@
 
   const SKY = {
     clearDay: {
-      gradient: gradient('#135deg', '#56ccf2', '#2f80ed', '#1a5276'),
+      gradient: gradient('135deg', '#56ccf2', '#2f80ed', '#1a5276'),
       accent: '#fff',
       glow: 'rgba(255,255,255,0.2)',
     },
@@ -78,42 +71,42 @@
       glow: 'rgba(255,234,167,0.25)',
     },
     clearNight: {
-      gradient: gradient('#135deg', '#1a1a3e', '#2d2b55', '#1e3a5f'),
+      gradient: gradient('135deg', '#1a1a3e', '#2d2b55', '#1e3a5f'),
       accent: '#a8c8ff',
       glow: 'rgba(168,200,255,0.2)',
     },
     cloudyDay: {
-      gradient: gradient('#135deg', '#89f7fe', '#66a6ff', '#4a6fa5'),
+      gradient: gradient('135deg', '#89f7fe', '#66a6ff', '#4a6fa5'),
       accent: '#fff',
       glow: 'rgba(255,255,255,0.18)',
     },
     cloudyNight: {
-      gradient: gradient('#135deg', '#232526', '#414345', '#2c3e50'),
+      gradient: gradient('135deg', '#232526', '#414345', '#2c3e50'),
       accent: '#b0bec5',
       glow: 'rgba(176,190,197,0.15)',
     },
     overcast: {
-      gradient: gradient('#135deg', '#4b6cb7', '#3a4a6b', '#2c3e50'),
+      gradient: gradient('135deg', '#4b6cb7', '#3a4a6b', '#2c3e50'),
       accent: '#cfd8dc',
       glow: 'rgba(207,216,220,0.12)',
     },
     rain: {
-      gradient: gradient('#135deg', '#1a2a6c', '#2a3f5f', '#0f2027'),
+      gradient: gradient('135deg', '#1a2a6c', '#2a3f5f', '#0f2027'),
       accent: '#90caf9',
       glow: 'rgba(144,202,249,0.2)',
     },
     snow: {
-      gradient: gradient('#135deg', '#e0eafc', '#a8c0d8', '#7b9cb8'),
+      gradient: gradient('135deg', '#e0eafc', '#a8c0d8', '#7b9cb8'),
       accent: '#fff',
       glow: 'rgba(255,255,255,0.3)',
     },
     haze: {
-      gradient: gradient('#135deg', '#606c88', '#3f4c6b', '#2c3e50'),
+      gradient: gradient('135deg', '#606c88', '#3f4c6b', '#2c3e50'),
       accent: '#d1d8e0',
       glow: 'rgba(209,216,224,0.15)',
     },
     dust: {
-      gradient: gradient('#135deg', '#b79891', '#94716b', '#5d4037'),
+      gradient: gradient('135deg', '#b79891', '#94716b', '#5d4037'),
       accent: '#ffccbc',
       glow: 'rgba(255,204,188,0.2)',
     },
@@ -172,12 +165,13 @@
   }
 
   /**
-   * 依据天气文案挑选 Meteocons 图标。
+   * 依据天气文案挑选 Meteocons 图标（Meteocons 只提供昼夜区分的文件名）。
    * @param {string} text 天气文案。
    * @return {string} 图标 URL。
    */
   function getWeatherIconUrl(text) {
     const value = text || '';
+    const night = isNight();
     let base = 'clear';
     for (let i = 0; i < ICON_RULES.length; i++) {
       if (value.indexOf(ICON_RULES[i][0]) !== -1) {
@@ -185,7 +179,10 @@
         break;
       }
     }
-    if (isNight() && NIGHT_ICON[base]) base = NIGHT_ICON[base];
+    if (base === 'clear') base = night ? 'clear-night' : 'clear-day';
+    else if (base === 'partly-cloudy') {
+      base = night ? 'partly-cloudy-night' : 'partly-cloudy-day';
+    } else if (base === 'overcast') base = 'overcast-day';
     return METEOCONS_CDN + base + '.svg';
   }
 
@@ -278,7 +275,10 @@
       SERVICE_UNAVAILABLE: '服务暂不可用',
       INTERNAL_SERVER_ERROR: '服务器错误',
     };
-    return byCode[error.code] || error.message || '天气加载失败';
+    if (byCode[error.code]) return byCode[error.code];
+    // fetch 在网络不可达时抛 TypeError('Failed to fetch')，直接透出英文不友好。
+    if (error.name === 'TypeError') return '网络异常，请检查网络连接';
+    return error.message || '天气加载失败';
   }
 
   /**
@@ -398,6 +398,14 @@
     contentEl.className =
       'weather-content immersive ' + getWeatherEffect(data.weather);
     contentEl.innerHTML = buildWeatherHtml(data);
+
+    // Meteocons 走 CDN，加载失败时隐藏图标而不是留一个破图。
+    const iconEl = contentEl.querySelector('.weather-icon');
+    if (iconEl) {
+      iconEl.addEventListener('error', function () {
+        iconEl.hidden = true;
+      });
+    }
   }
 
   /**

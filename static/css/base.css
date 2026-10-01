@@ -551,14 +551,14 @@ body:not(.loading) .kd-loading {
   transform: translateY(-5px);
 }
 
-#hitokoto_text {
+#hitokoto-text {
   display: block;
   font-size: 24px;
   font-weight: 700;
   text-align: center;
 }
 
-#hitokoto_from {
+#hitokoto-from {
   display: block;
   font-size: 17px;
   padding: 1vh 0 0;

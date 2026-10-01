@@ -6,6 +6,7 @@
 
   const CACHE_KEY = 'github_data_cache';
   const CACHE_TTL = 30 * 60 * 1000;
+  const REQUEST_TIMEOUT = 10000;
   const GITHUB_HOME = 'https://github.com/';
   const LANG_COLORS = {
     JavaScript: '#f1e05a',
@@ -226,6 +227,19 @@
     const contentEl = document.getElementById('github-content');
     if (!loadingEl || !errorEl || !contentEl) return;
 
+    /**
+     * 显示错误态，并把失败原因写进提示行，便于区分接口问题与网络问题。
+     * @param {string} reason 原因文案（可为空）。
+     * @return {void}
+     */
+    function showError(reason) {
+      loadingEl.style.display = 'none';
+      contentEl.style.display = 'none';
+      errorEl.style.display = 'block';
+      const tip = errorEl.querySelector('.github-error-msg');
+      if (tip && reason) tip.textContent = reason;
+    }
+
     if (!opt_force) {
       const cached = window.KD_STORAGE.readSessionJson(CACHE_KEY, CACHE_TTL);
       if (cached) {
@@ -243,26 +257,43 @@
 
     const api = (CFG.github && CFG.github.api) || '';
     if (!api) {
-      loadingEl.style.display = 'none';
-      errorEl.style.display = 'block';
+      showError('未配置 GitHub 接口地址');
       return;
     }
 
-    fetch(api)
+    // 请求可能被扩展或网络设备静默挂起（既不 resolve 也不 reject），
+    // 不加超时会让加载动画一直转下去。
+    const controller = new AbortController();
+    const timer = setTimeout(function () {
+      controller.abort();
+    }, REQUEST_TIMEOUT);
+
+    fetch(api, {signal: controller.signal})
       .then(function (response) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
         return response.json();
       })
       .then(function (data) {
+        clearTimeout(timer);
         window.KD_STORAGE.writeSessionJson(CACHE_KEY, data);
         renderAll(data);
         loadingEl.style.display = 'none';
         contentEl.style.display = 'block';
       })
       .catch(function (error) {
+        clearTimeout(timer);
         console.error('GitHub API Error:', error);
-        loadingEl.style.display = 'none';
-        errorEl.style.display = 'block';
+        if (error && error.name === 'AbortError') {
+          showError(
+            '请求超时（' + REQUEST_TIMEOUT / 1000 + 's），可点击重新加载',
+          );
+          return;
+        }
+        if (error && error.name === 'TypeError') {
+          showError('网络无法访问接口，请检查网络或代理设置');
+          return;
+        }
+        showError(error && error.message ? error.message : '');
       });
   };
 })();

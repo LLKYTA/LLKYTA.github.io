@@ -120,6 +120,26 @@ for (const file of jsFiles) {
   }
 }
 
+// CSS 里的 #id 选择器必须命中 HTML 中真实存在的 id。
+// 这一类漏改会让样式静默失效（曾经把 #hitokoto_text 改成 span 却漏改 CSS）。
+for (const file of cssFiles) {
+  const src = fs
+    .readFileSync(file, 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    // 去掉带引号的属性值，避免把 url('#x') 之类误判为 id 选择器。
+    .replace(/"[^"]*"|'[^']*'/g, '""');
+  for (const m of src.matchAll(/#([a-zA-Z][a-zA-Z0-9_-]*)/g)) {
+    const name = m[1];
+    // 排除十六进制颜色（#fff / #1a1a2e）与转义字符。
+    if (/^[0-9a-fA-F]{3,8}$/.test(name) && !ids.has(name)) continue;
+    if (!ids.has(name)) {
+      problems.push(
+        path.basename(file) + ': CSS 中的 #' + name + ' 在 HTML 里不存在',
+      );
+    }
+  }
+}
+
 // CSS 自定义属性定义与使用
 const rootCss = fs.readFileSync(ROOT + '/static/css/root.css', 'utf8');
 const defined = new Set(
