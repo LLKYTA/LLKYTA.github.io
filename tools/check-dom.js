@@ -164,7 +164,8 @@ const BUILTIN = new Set([
   '--weather-accent',
   '--weather-glow',
   '--footer-avoid-right',
-  // 组件内部局部变量，定义在使用它的同一文件里。
+  // 组件内部局部变量，定义在使用它的同一文件 / 由 JS 写入。
+  '--contrib-weeks',
   '--drawer-duration',
   '--drawer-ease',
   '--drawer-width',
@@ -173,6 +174,47 @@ const BUILTIN = new Set([
 for (const [name, where] of used) {
   if (!defined.has(name) && !BUILTIN.has(name)) {
     problems.push('未定义的自定义属性 ' + name + '（用于 ' + where + '）');
+  }
+}
+
+// 带 !important 的工具类不能被 JS 通过 style.display 覆盖。
+// 曾经用 .is-hidden 初始隐藏 #github-content，JS 设 style.display='block'
+// 却因 !important 无效，导致内容永远不显示（且 getComputedStyle 恒为 none）。
+const importantClasses = new Set();
+for (const file of cssFiles) {
+  const src = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  for (const m of src.matchAll(/\.([a-zA-Z][a-zA-Z0-9_-]*)\s*\{([^}]*)\}/g)) {
+    if (/display\s*:[^;]*!important/.test(m[2])) importantClasses.add(m[1]);
+  }
+}
+if (importantClasses.size) {
+  // 内联 SVG（含 sprite 定义）属于静态装饰，不会被 JS 切换显示，跳过检查。
+  // 注意：标签内部不得再出现 <svg，否则会把跨度拉到后面的元素上。
+  const svgRanges = [];
+  const svgRegex = /<svg(?:(?!<svg)[\s\S])*?<\/svg\s*>/g;
+  let svgMatch;
+  while ((svgMatch = svgRegex.exec(html))) {
+    svgRanges.push([svgMatch.index, svgMatch.index + svgMatch[0].length]);
+  }
+  /**
+   * 判断某个偏移是否落在内联 SVG 内。
+   * @param {number} index 字符偏移。
+   * @return {boolean} 在 SVG 内返回 true。
+   */
+  function insideSvg(index) {
+    return svgRanges.some((range) => index >= range[0] && index < range[1]);
+  }
+  for (const m of html.matchAll(/\sclass="([^"]+)"/g)) {
+    if (insideSvg(m.index)) continue;
+    for (const cls of m[1].split(/\s+/)) {
+      if (importantClasses.has(cls)) {
+        problems.push(
+          'HTML 类 "' +
+            cls +
+            '" 含 display:!important，JS 无法用 style.display 覆盖它',
+        );
+      }
+    }
   }
 }
 

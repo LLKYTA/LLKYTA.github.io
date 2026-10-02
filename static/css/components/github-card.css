@@ -197,26 +197,28 @@
   font-weight: 400;
 }
 
+/* 贡献热力图：整年约 53 周。用 grid 让所有周等比缩放，完整落在卡片内，
+   不再出现被裁掉一半的首尾两列。列数由 JS 按实际周数写入。 */
 .github-contrib-graph {
-  display: flex;
+  --contrib-weeks: 53;
+
+  display: grid;
   gap: 3px;
-  overflow: hidden;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(var(--contrib-weeks), minmax(0, 1fr));
   width: 100%;
 }
 
 .github-contrib-week {
-  display: flex;
-  flex: 1 1 0;
-  flex-direction: column;
+  display: grid;
   gap: 3px;
-  min-width: 0;
+  grid-template-rows: repeat(7, auto);
 }
 
 .github-contrib-day {
   aspect-ratio: 1 / 1;
   background: var(--item-hover-color);
   border-radius: 30%;
-  height: auto;
   transition:
     transform 0.15s ease,
     border-radius 0.15s ease;
@@ -381,24 +383,14 @@
   }
 }
 
+/* 窄屏：只收紧间距，仍然整体缩放，不做横向滚动，
+   避免首尾出现被截断的列。 */
 @media (max-width: 600px) {
   .github-contrib-graph {
     gap: 2px;
-    overflow-x: auto;
-    padding-bottom: 4px;
   }
 
   .github-contrib-week {
     gap: 2px;
-    min-width: 4px;
-  }
-
-  .github-contrib-graph::-webkit-scrollbar {
-    height: 4px;
-  }
-
-  .github-contrib-graph::-webkit-scrollbar-thumb {
-    background: var(--left-tag-item);
-    border-radius: 4px;
   }
 }

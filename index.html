@@ -205,8 +205,8 @@
             <div class="weather-loading-spinner"></div>
             <span>获取天气中...</span>
           </div>
-          <div class="weather-content immersive is-hidden"></div>
-          <div class="weather-error is-hidden">
+          <div class="weather-content immersive" style="display: none"></div>
+          <div class="weather-error" style="display: none">
             <span class="weather-error-msg">天气加载失败</span>
             <button class="weather-retry" id="weather-retry-btn" type="button">
               重试
@@ -338,13 +338,13 @@
               <div class="github-loading-spinner"></div>
               <span>正在获取 GitHub 数据...</span>
             </div>
-            <div id="github-error" class="github-error is-hidden">
+            <div id="github-error" class="github-error" style="display: none">
               <p class="github-error-msg">😥 数据加载失败，请稍后重试</p>
               <button id="github-retry-btn" class="github-retry-btn">
                 重新加载
               </button>
             </div>
-            <div id="github-content" class="is-hidden">
+            <div id="github-content" style="display: none">
               <div class="github-profile-card">
                 <div class="github-profile-left">
                   <img
@@ -660,6 +660,7 @@
     <script src="./static/js/config.js" defer></script>
     <script src="./static/js/core/globals.js" defer></script>
     <script src="./static/js/core/storage.js" defer></script>
+    <script src="./static/js/core/uapi.js" defer></script>
     <script src="./static/js/core/utils.js" defer></script>
     <script src="./static/js/core/theme.js" defer></script>
     <script src="./static/js/core/loading.js" defer></script>

@@ -32,6 +32,16 @@ window.KD_CONFIG = {
     qq: {image: './static/img/qq.jpg'},
   },
 
+  // UAPI（uapis.cn）凭证。Key 以 uapi- 开头。
+  // 静态站点读不到「环境变量」，因此部署时用以下任一方式注入，不要提交进仓库：
+  //   1) 页面里在 config.js 之前加：<script>window.__UAPI_KEY__ = 'uapi-xxx'</script>
+  //   2) 直接填下面的 apiKey（仅适合本地/私有部署）
+  //   3) 本地调试：localStorage.setItem('KD_uapi_key', 'uapi-xxx')
+  // 未配置时会以访客身份调用（每月 1500 积分、4 QPS）。
+  uapi: {
+    apiKey: '',
+  },
+
   weather: {
     enabled: true,
     apiKey: '',
@@ -47,11 +57,30 @@ window.KD_CONFIG = {
     timeout: 10000,
   },
 
+  // 查询 GitHub 用户信息（GET https://uapis.cn/api/v1/github/user）
+  // 参数含义见 https://uapis.cn/docs/api-reference/get-github-user
   github: {
-    username: 'LLKYTA',
-    api:
-      'https://uapis.cn/api/v1/github/user?user=LLKYTA' +
-      '&activity=true&activity_scope=all&pinned=true&repos=true&repos_limit=6',
+    enabled: true,
+    // 必填：GitHub 登录名（仅字母、数字、连字符，最长 39 位）
+    user: 'LLKYTA',
+    // 是否获取最近一年的贡献活动数据
+    activity: true,
+    // 活动范围：all | organization；传了 org 时必须为 organization
+    activityScope: 'all',
+    // 组织登录名；填写后自动按 organization 范围统计，不要再传 activityScope=all
+    org: '',
+    // 是否附带主页 pinned 仓库
+    pinned: true,
+    // 是否附带最近活跃的公开仓库
+    repos: true,
+    // 公开仓库返回数量，1~100，默认 6
+    reposLimit: 6,
+    // 单次请求超时（毫秒）
+    timeout: 10000,
+    // 失败重试次数（针对 429 / 5xx / 网络错误）
+    retries: 2,
+    // 会话内缓存时长（毫秒）
+    cacheTtl: 30 * 60 * 1000,
   },
 
   music: {

@@ -98,7 +98,8 @@
     │   ├── analytics.js           51.la 统计初始化
     │   ├── main.js                入口：绑定交互并初始化各模块
     │   ├── music-player.js        音乐播放器
-    │   ├── core/                  globals / storage / utils / theme / loading
+    │   ├── core/                  globals / storage / uapi / utils / theme /
+    │   │                          loading
     │   └── modules/               profile / skills / hitokoto / runtime /
     │                              visits / typewriter / mouse-glow /
     │                              three-bg / bg-mode / command-palette /
@@ -117,6 +118,79 @@
 如 Vercel、Netlify、GitHub Pages。
 
 天气、GitHub、一言等模块依赖线上接口，需要联网才能看到数据。
+
+## 🔌 UAPI（uapis.cn）接入
+
+GitHub 数据由 UAPI 提供，统一走 `static/js/core/uapi.js` 客户端，
+业务模块只负责组装参数与渲染。
+
+- 接口：`GET https://uapis.cn/api/v1/github/user`
+  （[接口文档](https://uapis.cn/docs/api-reference/get-github-user)）
+- 客户端能力：`Authorization: Bearer <KEY>` 鉴权、超时、
+  按 `Retry-After` 与指数退避重试、FAQ 中多种错误结构的归一化解析、
+  错误码翻译、`X-Request-ID` 与缓存命中标记透出。
+
+### 密钥填写位置
+
+密钥以 `uapi-` 开头，**不要提交进仓库**。静态站点读不到「环境变量」，
+因此按以下任一方式注入（`core/uapi.js` 会依次查找）：
+
+1. 在 `config.js` 之前内联（推荐给 CI / 部署平台注入）：
+
+   ```html
+   <script>
+     window.__UAPI_KEY__ = 'uapi-你的密钥';
+   </script>
+   ```
+
+2. 直接填在 `static/js/config.js` 的 `uapi.apiKey`（仅本地 / 私有部署）。
+
+3. 本地调试时在控制台执行一次：
+
+   ```js
+   localStorage.setItem('KD_uapi_key', 'uapi-你的密钥');
+   ```
+
+未配置密钥时以**访客**身份调用：每月 1500 积分、4 QPS，
+且浏览器跨域调用 `/api/v1/*` 可能返回 403 `CORS_FORBIDDEN`
+（见 FAQ Q22 / Q23；生产环境建议由自有后端转发以隐藏密钥）。
+
+### 参数配置
+
+`static/js/config.js` 的 `github` 段对应文档中的查询参数：
+
+| 配置项                             | 文档参数         | 说明                                                     |
+| ---------------------------------- | ---------------- | -------------------------------------------------------- |
+| `user`                             | `user`           | 必填，仅字母、数字、连字符，最长 39 位                   |
+| `activity`                         | `activity`       | 是否取最近一年贡献数据                                   |
+| `activityScope`                    | `activity_scope` | `all` 或 `organization`                                  |
+| `org`                              | `org`            | 组织登录名；填了它就会强制 `activity_scope=organization` |
+| `pinned`                           | `pinned`         | 是否附带主页 pinned 仓库                                 |
+| `repos`                            | `repos`          | 是否附带最近活跃仓库                                     |
+| `reposLimit`                       | `repos_limit`    | 1~100，单独传入也会开启 `repos`                          |
+| `timeout` / `retries` / `cacheTtl` | —                | 客户端行为，不发给接口                                   |
+
+### 调用方式
+
+```js
+// 页面其它模块也可以直接复用这个客户端
+window.KD_UAPI.get(
+  '/github/user',
+  {user: 'LLKYTA', activity: 'true', pinned: 'true'},
+  {timeout: 10000, retries: 2},
+)
+  .then(function (result) {
+    console.log(result.data); // 接口返回体
+    console.log(result.requestId); // X-Request-ID，排查问题时提供
+  })
+  .catch(function (error) {
+    console.log(error.code, error.message, error.status, error.retryable);
+  });
+
+// 页面自身用法
+window.loadGitHubData(); // 带会话缓存
+window.loadGitHubData(true); // 强制刷新
+```
 
 ## 🧹 代码规范
 
